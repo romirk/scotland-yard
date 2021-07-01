@@ -22,3 +22,7 @@
 .container {
     height: 100%;
 }
+
+form>div {
+    margin: 1vh;
+}

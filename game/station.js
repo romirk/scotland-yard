@@ -26,7 +26,7 @@ function Station(n) {
         }
     }
 
-    this.addEdge = (type, station) => {
+    this.addNeighbour = (type, station) => {
         switch (type) {
             case 'taxi':
             case 0:

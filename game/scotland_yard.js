@@ -24,19 +24,20 @@ let ScotlandYard = (game_id) => {
     this.addPlayer = (con, name, color, isMrX) => {
         if (game_info.number_of_players >= MAX_PLAYERS) return false;
 
-        let index = Math.floor(Math.random() * this.available_locations.length);
-        let loc = this.available_locations[index];
+        let index = Math.floor(Math.random() * game_info.available_locations.length);
+        let loc = game_info.available_locations[index];
 
-        game_info.players.forEach(player => {
+        for (let i = 0; i < game_info.number_of_players; i++) {
+            const player = game_info.players[i];
             if (color == player.color) {
                 return false;
             }
             if (isMrX && player.isMrX) {
                 return false;
             }
-        });
+        };
 
-        this.available_locations.splice(index, 1);
+        game_info.available_locations.splice(index, 1);
 
         let newPlayer = new Player(con.id, name, color, loc, isMrX);
 
@@ -44,6 +45,8 @@ let ScotlandYard = (game_id) => {
             game_info.players.unshift(newPlayer);
         else
             game_info.players.push(newPlayer);
+
+        game_info.number_of_players++;
         return true;
     }
 };

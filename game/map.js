@@ -7,7 +7,7 @@ function Map(map_data) {
     for (let i = 0; i < N; i++) {
         let station = new Station(i);
         for (let j = 0; j < map_data[i].length; j++) {
-            station.addEdge(j, map_data[i][j]);
+            station.addNeighbour(j, map_data[i][j]);
         }
         Object.freeze(station.getAllNeighbours());
         Object.freeze(station);

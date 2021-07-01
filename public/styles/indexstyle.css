@@ -1,5 +1,5 @@
 .demo-layout-transparent {
-    background: red center / cover;
+    background: linear-gradient(#6DB6F3, #C3D038) center / cover;
 }
 
 .demo-layout-transparent .mdl-layout__header,
@@ -7,4 +7,18 @@
     /* This background is dark, so we set text to white. Use 87% black instead if
        your background is light. */
     color: white;
+}
+
+.title {
+    margin: auto;
+    padding-top: 15vh;
+    width: max-content;
+    height: 100%;
+    color: white;
+    text-align: center;
+    /* font-family: Georgia, 'Times New Roman', Times, serif; */
+}
+
+.container {
+    height: 100%;
 }

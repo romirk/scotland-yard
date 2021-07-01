@@ -6,7 +6,7 @@ const SURFACE_MOVES = [3, 8, 13, 18, 24];
 const MOVE_LIMIT = 24;
 const MAX_PLAYERS = 6;
 
-let ScotlandYard = (game_id) => {
+function ScotlandYard(game_id) {
 
 
     const game_info = {
@@ -21,34 +21,33 @@ let ScotlandYard = (game_id) => {
 
     const map = new Map(mapdata);
 
-    this.addPlayer = (con, name, color, isMrX) => {
+    this.addPlayer = (con) => {
         if (game_info.number_of_players >= MAX_PLAYERS) return false;
 
+        const name = con.name;
         let index = Math.floor(Math.random() * game_info.available_locations.length);
         let loc = game_info.available_locations[index];
 
-        for (let i = 0; i < game_info.number_of_players; i++) {
-            const player = game_info.players[i];
-            if (color == player.color) {
-                return false;
-            }
-            if (isMrX && player.isMrX) {
-                return false;
-            }
-        };
-
         game_info.available_locations.splice(index, 1);
 
-        let newPlayer = new Player(con.id, name, color, loc, isMrX);
+        let newPlayer = new Player(con.id, name, loc);
 
-        if (isMrX)
-            game_info.players.unshift(newPlayer);
-        else
-            game_info.players.push(newPlayer);
-
+        game_info.players.push(newPlayer);
         game_info.number_of_players++;
         return true;
     }
+
+    this.getPlayer = token => {
+        return game_info.players.map(player => player.id).findIndex(player => player.id === token);
+    }
+
+    this.setColor = (token, color) => {
+        // TODO implement setColor
+    };
+    this.setMrX = (token) => {
+        // TODO implement setMrX
+    };
+
 };
 
 module.exports = ScotlandYard;

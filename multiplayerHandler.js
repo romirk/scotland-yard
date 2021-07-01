@@ -1,7 +1,11 @@
-import ScotlandYard from './game/scotland_yard'
+const ScotlandYard = require('./game/scotland_yard');
 
-let games = [];
+const games = {};
 
-module.exports.createRoom = token => {
-    let game;
+module.exports.createRoom = (token, name) => {
+    let game = new ScotlandYard(token);
+    games[token] = game;
+    return game.addPlayer({ name: name, id: token });
 }
+
+// TODO multiplayer logic

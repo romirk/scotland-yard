@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 // const crypto = require('crypto');
-import { v4 as uuidv4 } from 'uuid';
+const { v4: uuidv4 } = require('uuid');
 
 const multiplayer = require('../multiplayerHandler');
 
@@ -20,7 +20,8 @@ router.post("/new", (req, res) => {
     console.log(req.body);
     if (typeof req.body.create !== 'undefined') {
         let token = uuidv4();
-        multiplayer.createRoom(token);
+        multiplayer.createRoom(token, name);
+        // TODO create room
         res.render('createRoom');
     } else if (typeof req.body.join !== 'undefined') {
         res.render('joinRoom');

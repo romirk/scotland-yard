@@ -1,5 +1,5 @@
 function Station(n) {
-    const number = n;
+    const location = n;
     const neighbours = {
         taxi: [],
         bus: [],
@@ -7,6 +7,7 @@ function Station(n) {
         special: []
     }
 
+    this.getLocation = () => location;
     this.getAllNeighbours = () => neighbours;
 
     this.getNeighbours = type => {

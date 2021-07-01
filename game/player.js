@@ -1,8 +1,10 @@
-function Player(con_id, player_name, player_color, player_location, player_isMrX) {
+// const AVAILABLE_COLORS = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
+
+function Player(con_id, player_name, player_location) {
     const id = con_id; // websocket connection ID
     const name = player_name;
-    const color = player_color;
-    const isMrX = player_isMrX;
+    let color = player_color;
+    let isMrX = player_isMrX;
     let location = player_location;
 
     let tickets = isMrX ? {
@@ -18,12 +20,13 @@ function Player(con_id, player_name, player_color, player_location, player_isMrX
     };
 
     // getters
+    this.getID = () => id;
     this.getName = () => name;
     this.getColor = () => color;
     this.isMrX = () => isMrX;
     this.getLocation = () => location;
     this.getTickets = (type) => {
-        switch(type){
+        switch (type) {
             case 'taxi':
                 return tickets.taxi;
                 break;
@@ -34,15 +37,26 @@ function Player(con_id, player_name, player_color, player_location, player_isMrX
                 return tickets.underground;
                 break;
             case 'black':
-                if(isMrX) return tickets.black;
+                if (isMrX) return tickets.black;
                 break;
         }
     }
 
     //setters
+    this.setColor = c => {
+        color = c;
+    };
+    this.setMrX = () => {
+        isMrX = true;
+        color = 'X';
+    };
+    this.unsetMrX = (c) => {
+        isMrX = false;
+        color = c;
+    };
     this.setLocation = loc => location = 1 <= loc && loc <= 200 ? loc : location;
     this.discard = (type) => {
-        switch(type){
+        switch (type) {
             case 'taxi':
                 tickets.taxi--;
                 break;
@@ -62,8 +76,8 @@ function Player(con_id, player_name, player_color, player_location, player_isMrX
     }
 
     this.gain = (type) => { // Gain tickets discarded by detectives
-        if(isMrX){
-            switch(type){
+        if (isMrX) {
+            switch (type) {
                 case 'taxi':
                     tickets.taxi++;
                     break;

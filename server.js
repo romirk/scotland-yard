@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/games', game);
+app.use('/games', games);
 
 const port = 80;
 const host = '0.0.0.0';

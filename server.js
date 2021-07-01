@@ -6,7 +6,8 @@ const fs = require('fs');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 
-const game = require('./routes/games');
+const games = require('./routes/games');
+const ScotlandYard = require('./game/scotland_yard');
 
 const app = express();
 
@@ -20,7 +21,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/games', game);
+app.use('/games', games);
 
 const port = 80;
 const host = '0.0.0.0';

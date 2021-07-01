@@ -1,12 +1,15 @@
-let Player = require('player');
+const Player = require('./player');
+const Map = require('./map');
+const mapdata = require('./mapdata');
 
-const SURFACE_MOVE = [3, 8, 13, 18, 24];
+const SURFACE_MOVES = [3, 8, 13, 18, 24];
 const MOVE_LIMIT = 24;
+const MAX_PLAYERS = 6;
 
 let ScotlandYard = (game_id) => {
 
 
-    this.game_info = {
+    const game_info = {
         id: game_id,
         number_of_players: 0,
         running: true,
@@ -16,12 +19,15 @@ let ScotlandYard = (game_id) => {
         turn: 0
     }
 
-    this.addPlayer = (name, color, isMrX) => {
+    const map = new Map(mapdata);
+
+    this.addPlayer = (con, name, color, isMrX) => {
+        if (game_info.number_of_players >= MAX_PLAYERS) return false;
+
         let index = Math.floor(Math.random() * this.available_locations.length);
         let loc = this.available_locations[index];
-        this.available_locations.splice(index, 1);
 
-        this.game_info.players.forEach(player => {
+        game_info.players.forEach(player => {
             if (color == player.color) {
                 return false;
             }
@@ -30,12 +36,14 @@ let ScotlandYard = (game_id) => {
             }
         });
 
-        let newPlayer = new Player(name, color, loc, isMrX);
+        this.available_locations.splice(index, 1);
+
+        let newPlayer = new Player(con.id, name, color, loc, isMrX);
 
         if (isMrX)
-            this.players.unshift(newPlayer);
+            game_info.players.unshift(newPlayer);
         else
-            this.players.push(newPlayer);
+            game_info.players.push(newPlayer);
         return true;
     }
 };

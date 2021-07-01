@@ -1,7 +1,8 @@
-function Player(name, color, location, isMrX) {
-    let name = name;
-    let color = color;
-    let isMrX = isMrX;
+function Player(con_id, name, color, location, isMrX) {
+    const id = con_id; // websocket connection ID
+    const name = name;
+    const color = color;
+    const isMrX = isMrX;
     let location = location;
 
     let tickets = isMrX ? {
@@ -20,13 +21,12 @@ function Player(name, color, location, isMrX) {
     this.getColor = () => color;
     this.isMrX = () => isMrX;
     this.getLocation = () => location;
-    this.getTickets = (type) => {}
+    this.getTickets = type => {}
 
     //setters
-    this.setLocation = (loc) => location = 1 <= loc && loc <= 200 ? loc : location;
+    this.setLocation = loc => location = 1 <= loc && loc <= 200 ? loc : location;
     this.use = (type) => {
         switch (type) {
-            case 'bus':
 
         }
     }

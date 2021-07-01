@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 
-const game = require('./routes/game');
+const game = require('./routes/games');
 
 const app = express();
 

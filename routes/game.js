@@ -10,10 +10,8 @@ router.get('/', (req, res) => {
     res.sendStatus(200);
 });
 
-router.get('/echo/:t', (req, res) => {
-    console.log("game route");
-    let text = req.params.t;
-    res.send(text);
-});
-
+router.post("/new", (req, res) => {
+    let name = req.body.player_name;
+    console.log(name);
+})
 module.exports = router

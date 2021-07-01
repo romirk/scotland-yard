@@ -36,7 +36,7 @@
             <div class="container">
                 <div class="title">
                     <h1>Scotland Yard</h1>
-                    <form action="/games/new" method="post" style="margin: auto;">
+                    <form action="/games/new" method="post" style="margin: auto;" id="start">
                         <div class="row g-2">
                             <div class="col-12">
                                 <input class="form-control" type="text" name="player_name" id="player_name" placeholder="Name" />
@@ -45,10 +45,10 @@
 
                         <div class="row g-2">
                             <div class="col-6">
-                                <button type="submit" class="btn btn-success" name="join">Join Room</button>
+                                <button type="submit" class="btn btn-success" form="start" name="join">Join Room</button>
                             </div>
                             <div class="col-6">
-                                <button type="submit" class="btn btn-primary" name="create">Create Room</button>
+                                <button type="submit" class="btn btn-primary" form="start" name="create">Create Room</button>
                             </div>
                         </div>
                     </form>

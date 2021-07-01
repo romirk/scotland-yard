@@ -21,24 +21,34 @@ function ScotlandYard(game_id) {
 
     const map = new Map(mapdata);
 
-    this.addPlayer = (con) => {
+    this.addPlayer = (id, name) => {
         if (game_info.number_of_players >= MAX_PLAYERS) return false;
 
-        const name = con.name;
         let index = Math.floor(Math.random() * game_info.available_locations.length);
         let loc = game_info.available_locations[index];
 
         game_info.available_locations.splice(index, 1);
 
-        let newPlayer = new Player(con.id, name, loc);
+        let newPlayer = new Player(id, name, loc);
 
         game_info.players.push(newPlayer);
         game_info.number_of_players++;
         return true;
     }
 
+    this.removePlayer = id => {
+        // TODO remove player logic
+        let index = this.getPlayer(id);
+        if (index == -1) return false;
+
+        game_info.players.splice(index, 1);
+        game_info.number_of_players--;
+        if (game_info.number_of_players < 3) this.end();
+        return true;
+    }
+
     this.getPlayer = token => {
-        return game_info.players.map(player => player.id).findIndex(player => player.id === token);
+        return game_info.players.map(player => player.id).findIndex(id => id === token);
     }
 
     this.setColor = (token, color) => {
@@ -47,6 +57,8 @@ function ScotlandYard(game_id) {
     this.setMrX = (token) => {
         // TODO implement setMrX
     };
+
+    this.end = () => running = false;
 
 };
 

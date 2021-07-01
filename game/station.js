@@ -14,16 +14,16 @@ function Station(n) {
         switch (type) {
             case 'taxi':
             case 0:
-                return edges.taxi;
+                return neighbours.taxi;
             case 'bus':
             case 1:
-                return edges.bus;
+                return neighbours.bus;
             case 'underground':
             case 2:
-                return edges.underground;
+                return neighbours.underground;
             case 'special':
             case 3:
-                return edges.special;
+                return neighbours.special;
         }
     }
 
@@ -31,19 +31,19 @@ function Station(n) {
         switch (type) {
             case 'taxi':
             case 0:
-                edges.taxi.push(station);
+                neighbours.taxi.push(station);
                 break;
             case 'bus':
             case 1:
-                edges.bus.push(station);
+                neighbours.bus.push(station);
                 break;
             case 'underground':
             case 2:
-                edges.underground.push(station);
+                neighbours.underground.push(station);
                 break;
             case 'special':
             case 3:
-                edges.special.push(station);
+                neighbours.special.push(station);
                 break;
             default:
                 return false;

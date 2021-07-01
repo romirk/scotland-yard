@@ -3,8 +3,8 @@
 function Player(con_id, player_name, player_location) {
     const id = con_id; // websocket connection ID
     const name = player_name;
-    let color = player_color;
-    let isMrX = player_isMrX;
+    let color = undefined;
+    let isMrX = false;
     let location = player_location;
 
     let tickets = isMrX ? {

@@ -9,26 +9,31 @@ const multiplayer = require('../multiplayerHandler');
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
-
-router.get('/', (req, res) => {
-    console.log("game route");
-    res.sendStatus(200);
-});
-
 router.post("/new", (req, res) => {
     let name = req.body.player_name;
     console.log(req.body);
+    let token = req.cookies.sy_client_token;
+
     if (typeof req.body.create !== 'undefined') {
-        let token = uuidv4();
+        if (multiplayer.getGameWithPlayer(token) !== undefined)
+            multiplayer.disconnect(token);
         multiplayer.createRoom(token, name);
-        // TODO create room
+        res.locals.token = token;
         res.render('createRoom');
     } else if (typeof req.body.join !== 'undefined') {
         res.render('joinRoom');
     } else {
-        res.status(400);
+        res.status(405);
         res.end();
     }
+});
+
+router.get("/:game_id", (req, res) => {
+    let token = req.cookies.sy_client_token;
+    let name = req.body.player_name;
+
+    multiplayer.joinRoom(token, name, req.params.game_id);
+    res.render('game');
 });
 
 module.exports = router;

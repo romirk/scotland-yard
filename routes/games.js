@@ -12,6 +12,12 @@ router.get('/', (req, res) => {
 
 router.post("/new", (req, res) => {
     let name = req.body.player_name;
-    console.log(name);
-})
-module.exports = router
+    console.log(req.body);
+    if (req.body.create) {
+        res.render('createRoom');
+    } else if (req.body.join) {
+        res.render('joinRoom');
+    } else res.status(400);
+});
+
+module.exports = router;

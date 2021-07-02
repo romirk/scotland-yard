@@ -1,13 +1,13 @@
 const express = require('express');
 const http = require("http");
 const logger = require('morgan');
-const fs = require('fs');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const { v4: uuidv4 } = require('uuid');
+// const { socketServer } = require("socket.io");
 
 const games = require('./routes/games');
-const ScotlandYard = require('./game/scotland_yard');
+const wsRoutes = require('./websocketRoutes');
 
 const app = express();
 
@@ -39,7 +39,9 @@ const port = 80;
 const host = '0.0.0.0';
 
 const server = http.createServer(app);
-const wss = require('./websocketRoutes');
+const io = wsRoutes(require("socket.io")(server));
+
+// const wss = require('./websocketRoutes');
 
 server.listen(port, host, () => {
     console.log(`Starting the server at ${host}:${port}`);

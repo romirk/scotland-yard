@@ -1,22 +1,20 @@
-const websocket = require("ws");
-const Messages = require('./public/js/ws_protocol')
+const Messages = require('./public/js/ws_protocol');
+const multiplayer = require('./multiplayerHandler');
 
-const wss = new websocket.Server({ port: 3000 });
-
-wss.on("connection", (ws, req) => {
-    let token = req.headers.cookie.split(';').find(cookie => cookie.trim().startsWith('sy_client_token=')).slice(17);
-    ws.id = token;
-    console.log(`ws-connected: ${token}`);
-    ws.on("message", msgStr => {
-        console.log(msgStr);
-        let msg = JSON.parse(msgStr);
-        let data = msg.data;
-        switch (data.type) {
-            // TODO ws messsage handling
-            case Messages.CONNECTED.type:
-                break;
-        }
+function createRoutes(io) {
+    // TODO handle ws connections
+    io.on('connection', socket => {
+        socket.on(Messages.CONNECTED.type, msg => {
+            let data = JSON.parse(msg).data;
+            console.log(`Connected: ${data}`);
+            socket.join(data.token);
+            let ackObj = Messages.ACKNOWLEDGE;
+            ackObj.token = data.token;
+            socket.to(socket.id).emit(Messages.ACKNOWLEDGE.type, JSON.stringify(ackObj));
+        });
     });
-});
 
-module.exports = wss;
+    return io;
+}
+
+module.exports = createRoutes;

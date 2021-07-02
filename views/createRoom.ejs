@@ -36,8 +36,25 @@
             </div>
         </main>
     </div>
+
     <script>
-        document.getElementById("link").innerText = window.location.host + '/games/' + '<%= token %>';
+        const token = '<%= token %>';
+        document.getElementById('link').innerText = window.location.host + '/games/' + token;
+    </script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/ws_protocol.js"></script>
+    <script>
+        var socket = io();
+        const Messages = this.Messages;
+
+        console.log(token);
+
+        let connectedObj = Messages.CONNECTED;
+        connectedObj.data.token = token;
+        socket.emit(Messages.CONNECTED.type, JSON.stringify(connectedObj));
+
+        socket.on(Messages.ACKNOWLEDGE.type, (msg) => console.log("connected"));
     </script>
 </body>
 

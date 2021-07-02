@@ -32,6 +32,7 @@ router.post("/new", (req, res) => {
 router.get("/:game_id", (req, res, next) => {
     let token = req.cookies.sy_client_token;
     let name = req.body.player_name;
+    let game_id = req.params.game_id;
 
     if (token === game_id) {
         // host joined, start the game

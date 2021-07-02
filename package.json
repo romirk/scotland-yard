@@ -4,7 +4,7 @@
     "description": "Multiplayer real-time scotland yard game",
     "main": "server.js",
     "scripts": {
-        "test": "node server"
+        "test": "npm i && node server"
     },
     "repository": {
         "type": "git",
@@ -23,6 +23,7 @@
         "express": "~4.16.1",
         "http-errors": "~1.6.3",
         "morgan": "~1.9.1",
+        "socket.io": "^4.1.2",
         "uuid": "^8.3.2",
         "ws": "^7.4.2"
     }

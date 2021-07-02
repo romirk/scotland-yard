@@ -63,10 +63,9 @@ function ScotlandYard(game_id) {
      */
     this.init = () => {
         // precondition checks
-        if (game_info.number_of_players < 3 || game_info.number_of_players > 6)
+        if (game_info.number_of_players !== 6)
             throw new Exception("Invalid number of players.", { "players": game_info.number_of_players });
-
-
+        // TODO init logic
     }
 
     /**
@@ -89,6 +88,11 @@ function ScotlandYard(game_id) {
         game_info.players.push(newPlayer);
         game_info.number_of_players++;
         return true;
+    }
+
+    this.removePlayer = token => {
+        //TODO remove player logic
+
     }
 
     this.move = (id, location) => {

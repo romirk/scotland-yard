@@ -58,19 +58,19 @@ function Player(con_id, player_name, player_location) {
     this.discard = (type) => {
         switch (type) {
             case 'taxi':
-                tickets.taxi--;
+                tickets.taxi = tickets.taxi === 0 ? tickets.taxi : tickets.taxi - 1;
                 break;
             case 'bus':
-                tickets.bus--;
+                tickets.bus = tickets.bus === 0 ? tickets.bus : tickets.bus - 1;
                 break;
             case 'underground':
-                tickets.underground--;
+                tickets.underground = tickets.underground === 0 ? tickets.underground : tickets.underground - 1;
                 break;
             case 'black':
-                if (isMrX) tickets.black--;
+                if (isMrX) tickets.black = tickets.black === 0 ? tickets.black : tickets.black - 1;
                 break;
             case 'times_two':
-                if (isMrX) tickets.times_two--;
+                if (isMrX) tickets.times_two = tickets.times_two === 0 ? tickets.times_two : tickets.times_two - 1;
                 break;
         }
     }

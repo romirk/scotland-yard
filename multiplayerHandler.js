@@ -1,4 +1,5 @@
 const ScotlandYard = require('./game/scotland_yard');
+const Exception = require('./Exceptions');
 
 const games = {};
 const players = {};
@@ -17,10 +18,27 @@ module.exports.joinRoom = (player_id, player_name, game_id) => {
     if (games[game_id] === undefined)
         return false;
 
+    /** @type {boolean} */
     let result = games[game_id].addPlayer(player_id, player_name);
     if (result)
         players[player_id] = game_id;
     return result;
+}
+
+module.exports.startGame = game_id => {
+    if (games[game_id] === undefined)
+        return false;
+    try {
+        games[game_id].init();
+        return true;
+    } catch (e) {
+        if (e instanceof Exception) {
+            console.log("%cERROR: %c" + e.message, "color: red", "color: default");
+        } else {
+            console.log("Uncaught excpetion in handling multiplayer game start: " + e);
+            throw e;
+        }
+    }
 }
 
 module.exports.disconnect = player_id => {

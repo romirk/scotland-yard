@@ -1,6 +1,6 @@
 const Player = require('./player');
 const Map = require('./map');
-const Exception = require('./Exceptions');
+const Exception = require('../Exceptions');
 const mapdata = require('./mapdata');
 
 const SURFACE_MOVES = [3, 8, 13, 18, 24];
@@ -69,6 +69,12 @@ function ScotlandYard(game_id) {
 
     }
 
+    /**
+     * Add a player to the game
+     * @param {String} id 
+     * @param {String} name 
+     * @returns {boolean} player was added successfully
+     */
     this.addPlayer = (id, name) => {
         if (game_info.number_of_players >= MAX_PLAYERS) return false;
         if (getPlayer(id) !== -1) return false;

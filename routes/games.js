@@ -21,6 +21,7 @@ router.post("/new", (req, res) => {
         res.locals.token = token;
         res.render('createRoom');
     } else if (typeof req.body.join !== 'undefined') {
+        res.locals.token = token;
         res.render('joinRoom');
     } else {
         res.status(405);
@@ -28,12 +29,25 @@ router.post("/new", (req, res) => {
     }
 });
 
-router.get("/:game_id", (req, res) => {
+router.get("/:game_id", (req, res, next) => {
     let token = req.cookies.sy_client_token;
     let name = req.body.player_name;
 
-    multiplayer.joinRoom(token, name, req.params.game_id);
-    res.render('game');
+    if (token === game_id) {
+        // host joined, start the game
+        try {
+            multiplayer.startGame(game_id)
+            res.locals.token = token;
+            res.render('game');
+        } catch (e) {
+            res.redirect("/");
+            next(e);
+        }
+    } else {
+        multiplayer.joinRoom(token, name, req.params.game_id);
+        res.locals.token = token;
+        res.render('game');
+    }
 });
 
 module.exports = router;

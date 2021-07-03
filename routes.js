@@ -1,8 +1,6 @@
 //Require the express package and use express.Router()
 const express = require('express');
 const router = express.Router();
-// const crypto = require('crypto');
-const { v4: uuidv4 } = require('uuid');
 
 const multiplayer = require('./multiplayerHandler');
 
@@ -39,34 +37,34 @@ router.post("/new", (req, res) => {
 
 router.post('/lobby', (req, res) => {
     let name = req.body.player_name;
-    if (name == "") {
-        res.redirect("/");
+    if (name == "" || name === undefined) {
+        res.redirect("/?error=empty_name");
         return;
     }
+
     let game_id = req.body.game_id;
     if (game_id == "") {
         res.status(400);
         res.end();
         return;
     }
+
     let token = res.locals.token = req.cookies.sy_client_token;
 
-    let result = multiplayer.joinRoom(token, name, game_id);
-    if(!result) {
-        // invalid token
+    if(!multiplayer.joinRoom(token, name, game_id))
+        // invalid game id
         res.redirect("/?error=invalid_room_code");
-    }
-
+    
     res.render("lobby");
 });
 
 router.get('/play', (req, res) => {
-    res.locals.token = res.cookies.token;
+    res.locals.token = req.cookies.token;
     res.render("game");
 });
 
 router.get('/:game_id', (req, res) => {
-    let token = req.cookies.sy_client_token;
+    // TODO detect invalid room code
     res.locals.action = "/lobby";
     res.locals.game_id = req.params.game_id;
     res.locals.isJoining = true;

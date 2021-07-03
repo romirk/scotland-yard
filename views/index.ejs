@@ -32,9 +32,9 @@
                 <div class="title">
                     <h1>Scotland Yard</h1>
                     <form action="<%= action %>" method="post" style="margin: auto;" id="start">
+                        <span id="error"></span>
+                        <span id="room"></span>
                         <div class="row g-2">
-                            <span id="error"></span>
-                            <br><span id="room"></span>
                             <div class="col-9">
                                 <input class="form-control" type="text" name="player_name" id="player_name"
                                     placeholder="Name" />
@@ -57,10 +57,10 @@
         const urlSearchParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlSearchParams.entries());
         if (params.error !== undefined) {
-            document.getElementById("error").innerText = params.error;
+            document.getElementById("error").innerHTML = params.error + "<br>";
         }
-        if(<%= isJoining %>) {
-            document.getElementById("room").innerText = "Joining room: " + "<%= game_id %>";
+        if (<%= isJoining %>) {
+            document.getElementById("room").innerHTML = "Joining room: <b><%= game_id %></b>. <a class=link-light href=/>Create your own room.</a><br><br>";
         }
     </script>
 </body>

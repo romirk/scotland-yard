@@ -36,3 +36,7 @@ form>div {
     background-color: blueviolet;
     border-radius: 10%;
 }
+
+#error {
+    color: red;
+}

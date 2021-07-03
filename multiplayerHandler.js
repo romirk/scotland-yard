@@ -5,7 +5,7 @@ const games = {};
 const players = {};
 
 /**
- * Creates new game and adds host to game.
+ * Creates new game.
  * @param {String} token player ID
  * @param {String} name name
  * @returns {boolean} successful
@@ -14,7 +14,6 @@ module.exports.createRoom = (token, name) => {
     let game = new ScotlandYard(token);
     games[token] = game;
     players[token] = token;
-    return game.addPlayer(token, name);
 };
 
 /**

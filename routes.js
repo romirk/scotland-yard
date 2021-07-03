@@ -11,26 +11,66 @@ router.use(express.json());
 
 /**
  * available routes:
- * /games/new
- * /games/:game_id
- * /games/play
+ * /new
+ * /:game_id
+ * /lobby
+ * /play
  */
+
+router.get('/', (req, res) => {
+    res.locals.action = "/new";
+    res.locals.game_id = "";
+    res.locals.isJoining = false;
+    res.render("index");
+});
+
 router.post("/new", (req, res) => {
     let name = req.body.player_name;
-    console.log(req.body);
+    if (name == "") {
+        res.redirect("/");
+        return;
+    }
     let token = req.cookies.sy_client_token;
+    req.body.game_id = token;
 
     multiplayer.createRoom(token, name);
-    res.redirect("/lobby");
+    res.redirect(307, "/lobby");
 });
 
-router.get('/lobby', (req, res) => {
-    res.locals.token = res.cookies.token;
+router.post('/lobby', (req, res) => {
+    let name = req.body.player_name;
+    if (name == "") {
+        res.redirect("/");
+        return;
+    }
+    let game_id = req.body.game_id;
+    if (game_id == "") {
+        res.status(400);
+        res.end();
+        return;
+    }
+    let token = res.locals.token = req.cookies.sy_client_token;
+
+    let result = multiplayer.joinRoom(token, name, game_id);
+    if(!result) {
+        // invalid token
+        res.redirect("/?error=invalid_room_code");
+    }
+
     res.render("lobby");
 });
+
 router.get('/play', (req, res) => {
     res.locals.token = res.cookies.token;
     res.render("game");
+});
+
+router.get('/:game_id', (req, res) => {
+    let token = req.cookies.sy_client_token;
+    res.locals.action = "/lobby";
+    res.locals.game_id = req.params.game_id;
+    res.locals.isJoining = true;
+    res.render("index");
 });
 
 module.exports = router;

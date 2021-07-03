@@ -10,7 +10,7 @@ function createRoutes(io) {
             socket.join(data.token);
             let ackObj = Messages.ACKNOWLEDGE;
             ackObj.token = data.token;
-            socket.to(socket.id).emit(Messages.ACKNOWLEDGE.type, JSON.stringify(ackObj));
+            socket.emit(Messages.ACKNOWLEDGE.type, JSON.stringify(ackObj));
         });
     });
 

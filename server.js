@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const { v4: uuidv4 } = require('uuid');
 // const { socketServer } = require("socket.io");
 
-const games = require('./routes/games');
+const routes = require('./routes');
 const wsRoutes = require('./websocketRoutes');
 
 const app = express();
@@ -33,7 +33,8 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.use('/games', games);
+app.use('/', routes);
+
 
 const port = 80;
 const host = '0.0.0.0';

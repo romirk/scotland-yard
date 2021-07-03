@@ -12,7 +12,6 @@ function ScotlandYard(game_id) {
 
     const game_info = {
         id: game_id,
-        number_of_players: 0,
         running: true,
         players: [],
         available_locations: [34, 174, 132, 26, 198, 141, 94, 29, 53, 13, 112, 103, 155, 138, 117, 91, 197, 50],
@@ -63,8 +62,8 @@ function ScotlandYard(game_id) {
      */
     this.init = () => {
         // precondition checks
-        if (game_info.number_of_players !== 6)
-            throw new Exception("Invalid number of players.", { "players": game_info.number_of_players });
+        if (game_info.players.length !== 6)
+            throw new Exception("Invalid number of players.", { "players": game_info.players.length });
         // TODO init logic
     }
 
@@ -75,7 +74,7 @@ function ScotlandYard(game_id) {
      * @returns {boolean} player was added successfully
      */
     this.addPlayer = (id, name) => {
-        if (game_info.number_of_players >= MAX_PLAYERS) return false;
+        if (game_info.players.length >= MAX_PLAYERS) return false;
         if (getPlayer(id) !== -1) return false;
 
         let index = Math.floor(Math.random() * game_info.available_locations.length);
@@ -86,7 +85,6 @@ function ScotlandYard(game_id) {
         let newPlayer = new Player(id, name, loc);
 
         game_info.players.push(newPlayer);
-        game_info.number_of_players++;
         return true;
     }
 

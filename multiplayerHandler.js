@@ -4,6 +4,12 @@ const Exception = require('./Exceptions');
 const games = {};
 const players = {};
 
+/**
+ * Creates new game and adds host to game.
+ * @param {String} token player ID
+ * @param {String} name name
+ * @returns {boolean} successful
+ */
 module.exports.createRoom = (token, name) => {
     let game = new ScotlandYard(token);
     games[token] = game;
@@ -11,6 +17,13 @@ module.exports.createRoom = (token, name) => {
     return game.addPlayer(token, name);
 };
 
+/**
+ * Add player to game.
+ * @param {String} player_id 
+ * @param {String} player_name 
+ * @param {String} game_id 
+ * @returns {boolean}
+ */
 module.exports.joinRoom = (player_id, player_name, game_id) => {
     if (players[player_id] !== undefined)
         games[players[player_id]].removePlayer(player_id);

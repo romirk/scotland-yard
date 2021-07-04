@@ -29,8 +29,7 @@ router.post("/new", (req, res) => {
         return;
     }
     let token = req.cookies.sy_client_token;
-    multiplayer.createRoom(token, name);
-    res.redirect(308, "/lobby");
+    multiplayer.createRoom(token, name).then(() => res.redirect(308, "/lobby"));
 });
 
 router.post('/lobby', (req, res) => {
@@ -41,20 +40,20 @@ router.post('/lobby', (req, res) => {
     }
 
     let game_id = req.body.game_id;
-    if (!multiplayer.gameExists()) {
+    if (!multiplayer.gameExists(game_id)) {
         res.redirect("/?error=invalid_room_code");
         return;
     }
 
     let token = res.locals.token = req.cookies.sy_client_token;
 
-    if(!multiplayer.joinRoom(token, name, game_id)) {
-        // invalid game id
-        res.redirect("/?error=invalid_room_code");
+    multiplayer.joinRoom(token, name, game_id)
+    .then(() => res.render("lobby"))
+    .catch((err) => {
+        console.log(err);
+        res.redirect("/?error=can't_join_room");
         return;
-    }
-    
-    res.render("lobby");
+    });
 });
 
 router.get('/play', (req, res) => {
@@ -63,9 +62,10 @@ router.get('/play', (req, res) => {
 });
 
 router.get('/:game_id', (req, res) => {
-    if (!multiplayer.gameExists()) {
+    if (!multiplayer.gameExists(req.params.game_id)) {
         res.status(404);
         res.render('404', {url: req.url});
+        return;
     }
     res.locals.token = req.cookies.sy_client_token;
     res.locals.action = "/lobby";

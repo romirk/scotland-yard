@@ -58,4 +58,5 @@ module.exports.disconnect = player_id => {
     delete players[player_id];
 }
 
+module.exports.gameExists = game_id => games[game_id] !== undefined;
 module.exports.getGameWithPlayer = player_id => players[player_id];

@@ -41,17 +41,18 @@ router.post('/lobby', (req, res) => {
     }
 
     let game_id = req.body.game_id;
-    if (game_id == "") {
-        res.status(400);
-        res.end();
+    if (!multiplayer.gameExists()) {
+        res.redirect("/?error=invalid_room_code");
         return;
     }
 
     let token = res.locals.token = req.cookies.sy_client_token;
 
-    if(!multiplayer.joinRoom(token, name, game_id))
+    if(!multiplayer.joinRoom(token, name, game_id)) {
         // invalid game id
         res.redirect("/?error=invalid_room_code");
+        return;
+    }
     
     res.render("lobby");
 });
@@ -62,7 +63,10 @@ router.get('/play', (req, res) => {
 });
 
 router.get('/:game_id', (req, res) => {
-    // TODO detect invalid room code
+    if (!multiplayer.gameExists()) {
+        res.status(404);
+        res.render('404', {url: req.url});
+    }
     res.locals.token = req.cookies.sy_client_token;
     res.locals.action = "/lobby";
     res.locals.game_id = req.params.game_id;

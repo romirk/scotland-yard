@@ -4,13 +4,16 @@
     "description": "Multiplayer real-time scotland yard game",
     "main": "server.js",
     "scripts": {
-        "test": "npm i && node server"
+        "start": "npm i && node server"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/romirk/scotland-yard.git"
     },
-    "contributors": ["Romir Kulshrestha <romir.kulshrestha@gmail.com> (https://github.com/romirk)", "Bhavvya Sarna (https://github.com/bhaveesarna)"],
+    "contributors": [
+        "Romir Kulshrestha <romir.kulshrestha@gmail.com> (https://github.com/romirk)",
+        "Bhavvya Sarna (https://github.com/bhaveesarna)"
+    ],
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/romirk/scotland-yard/issues"
@@ -23,6 +26,7 @@
         "express": "~4.16.1",
         "http-errors": "~1.6.3",
         "morgan": "~1.9.1",
-        "ws": "^7.4.2"
+        "uuid": "^8.3.2",
+        "socket.io": "^4.1.2"
     }
 }

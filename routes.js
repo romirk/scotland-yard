@@ -17,7 +17,7 @@ router.use(express.json());
 
 router.get('/', (req, res) => {
     res.locals.action = "/new";
-    res.locals.game_id = "";
+    res.locals.game_id = req.cookies.sy_client_token;;
     res.locals.isJoining = false;
     res.render("index");
 });
@@ -29,10 +29,8 @@ router.post("/new", (req, res) => {
         return;
     }
     let token = req.cookies.sy_client_token;
-    req.body.game_id = token;
-
     multiplayer.createRoom(token, name);
-    res.redirect(307, "/lobby");
+    res.redirect(308, "/lobby");
 });
 
 router.post('/lobby', (req, res) => {
@@ -65,6 +63,7 @@ router.get('/play', (req, res) => {
 
 router.get('/:game_id', (req, res) => {
     // TODO detect invalid room code
+    res.locals.token = req.cookies.sy_client_token;
     res.locals.action = "/lobby";
     res.locals.game_id = req.params.game_id;
     res.locals.isJoining = true;

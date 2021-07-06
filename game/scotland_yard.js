@@ -7,6 +7,8 @@ const SURFACE_MOVES = [3, 8, 13, 18, 24];
 const MOVE_LIMIT = 24;
 const MAX_PLAYERS = 6;
 
+const ticket_indices = {'taxi': 0, 'bus': 1, 'underground': 2, 'special': 3}; //should this go in mapdata.js and then be required?
+
 function ScotlandYard(game_id) {
 
 
@@ -33,6 +35,21 @@ function ScotlandYard(game_id) {
         return game_info.players.findIndex(player => player.id === token);
     }
 
+    /**
+     *  To check if given player can move from one location to another 
+     * @param {String} token id of the player
+     * @param {number} start 0 indexed start location
+     * @param {number} end 0 indexed end location 
+     * @param {String} ticket type of ticket used to make the move
+     * @returns {boolean}
+     */
+
+    function validMove(token, start, end, ticket){
+        let index = getPlayer(token);
+        return index !== -1 && game_info.players[index].getTickets(ticket) > 0 && mapdata[start][ticket_indices[ticket]].includes(end);
+        //player exists, player has the required ticket, there exists a path from start to end that requires this ticket
+    }
+
     // getters
 
     /**
@@ -53,6 +70,14 @@ function ScotlandYard(game_id) {
     };
     this.setMrX = (token) => {
         // TODO delegate setMrX to Player
+        let index = getPlayer(token);
+        if(index !== 0){
+            let newX = game_info.players[index];
+            game_info.players[0].unsetMrX(newX.getColor());            
+            newX.setMrX();
+            game_info.players.splice(index, 1);
+            game_info.players.unshift(newX);
+        }        
     };
 
     // methods

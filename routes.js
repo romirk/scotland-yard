@@ -7,14 +7,6 @@ const multiplayer = require('./multiplayerHandler');
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 
-/**
- * available routes:
- * /new
- * /:game_id
- * /lobby
- * /play
- */
-
 router.get('/', (req, res) => {
     res.locals.action = "/new";
     res.locals.game_id = req.cookies.sy_client_token;;
@@ -24,8 +16,8 @@ router.get('/', (req, res) => {
 
 router.post("/new", (req, res) => {
     let name = req.body.player_name;
-    if (name == "") {
-        res.redirect("/");
+    if (name === undefined || name === "") {
+        res.redirect("/?error=empty_name");
         return;
     }
     let token = req.cookies.sy_client_token;
@@ -57,7 +49,9 @@ router.post('/lobby', (req, res) => {
 });
 
 router.get('/play', (req, res) => {
-    res.locals.token = req.cookies.token;
+    let token = req.cookies.sy_client_token;
+    multiplayer.startGame(multiplayer.getGameWithPlayer(token));
+    res.locals.token = token;
     res.render("game");
 });
 

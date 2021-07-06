@@ -1,7 +1,12 @@
 const Station = require('./station');
 
+/**
+ * Game map
+ * @param {number[][][]} map_data 
+ */
 function Map(map_data) {
     const N = map_data.length;
+    /** @type {Station[]} */
     const stations = [];
 
     for (let i = 0; i < N; i++) {
@@ -14,6 +19,11 @@ function Map(map_data) {
         stations.push(station);
     }
 
+    /**
+     * 
+     * @param {number} n 
+     * @returns {Station}
+     */
     this.getStation = (n) => stations[n];
     this.N = () => N;
 }

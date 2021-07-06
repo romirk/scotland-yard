@@ -3,26 +3,42 @@ const Map = require('./map');
 const Exception = require('../Exceptions');
 const mapdata = require('./mapdata');
 
+/** @typedef {number} GameState */
+/**
+ * @typedef GameInfo
+ * @type {object}
+ * @property {string} id
+ * @property {GameState} state
+ * @property {Player[]} players
+ * @property {number[]} available_locations
+ * @property {number} moves
+ * @property {numbern} turn
+ */
+
 const SURFACE_MOVES = [3, 8, 13, 18, 24];
 const MOVE_LIMIT = 24;
 const MAX_PLAYERS = 6;
-
+const GAME_STATES = {PENDING: 1, RUNNING: 2, STOPPED: 3}
 const ticket_indices = {'taxi': 0, 'bus': 1, 'underground': 2, 'special': 3}; //should this go in mapdata.js and then be required?
 
+const MAP = new Map(mapdata);
+
+
+/**
+ * Scotland Yard Game object
+ * @param {string} game_id 
+ */
 function ScotlandYard(game_id) {
-
-
+    
+    /** @type {GameInfo} */
     const game_info = {
         id: game_id,
-        running: true,
+        state: GAME_STATES.PENDING,
         players: [],
         available_locations: [34, 174, 132, 26, 198, 141, 94, 29, 53, 13, 112, 103, 155, 138, 117, 91, 197, 50],
         moves: 0,
         turn: 0
-    }
-
-    const map = new Map(mapdata);
-
+    }  
 
     // private
 
@@ -43,10 +59,11 @@ function ScotlandYard(game_id) {
      * @param {String} ticket type of ticket used to make the move
      * @returns {boolean}
      */
-
     function validMove(token, start, end, ticket){
         let index = getPlayer(token);
-        return index !== -1 && game_info.players[index].getTickets(ticket) > 0 && mapdata[start][ticket_indices[ticket]].includes(end);
+        return index !== -1 
+            && game_info.players[index].getTickets(ticket) > 0 
+            && MAP.getStation(start).getNeighbours(ticket).includes(end);
         //player exists, player has the required ticket, there exists a path from start to end that requires this ticket
     }
 
@@ -60,9 +77,9 @@ function ScotlandYard(game_id) {
 
     /**
      * Checks if game is active
-     * @returns {boolean}
+     * @returns {GameState}
      */
-    this.isRunning = () => game_info.running;
+    this.getState = () => game_info.state;
 
     // setters
     this.setColor = (token, color) => {

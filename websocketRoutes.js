@@ -6,7 +6,7 @@ function createRoutes(io) {
     io.on('connection', socket => {
         socket.on(Messages.CONNECTED.type, msg => {
             let data = JSON.parse(msg).data;
-            console.log(`Connected: ${data}`);
+            console.log(`ws-connected: ${data}`);
             socket.join(data.token);
             let ackObj = Messages.ACKNOWLEDGE;
             ackObj.token = data.token;

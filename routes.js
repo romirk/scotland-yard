@@ -25,22 +25,27 @@ router.post("/new", (req, res) => {
 });
 
 router.post('/lobby', (req, res) => {
-    let name = req.body.player_name;
+    // TODO retrieve previously connected players
+    console.log(req.body);
+    let name = res.locals.name = req.body.player_name;
     if (name == "" || name === undefined) {
         res.redirect("/?error=empty_name");
         return;
     }
 
-    let game_id = req.body.game_id;
+    let game_id = res.locals.game_id = req.body.game_id;
     if (!multiplayer.gameExists(game_id)) {
         res.redirect("/?error=invalid_room_code");
         return;
     }
 
-    let token = res.locals.token = req.cookies.sy_client_token;
+    let token = res.locals.player_id = req.cookies.sy_client_token;
 
     multiplayer.joinRoom(token, name, game_id)
-    .then(() => res.render("lobby"))
+    .then((result) => {
+        res.locals.player_info = result;
+        res.render("lobby");
+    })
     .catch((err) => {
         console.log(err);
         res.redirect("/?error=can't_join_room");

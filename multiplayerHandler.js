@@ -31,20 +31,30 @@ module.exports.createRoom = token => {
  */
 module.exports.joinRoom = (player_id, player_name, game_id) => {
     return new Promise((resolve, reject) => {
-        if (players[player_id] !== undefined)
-            games[players[player_id]].removePlayer(player_id);
+        console.log(`joining ${game_id}...`);
+        // if (players[player_id] !== undefined) {
+        //     try {
+        //         games[players[player_id]].removePlayer(player_id);
+        //     } catch (error) {
+        //         ;
+        //     }
+        // }
+           
 
         if (games[game_id] === undefined) 
             return reject("game does not exist");
 
         /** @type {boolean} */
-        let result = games[game_id].addPlayer(player_id, player_name);
-        if (result) {
+        try {
+            let result = games[game_id].addPlayer(player_id, player_name);
             players[player_id] = game_id;
-            console.log(`${player_name} joined`);
-            return resolve();
-        } else
-            return reject("can't add player to game");
+            console.log(`${player_name} joined as ${result.isMrX ? 'Mr. X' : 'a detective'}.`);
+            return resolve(result);
+        } catch (err) {
+            return reject("can't add player to game: " + err);
+        }
+        
+            
     });
 }
 
@@ -94,3 +104,5 @@ module.exports.gameExists = game_id => {
  * @returns {ID}
  */
 module.exports.getGameWithPlayer = player_id => players[player_id];
+
+module.exports.getAllPlayersInGame = game_id => games[game_id].getPlayers();

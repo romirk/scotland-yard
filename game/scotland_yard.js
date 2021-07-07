@@ -36,6 +36,7 @@ function ScotlandYard(game_id) {
         state: GAME_STATES.PENDING,
         players: [],
         available_locations: [34, 174, 132, 26, 198, 141, 94, 29, 53, 13, 112, 103, 155, 138, 117, 91, 197, 50],
+        available_colors: ['red', 'blue', 'purple', 'green', 'yellow', 'orange'],
         moves: 0,
         turn: 0
     }  
@@ -119,18 +120,22 @@ function ScotlandYard(game_id) {
      * @returns {boolean} player was added successfully
      */
     this.addPlayer = (id, name) => {
-        if (game_info.players.length >= MAX_PLAYERS) return false;
-        if (getPlayer(id) !== -1) return false;
+        console.log("adding " + name);
+        if (game_info.players.length >= MAX_PLAYERS) throw new Exception("Game is full!");
+        if (getPlayer(id) !== -1) throw new Exception("Player already connected");
 
-        let index = Math.floor(Math.random() * game_info.available_locations.length);
-        let loc = game_info.available_locations[index];
+        let isMrX = game_info.players.length === 0;
+        let color = isMrX ? 'X' : game_info.available_colors[Math.floor(Math.random() * game_info.available_colors.length)];
 
-        game_info.available_locations.splice(index, 1);
+        let loc_index = Math.floor(Math.random() * game_info.available_locations.length);
+        let loc = game_info.available_locations[loc_index];
 
-        let newPlayer = new Player(id, name, loc);
+        game_info.available_locations.splice(loc_index, 1);
+
+        let newPlayer = new Player(id, name, loc, color, isMrX);
 
         game_info.players.push(newPlayer);
-        return true;
+        return {color: color, isMrX: isMrX};
     }
 
     this.removePlayer = token => {

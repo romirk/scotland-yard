@@ -1,10 +1,10 @@
 // const AVAILABLE_COLORS = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
 
-function Player(con_id, player_name, player_location) {
+function Player(con_id, player_name, player_location, player_color, is_mr_x) {
     const id = con_id; // websocket connection ID
     const name = player_name;
-    let color = undefined;
-    let isMrX = false;
+    let color = player_color;
+    let isMrX = is_mr_x;
     let location = player_location;
 
     let tickets = isMrX ? {

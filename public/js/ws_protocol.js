@@ -5,8 +5,8 @@
      * @typedef {Object} CONNECTED
      * 
      */
-    exports.CONNECTED = {
-        type: "CONNECTED",
+    exports.CONNECT = {
+        type: "CONNECT",
         data: {
             token: null,
             name: null,
@@ -30,5 +30,5 @@
         }
     }
 
-})(typeof exports === "undefined" ? (this.Messages = {}) : exports);
+})(typeof exports === "undefined" ? (this.GameMessages = {}) : exports);
 //if exports is undefined, we are on the client; else the server

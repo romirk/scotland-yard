@@ -39,25 +39,38 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-    crossorigin="anonymous"></script>
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/ws_protocol.js"></script>
+    <script src="/js/ws_lobby_protocol.js"></script>
 
     <script>
-        const token = '<%= token %>';
-        document.getElementById('link').innerText = window.location.host + '/' + token;
-   
+        const player_id = '<%= player_id %>';
+        const game_id = '<%= game_id %>';
+        const name = '<%= name %>';
+        const color = '<%= player_info.color %>';
+        const isMrX = '<%= player_info.isMrX %>' === 'true';
+        document.getElementById('link').innerText = window.location.host + '/' + game_id;
+
         let socket = io();
-        const Messages = this.Messages;
+        const Messages = this.LobbyMessages;
 
-        console.log(token);
+        let connectedObj = Messages.CONNECT;
+        connectedObj.data.player_id = player_id;
+        connectedObj.data.name = name;
+        connectedObj.data.color = color;
+        connectedObj.data.isMrX = isMrX;
+        socket.emit(Messages.CONNECT.type, JSON.stringify(connectedObj));
 
-        let connectedObj = Messages.CONNECTED;
-        connectedObj.data.token = token;
-        socket.emit(Messages.CONNECTED.type, JSON.stringify(connectedObj));
-
-        socket.on(Messages.ACKNOWLEDGE.type, (msg) => console.log("connected", JSON.parse(msg).data));
+        socket.on(Messages.ACKNOWLEDGE.type, (msg) => {
+            console.log("connected to", JSON.parse(msg).data.game_id)
+            console.log("connected players:", JSON.parse(msg).data.players);
+        });
+        socket.on(Messages.PLAYER_CONNECTED.type, msg => {
+            let data = JSON.parse(msg).data;
+            console.log("player joined: ", data);
+            if (data.player_id === player_id) console.log("self");;
+        })
     </script>
 </body>
 

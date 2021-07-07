@@ -49,7 +49,7 @@ function ScotlandYard(game_id) {
      * @returns {number} index of the player in game_info.players if found, else -1
      */
     function getPlayer(token) {
-        return game_info.players.findIndex(player => player.id === token);
+        return game_info.players.findIndex(player => player.getID() === token);
     }
 
     /**
@@ -74,7 +74,7 @@ function ScotlandYard(game_id) {
      * Get connected players
      * @returns {String[]} Player IDs
      */
-    this.getPlayers = () => game_info.players.map(player => player.id);
+    this.getPlayers = () => game_info.players.map(player => player.getID());
 
     /**
      * Checks if game is active

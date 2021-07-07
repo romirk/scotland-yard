@@ -105,3 +105,4 @@ dist
 
 # misc
 .vscode/
+mapbox_api_key.js

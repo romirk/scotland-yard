@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+  <Document>
+    <name>scotlandyard</name>
+    <Style id="icon-1899-0288D1-labelson">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+    </Style>
+    <Style id="icon-1899-0288D1-labelson-nodesc">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="line-FBC02D-10688-nodesc-normal">
+      <LineStyle>
+        <color>ff2dc0fb</color>
+        <width>10.688</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="line-FBC02D-10688-nodesc-highlight">
+      <LineStyle>
+        <color>ff2dc0fb</color>
+        <width>16.032</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="line-FBC02D-10688-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#line-FBC02D-10688-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#line-FBC02D-10688-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Placemark>
+      <name>meap</name>
+      <description>meap</description>
+      <styleUrl>#icon-1899-0288D1-labelson</styleUrl>
+      <Point>
+        <coordinates>
+          77.6649457,12.9185252,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>bhavee</name>
+      <styleUrl>#icon-1899-0288D1-labelson-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          77.6905178,12.9333063,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>linus</name>
+      <styleUrl>#line-FBC02D-10688-nodesc</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          77.6649403,12.9188122,0
+          77.6727936,12.9187185,0
+          77.679617,12.9222218,0
+          77.6859256,12.9266348,0
+          77.6905178,12.9333063,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+  </Document>
+</kml>

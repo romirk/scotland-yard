@@ -1,17 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
     <title>Scotland Yard</title>
-    <link rel="stylesheet" href="styles/game.css">
+    <style>
+        html,
+        body {
+            height: 370px;
+            padding: 0;
+            margin: 0;
+        }
+
+        #map {
+            height: 80vh;
+            width: 80vw;
+            overflow: hidden;
+            float: left;
+            border: thin solid #333;
+        }
+    </style>
 </head>
 
 <body>
-    <div id="board-wrap"></div>
-    <script src="js/app.js"></script>
+    <div id="map"></div>
+
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCkKpoRVgDkuinboTmxol6ygrC0cnhsSa4&callback=initMap"></script>
+
+    <script>
+        var map;
+        var src = 'map/bangalore.kml';
+        let markers = [];
+
+        function initMap() {
+            const myLatLng = { lat: 12.968331858875942, lng: 77.5952885571 };
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: myLatLng,
+                mapId: '9cd3176a1f02dde6'
+            });
+            map.addListener('click', function (event) {
+                console.log("click");
+                placeMarker(event.latLng);
+            });
+
+            var kmlLayer = new google.maps.KmlLayer({
+                url: 'http://127.0.0.1/map/cta.kml', //'https://googlearchive.github.io/js-v2-samples/ggeoxml/cta.kml',
+                map: map
+            });
+
+            function placeMarker(location) {
+                var marker = new google.maps.Marker({
+                    position: location,
+                    map: map
+                });
+                markers.push(location);
+            }
+        }
+
+        function placeAllMarkers() {
+
+        }
+
+
+    </script>
+
 </body>
 
 </html>

@@ -85,15 +85,18 @@ function ScotlandYard(game_id) {
     this.setColor = (token, color) => {
         // TODO delegate setColor to Player
     };
+
     this.setMrX = (token) => {
         // TODO delegate setMrX to Player
         let index = getPlayer(token);
+        if(index === -1) return false;
         if(index !== 0){
             let newX = game_info.players[index];
             game_info.players[0].unsetMrX(newX.getColor());            
             newX.setMrX();
             game_info.players.splice(index, 1);
             game_info.players.unshift(newX);
+            return true;
         }        
     };
 

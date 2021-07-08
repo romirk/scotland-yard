@@ -48,7 +48,7 @@ router.post('/lobby', (req, res) => {
     })
     .catch((err) => {
         console.log(err);
-        res.redirect("/?error=can't_join_room");
+        res.redirect("/?error=can't_join_room&errmsg=" + encodeURI(err));
         return;
     });
 });
@@ -57,6 +57,7 @@ router.get('/play', (req, res) => {
     let token = req.cookies.sy_client_token;
     multiplayer.startGame(multiplayer.getGameWithPlayer(token));
     res.locals.token = token;
+    res.locals.api_key = process.env.GOOGLE_API_KEY;
     res.render("game");
 });
 

@@ -59,7 +59,10 @@
         if (params.error !== undefined) {
             document.getElementById("error").innerHTML = params.error + "<br>";
         }
-        if (<%= isJoining %>) {
+        if (params.errmsg !== undefined) {
+            alert(decodeURI(errmsg));
+        }
+        if ('<%= isJoining %>' === 'true') {
             document.getElementById("room").innerHTML = "Joining room: <b><%= game_id %></b>. <a class=link-light href=/>Create your own room.</a><br><br>";
         }
     </script>

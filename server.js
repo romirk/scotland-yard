@@ -4,6 +4,7 @@ const logger = require('morgan');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const { v4: uuidv4 } = require('uuid');
+require('dotenv').config()
 
 const routes = require('./routes');
 const wsRoutes = require('./websocketRoutes');

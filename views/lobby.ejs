@@ -34,6 +34,9 @@
                 <div id="gamecodebox">
                     <span id="link"></span>
                 </div>
+                <div>
+                    <ul id="players"></ul>
+                </div>
             </div>
         </main>
     </div>
@@ -50,6 +53,7 @@
         const name = '<%= name %>';
         const color = '<%= player_info.color %>';
         const isMrX = '<%= player_info.isMrX %>' === 'true';
+        const players = [];
         document.getElementById('link').innerText = window.location.host + '/' + game_id;
 
         let socket = io();
@@ -63,14 +67,28 @@
         socket.emit(Messages.CONNECT.type, JSON.stringify(connectedObj));
 
         socket.on(Messages.ACKNOWLEDGE.type, (msg) => {
-            console.log("connected to", JSON.parse(msg).data.game_id)
-            console.log("connected players:", JSON.parse(msg).data.players);
+            let data = JSON.parse(msg).data;
+            console.log("connected to", data.game_id)
+            console.log("connected players:", data.players);
+            data.players.forEach(player => {
+                players.push(player);
+            });            
+            updateList();
         });
         socket.on(Messages.PLAYER_CONNECTED.type, msg => {
             let data = JSON.parse(msg).data;
             console.log("player joined: ", data);
-            if (data.player_id === player_id) console.log("self");;
-        })
+            if (data.player_id === player_id) return;
+            else players.push(data.player_id);
+            updateList();
+        });
+        function updateList() {
+            let html = "";
+            players.forEach(player => {
+                html += "<li>" + player + "</li>";
+            });
+            document.getElementById("players").innerHTML = html;
+        }
     </script>
 </body>
 

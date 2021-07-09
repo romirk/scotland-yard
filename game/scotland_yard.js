@@ -42,29 +42,32 @@ function ScotlandYard(game_id) {
     }  
 
     // private
+    /** @type {Player} */
+    let mrX;
 
     /**
      * Searches for a player in the list of connected players
-     * @param {String} token ID of the player to be found
-     * @returns {number} index of the player in game_info.players if found, else -1
+     * @param {String} player_id ID of the player to be found
+     * @returns {Player} index of the player in game_info.players if found, else -1
      */
-    function getPlayer(token) {
-        return game_info.players.findIndex(player => player.getID() === token);
+    function getPlayer(player_id) {
+        return game_info.players.find(player => player.getID() === player_id);
     }
 
     /**
      *  To check if given player can move from one location to another 
-     * @param {String} token id of the player
+     * @param {String} player_id id of the player
      * @param {number} start 0 indexed start location
      * @param {number} end 0 indexed end location 
      * @param {String} ticket type of ticket used to make the move
      * @returns {boolean}
      */
-    function validMove(token, start, end, ticket){
-        let index = getPlayer(token);
-        return index !== -1 
-            && game_info.players[index].getTickets(ticket) > 0 
-            && MAP.getStation(start).getNeighbours(ticket).includes(end);
+    function validMove(player_id, end, ticket){
+        let player = getPlayer(player_id);
+        return player !== undefined 
+            && ((ticket == "special" && player.isMrX()) || (ticket !== "special"))
+            && player.getTickets(ticket) > 0 
+            && MAP.getStation(player.getLocation()).getNeighbours(ticket).includes(end);
         //player exists, player has the required ticket, there exists a path from start to end that requires this ticket
     }
 
@@ -83,13 +86,13 @@ function ScotlandYard(game_id) {
     this.getState = () => game_info.state;
 
     // setters
-    this.setColor = (token, color) => {
+    this.setColor = (player_id, color) => {
         // TODO delegate setColor to Player
     };
 
-    this.setMrX = (token) => {
+    this.setMrX = (player_id) => {
         // TODO delegate setMrX to Player
-        let index = getPlayer(token);
+        let index = getPlayer(player_id);
         if(index === -1) return false;
         if(index !== 0){
             let newX = game_info.players[index];
@@ -111,6 +114,7 @@ function ScotlandYard(game_id) {
         if (game_info.players.length !== 6)
             throw new Exception("Invalid number of players.", { "players": game_info.players.length });
         // TODO init logic
+        mrX = game_info.players[0];
     }
 
     /**
@@ -122,7 +126,7 @@ function ScotlandYard(game_id) {
     this.addPlayer = (id, name) => {
         console.log("adding " + name);
         if (game_info.players.length >= MAX_PLAYERS) throw new Exception("Game is full!");
-        if (getPlayer(id) !== -1) throw new Exception("Player already connected");
+        if (getPlayer(id) !== undefined) throw new Exception("Player already connected");
 
         let isMrX = game_info.players.length === 0;
         let color = isMrX ? 'X' : game_info.available_colors[Math.floor(Math.random() * game_info.available_colors.length)];
@@ -138,7 +142,22 @@ function ScotlandYard(game_id) {
         return {color: color, isMrX: isMrX};
     }
 
-    this.removePlayer = token => {
+    this.move = (player_id, location, ticket) => {
+        let player = getPlayer(player_id);
+        if (player === undefined) 
+            throw new Exception("Invalid player ID");
+        
+        if(validMove(player_id, location, ticket)) {
+            player.discard(ticket);
+            player.setLocation(location);
+            if (!player.isMrX()) 
+                mrX.gain(ticket);       
+        }
+        else
+            throw new Exception("Invalid move location");
+    }
+
+    this.removePlayer = player_id => {
         //TODO remove player logic
 
     }

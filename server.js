@@ -20,10 +20,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use((req, res, next) => {
-    if (req.cookies.sy_client_token === undefined) {
-        let token = uuidv4();
-        req.cookies.sy_client_token = token;
-        res.cookie('sy_client_token', token, { httpOnly: true });
+    if (req.cookies.sy_client_ID === undefined) {
+        let ID = uuidv4();
+        req.cookies.sy_client_ID = ID;
+        res.cookie('sy_client_ID', ID, { httpOnly: true });
     }
     next();
 });

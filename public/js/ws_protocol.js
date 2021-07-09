@@ -29,6 +29,10 @@
             mr_x: null
         }
     }
+    exports.MOVE_REQUEST = {
+        type: "MOVE_REQUEST",
+        data: {}
+    }
 
 })(typeof exports === "undefined" ? (this.GameMessages = {}) : exports);
 //if exports is undefined, we are on the client; else the server

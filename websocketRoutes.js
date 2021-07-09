@@ -20,6 +20,12 @@ function createRoutes(io) {
             plrConObj.data.game_id = game_id;
             io.to(game_id).emit(LobbyMessages.PLAYER_CONNECTED.type, JSON.stringify(plrConObj));
         });
+
+        socket.on(GameMessages.MOVE_REQUEST.type, msg => {
+            //TODO handle ws move request
+            multiplayer.move();
+            
+        });
     });
 
     return io;

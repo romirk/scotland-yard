@@ -9,7 +9,7 @@ router.use(express.json());
 
 router.get('/', (req, res) => {
     res.locals.action = "/new";
-    res.locals.game_id = req.cookies.sy_client_token;;
+    res.locals.game_id = req.cookies.sy_client_ID;;
     res.locals.isJoining = false;
     res.render("index");
 });
@@ -20,8 +20,8 @@ router.post("/new", (req, res) => {
         res.redirect("/?error=empty_name");
         return;
     }
-    let token = req.cookies.sy_client_token;
-    multiplayer.createRoom(token, name).then(() => res.redirect(308, "/lobby"));
+    let ID = req.cookies.sy_client_ID;
+    multiplayer.createRoom(ID, name).then(() => res.redirect(308, "/lobby"));
 });
 
 router.post('/lobby', (req, res) => {
@@ -39,9 +39,9 @@ router.post('/lobby', (req, res) => {
         return;
     }
 
-    let token = res.locals.player_id = req.cookies.sy_client_token;
+    let ID = res.locals.player_id = req.cookies.sy_client_ID;
 
-    multiplayer.joinRoom(token, name, game_id)
+    multiplayer.joinRoom(ID, name, game_id)
     .then((result) => {
         res.locals.player_info = result;
         res.render("lobby");
@@ -54,9 +54,9 @@ router.post('/lobby', (req, res) => {
 });
 
 router.get('/play', (req, res) => {
-    let token = req.cookies.sy_client_token;
-    multiplayer.startGame(multiplayer.getGameWithPlayer(token));
-    res.locals.token = token;
+    let ID = req.cookies.sy_client_ID;
+    multiplayer.startGame(multiplayer.getGameWithPlayer(ID));
+    res.locals.player_id = ID;
     res.locals.api_key = process.env.GOOGLE_API_KEY;
     res.render("game");
 });
@@ -67,7 +67,7 @@ router.get('/:game_id', (req, res) => {
         res.render('404', {url: req.url});
         return;
     }
-    res.locals.token = req.cookies.sy_client_token;
+    res.locals.ID = req.cookies.sy_client_ID;
     res.locals.action = "/lobby";
     res.locals.game_id = req.params.game_id;
     res.locals.isJoining = true;

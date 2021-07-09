@@ -10,15 +10,15 @@ const players = {};
 
 /**
  * Creates new game.
- * @param {ID} token player ID
+ * @param {ID} player_id player ID
  * @returns {Promise} successful, passes newly created game ID
  */
-module.exports.createRoom = token => {
+module.exports.createRoom = player_id => {
     return new Promise((resolve, reject) => {
-        let game = new ScotlandYard(token);
-        games[token] = game;
-        players[token] = token;
-        resolve(token);
+        let game = new ScotlandYard(player_id);
+        games[player_id] = game;
+        players[player_id] = player_id;
+        resolve(player_id);
     });
 };
 
@@ -78,6 +78,12 @@ module.exports.startGame = game_id => {
         return;
     }
     games[game_id].init();
+}
+
+module.exports.move = (game_id, player_id, location, ticket) => {
+    // TODO handle multiplayer move
+    games[game_id].move(player_id, location, ticket);
+
 }
 
 /**

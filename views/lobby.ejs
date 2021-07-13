@@ -79,7 +79,7 @@
             let data = JSON.parse(msg).data;
             console.log("player joined: ", data);
             if (data.player_id === player_id) return;
-            else players.push(data.player_id);
+            else players.push(data.name);
             updateList();
         });
         function updateList() {

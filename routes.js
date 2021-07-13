@@ -48,7 +48,7 @@ router.post('/lobby', (req, res) => {
     })
     .catch((err) => {
         console.log(err);
-        res.redirect("/?error=can't_join_room&errmsg=" + encodeURI(err));
+        res.redirect("/?error=can't_join_room&errmsg=" + encodeURIComponent(err));
         return;
     });
 });

@@ -112,3 +112,5 @@ module.exports.gameExists = game_id => {
 module.exports.getGameWithPlayer = player_id => players[player_id];
 
 module.exports.getAllPlayersInGame = game_id => games[game_id].getPlayers();
+
+module.exports.getAllPlayerNamesInGame = game_id => games[game_id].getPlayerNames();

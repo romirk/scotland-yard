@@ -11,7 +11,7 @@ function createRoutes(io) {
             
             let ackObj = LobbyMessages.ACKNOWLEDGE;
             let game_id = ackObj.data.game_id = multiplayer.getGameWithPlayer(data.player_id);
-            ackObj.data.players = multiplayer.getAllPlayersInGame(game_id);
+            ackObj.data.players = multiplayer.getAllPlayerNamesInGame(game_id);
             socket.join(game_id);
             socket.emit(LobbyMessages.ACKNOWLEDGE.type, JSON.stringify(ackObj));
 

@@ -9,6 +9,7 @@
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     <title>Scotland Yard</title>
     <link rel="stylesheet" href="/styles/main.css">
@@ -53,43 +54,8 @@
         const name = '<%= name %>';
         const color = '<%= player_info.color %>';
         const isMrX = '<%= player_info.isMrX %>' === 'true';
-        const players = [];
-        document.getElementById('link').innerText = window.location.host + '/' + game_id;
-
-        let socket = io();
-        const Messages = this.LobbyMessages;
-
-        let connectedObj = Messages.CONNECT;
-        connectedObj.data.player_id = player_id;
-        connectedObj.data.name = name;
-        connectedObj.data.color = color;
-        connectedObj.data.isMrX = isMrX;
-        socket.emit(Messages.CONNECT.type, JSON.stringify(connectedObj));
-
-        socket.on(Messages.ACKNOWLEDGE.type, (msg) => {
-            let data = JSON.parse(msg).data;
-            console.log("connected to", data.game_id)
-            console.log("connected players:", data.players);
-            data.players.forEach(player => {
-                players.push(player);
-            });            
-            updateList();
-        });
-        socket.on(Messages.PLAYER_CONNECTED.type, msg => {
-            let data = JSON.parse(msg).data;
-            console.log("player joined: ", data);
-            if (data.player_id === player_id) return;
-            else players.push(data.name);
-            updateList();
-        });
-        function updateList() {
-            let html = "";
-            players.forEach(player => {
-                html += "<li>" + player + "</li>";
-            });
-            document.getElementById("players").innerHTML = html;
-        }
     </script>
+    <script src="js/lobby.js"></script>
 </body>
 
 </html>

@@ -1,4 +1,15 @@
-.layout-transparent {
+:root {
+    /* AMOGUS */
+    --color-red: #C51111;
+    --color-blue: #132FD2;
+    --color-green: #50EF3A;
+    --color-purple: #6B30BA;
+    --color-yellow: #F5F558;
+    --color-orange: #EF7D0E;
+    --color-X: #3F484E;
+}
+
+layout-transparent {
     background: linear-gradient(#6DB6F3, #C3D038) center / cover;
 }
 

@@ -6,8 +6,8 @@ const cookieParser = require('cookie-parser');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config()
 
-const routes = require('./routes');
-const wsRoutes = require('./websocketRoutes');
+const routes = require('./routes/routes');
+const wsRoutes = require('./routes/websocketRoutes');
 
 const app = express();
 
@@ -20,6 +20,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use((req, res, next) => {
+    console.log(req.socket.remoteAddress);
     if (req.cookies.sy_client_ID === undefined) {
         let ID = uuidv4();
         req.cookies.sy_client_ID = ID;

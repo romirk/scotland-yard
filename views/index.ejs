@@ -57,7 +57,7 @@
         const urlSearchParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlSearchParams.entries());
         if (params.error !== undefined) {
-            document.getElementById("error").innerHTML = params.error + "<br>";
+            document.getElementById("error").innerHTML = params.error + ": " + params.errmsg + "<br>";
         }
         if (params.errmsg !== undefined) {
             alert(decodeURIComponent(errmsg));

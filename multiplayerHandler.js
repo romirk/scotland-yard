@@ -51,7 +51,7 @@ module.exports.joinRoom = (player_id, player_name, game_id) => {
             console.log(`${player_name} joined as ${result.isMrX ? 'Mr. X' : 'a detective'}.`);
             return resolve(result);
         } catch (err) {
-            return reject("can't add player to game: " + err);
+            return reject("can't add player to game: " + err.message);
         }
         
             
@@ -109,8 +109,12 @@ module.exports.gameExists = game_id => {
  * @param {ID} player_id 
  * @returns {ID}
  */
-module.exports.getGameWithPlayer = player_id => players[player_id];
+module.exports.getGameByPlayer = player_id => players[player_id];
+
+module.exports.checkPlayerInGame = (game_id, player_id) => module.exports.getAllPlayerIDsInGame(game_id).includes(player_id);
 
 module.exports.getAllPlayersInGame = game_id => games[game_id].getPlayers();
+
+module.exports.getAllPlayerIDsInGame = game_id => games[game_id].getPlayerIDs();
 
 module.exports.getAllPlayerNamesInGame = game_id => games[game_id].getPlayerNames();

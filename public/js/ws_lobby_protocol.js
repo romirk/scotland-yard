@@ -37,5 +37,50 @@
         }
     }
 
+    /**
+     * client to server
+     */
+    exports.REQUEST_COLOR = {
+        type: "REQUEST_COLOR",
+        data: {
+            game_id: null,
+            player_id: null,
+            color: null
+        }
+    }
+
+    /**
+     * client to server
+     */
+     exports.REQUEST_MRX = {
+        type: "REQUEST_MRX",
+        data: {
+            game_id: null,
+            player_id: null
+        }
+    }
+
+    /**
+     * server to client
+     */
+    exports.SET_COLOR = {
+        type: "SET_COLOR",
+        data: {
+            game_id: null,
+            player_id: null,
+            color: null
+        }
+    }
+
+    /**
+     * server to client
+     */
+    exports.SET_MRX = {
+        type: "SET_MRX",
+        data: {
+            game_id: null,
+            player_id: null
+        }
+    }
 })(typeof exports === "undefined" ? (this.LobbyMessages = {}) : exports);
 //if exports is undefined, we are on the client; else the server

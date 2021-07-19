@@ -25,14 +25,14 @@ socket.on(Messages.ACKNOWLEDGE.type, (msg) => {
 socket.on(Messages.PLAYER_CONNECTED.type, msg => {
     let data = JSON.parse(msg).data;
     console.log("player joined: ", data);
-    if (data.player_id === player_id) return;
-    else players.push(data.name);
+    if (data.player_id === player_id || players.map(p => p.player_id).includes(data.player_id));
+    else players.push(data);
     updateList();
 });
 function updateList() {
     let html = "";
     players.forEach(player => {
-        html += "<li><span class=\"material-icons-outlined\">" + (isMrX ? "help_outline": "person") + "</span>" + player + "</li>\n";
+        html += `<div class="row"><div class="col player" style="background-color: var(--color-${player.color})"><span class="material-icons" style="position: relative; top: 0.5vh">${player.isMrX ? "help_outline": "person"}</span> ${player.name}</div></div>\n`;
     });
     document.getElementById("players").innerHTML = html;
 

@@ -96,16 +96,22 @@ function ScotlandYard(game_id) {
     this.getID = () => id;
 
     /**
-     * Get connected players
+     * Get connected player IDs
      * @returns {String[]} Player IDs
      */
-    this.getPlayers = () => players.map(player => player.getID());
+    this.getPlayerIDs = () => players.map(player => player.getID());
 
     /**
      * Get connected player names
      * @returns {String[]} Player names
      */
-     this.getPlayerNames = () => players.map(player => player.getName());
+    this.getPlayerNames = () => players.map(player => player.getName());
+
+    /**
+     * Get players
+     * @returns {object} modified player object
+     */
+    this.getPlayers = () => players.map(player => { return { name: player.getName(), player_id: player.getID(), color: player.getColor(), isMrX: player.isMrX(), game_id: id } })
 
     /**
      * Checks if game is active
@@ -158,17 +164,26 @@ function ScotlandYard(game_id) {
         if (getPlayer(id) !== undefined) throw new Exception("Player already connected");
 
         let isMrX = players.length === 0;
-        let color = isMrX ? 'X' : available_colors[Math.floor(Math.random() * available_colors.length)];
+        let col;
+
+        if (isMrX) {
+            col = 'X';
+        } else {
+            let col_index = Math.floor(Math.random() * available_colors.length);
+            col = available_colors[col_index];
+
+            available_colors.splice(col_index, 1);
+        }
 
         let loc_index = Math.floor(Math.random() * available_locations.length);
         let loc = available_locations[loc_index];
 
         available_locations.splice(loc_index, 1);
 
-        let newPlayer = new Player(id, name, loc, color, isMrX);
+        let newPlayer = new Player(id, name, loc, col, isMrX);
 
         players.push(newPlayer);
-        return { color: color, isMrX: isMrX };
+        return { color: col, isMrX: isMrX };
     }
 
     this.move = (player_id, location, ticket) => {

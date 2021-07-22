@@ -36,13 +36,13 @@ socket.on(Messages.PLAYER_CONNECTED.type, msg => {
     updateUI();
 });
 
-socket.on(Messages.PLAYER_DISCONNECTED.type, msg => {
-    let data = JSON.parse(msg).data;
-    let i = players.map(player => player.player_id).indexOf(data.player_id);
-    available_colors.push(players[i].color);
-    players.splice(i, 1);
-    updateUI();
-})
+// socket.on(Messages.PLAYER_DISCONNECTED.type, msg => {
+//     let data = JSON.parse(msg).data;
+//     let i = players.map(player => player.player_id).indexOf(data.player_id);
+//     available_colors.push(players[i].color);
+//     players.splice(i, 1);
+//     updateUI();
+// })
 
 socket.on(Messages.SET_COLOR.type, msg => {
     let data = JSON.parse(msg).data;

@@ -44,12 +44,12 @@ function createEvents(io, socket) {
         io.to(socket.game_id).emit(LobbyMessages.SET_MRX.type, JSON.stringify(setMrXObj));
     })
 
-    socket.on('disconnect', () => {
-        let disConObj = LobbyMessages.PLAYER_DISCONNECTED;
-        multiplayer.disconnect(socket.player_id);
-        disConObj.data = {game_id: socket.game_id, player_id: socket.player_id};
-        io.to(socket.game_id).emit(LobbyMessages.PLAYER_DISCONNECTED.type, JSON.stringify(disConObj));
-    });
+    // socket.on('disconnect', () => {
+    //     let disConObj = LobbyMessages.PLAYER_DISCONNECTED;
+    //     multiplayer.disconnect(socket.player_id);
+    //     disConObj.data = {game_id: socket.game_id, player_id: socket.player_id};
+    //     io.to(socket.game_id).emit(LobbyMessages.PLAYER_DISCONNECTED.type, JSON.stringify(disConObj));
+    // });
 
     return socket;
 }

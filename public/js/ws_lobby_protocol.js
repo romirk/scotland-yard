@@ -74,7 +74,6 @@
     exports.SET_COLOR = {
         type: "SET_COLOR",
         data: {
-            game_id: null,
             player_id: null,
             color: null
         }
@@ -89,5 +88,8 @@
             player_id: null
         }
     }
+
+    
+
 })(typeof exports === "undefined" ? (this.LobbyMessages = {}) : exports);
 //if exports is undefined, we are on the client; else the server

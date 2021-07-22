@@ -32,15 +32,7 @@ module.exports.createRoom = player_id => {
 module.exports.joinRoom = (player_id, player_name, game_id) => {
     return new Promise((resolve, reject) => {
         console.log(`joining ${game_id}...`);
-        // if (players[player_id] !== undefined) {
-        //     try {
-        //         games[players[player_id]].removePlayer(player_id);
-        //     } catch (error) {
-        //         ;
-        //     }
-        // }
-           
-
+        
         if (games[game_id] === undefined) 
             return reject("game does not exist");
 
@@ -91,8 +83,8 @@ module.exports.move = (game_id, player_id, location, ticket) => {
  * @param {ID} player_id 
  */
 module.exports.disconnect = player_id => {
-    games[players[player_id]].removePlayer(player_id);
-    delete players[player_id];
+    // games[players[player_id]].removePlayer(player_id);
+    // delete players[player_id];
 }
 
 /**

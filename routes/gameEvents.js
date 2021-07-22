@@ -1,4 +1,4 @@
-const GameMessages = require('../public/js/ws_protocol');
+const GameMessages = require('../public/js/ws_game_protocol');
 const multiplayer = require('../multiplayerHandler');
 
 function createEvents(io, socket) {

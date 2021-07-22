@@ -5,7 +5,7 @@ function createEvents(io, socket) {
 
     // connect event
     socket.on(LobbyMessages.CONNECT.type, msg => {
-        
+
         let data = JSON.parse(msg).data;
         console.log(`ws-lobby-connected: ${data.player_id}`);
         socket.player_id = data.player_id;
@@ -29,13 +29,13 @@ function createEvents(io, socket) {
 
         if (result) {
             let setColorObj = LobbyMessages.SET_COLOR;
-            setColorObj.data = data;
+            setColorObj.data = { color: data.color, player_id: socket.player_id };
             io.to(socket.game_id).emit(LobbyMessages.SET_COLOR.type, JSON.stringify(setColorObj));
         }
     });
 
     //request change of Mr X event
-    socket.on(LobbyMessages.REQUEST_MRX.type, msg =>{
+    socket.on(LobbyMessages.REQUEST_MRX.type, msg => {
         let data = JSON.parse(msg).data;
         let newXId = data.player_id;
         multiplayer.setMrX(socket.game_id, newXId);

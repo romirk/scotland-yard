@@ -23,7 +23,13 @@ function createEvents(io, socket) {
     // request color event
     socket.on(LobbyMessages.REQUEST_COLOR.type, msg => {
         let data = JSON.parse(msg).data;
-        // TODO request color       
+        let result = multiplayer.setColor(data.game_id, data.player_id, data.color);
+
+        if (result) {
+            let setColorObj = LobbyMessages.SET_COLOR;
+            setColorObj.data = data;
+            io.to(data.game_id).emit(LobbyMessages.SET_COLOR.type, JSON.stringify(setColorObj));
+        }
     })
 
     return socket;

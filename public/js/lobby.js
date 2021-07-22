@@ -1,10 +1,11 @@
 const players = [];
 const available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
+const isHost = player_id === game_id;
 
 let socket = io();
 const Messages = this.LobbyMessages;
 
-document.getElementById('link').innerText = window.location.host + '/' + game_id;
+$('#link').html(window.location.host + '/' + game_id)
 
 let connectedObj = Messages.CONNECT;
 connectedObj.data.player_id = player_id;
@@ -19,21 +20,102 @@ socket.on(Messages.ACKNOWLEDGE.type, (msg) => {
     console.log("connected players:", data.players);
     data.players.forEach(player => {
         players.push(player);
-    });            
-    updateList();
+        updateAvailableColors(player.color);
+    });
+    updateUI();
 });
+
 socket.on(Messages.PLAYER_CONNECTED.type, msg => {
     let data = JSON.parse(msg).data;
     console.log("player joined: ", data);
     if (data.player_id === player_id || players.map(p => p.player_id).includes(data.player_id));
-    else players.push(data);
-    updateList();
+    else
+        players.push(data)
+    updateAvailableColors(data.color)
+    updateUI();
 });
-function updateList() {
+
+socket.on(Messages.SET_COLOR.type, msg => {
+    let data = JSON.parse(msg).data;
+    let i = players.map(player => player.player_id).indexOf(data.player_id);
+    available_colors.push(players[i].color);
+    players[i].color = data.color;
+    updateAvailableColors(data.color);
+    console.log(`${players[i].name} changed to ${data.color}`);
+    updateUI();
+});
+
+function setColor(color) {
+    let reqColObj = Messages.REQUEST_COLOR;
+    reqColObj.data = { player_id: player_id, game_id: game_id, color: color };
+    socket.emit(Messages.REQUEST_COLOR.type, JSON.stringify(reqColObj));
+}
+
+function updateUI() {
     let html = "";
     players.forEach(player => {
-        html += `<div class="row"><div class="col player" style="background-color: var(--color-${player.color})"><span class="material-icons" style="position: relative; top: 0.5vh">${player.isMrX ? "help_outline": "person"}</span> ${player.name}</div></div>\n`;
+        html += `<div class="row"><div class="col player" style="background-color: var(--color-${player.color})"><span class="material-icons" style="position: relative; top: 0.5vh">${player.isMrX ? "help_outline" : "person"}</span> ${player.name} ${player.player_id === player_id ? '(You)' : ''}</div></div>\n`;
     });
     document.getElementById("players").innerHTML = html;
+    // TODO update color UI
+}
 
+function updateAvailableColors(unavailableColor) {
+    let index = available_colors.indexOf(unavailableColor);
+    if (index !== -1) available_colors.splice(index, 1);
+}
+
+function copyInvite() {
+    var e = document.getElementById('link');
+    copyToClipboard(e);
+}
+
+function copyToClipboard(elem) {
+    // create hidden text element, if it doesn't already exist
+    var targetId = "_hiddenCopyText_";
+    var isInput = elem.tagName === "INPUT" || elem.tagName === "TEXTAREA";
+    var origSelectionStart, origSelectionEnd;
+    if (isInput) {
+        // can just use the original source element for the selection and copy
+        target = elem;
+        origSelectionStart = elem.selectionStart;
+        origSelectionEnd = elem.selectionEnd;
+    } else {
+        // must use a temporary form element for the selection and copy
+        target = document.getElementById(targetId);
+        if (!target) {
+            var target = document.createElement("textarea");
+            target.style.position = "absolute";
+            target.style.left = "-9999px";
+            target.style.top = "0";
+            target.id = targetId;
+            document.body.appendChild(target);
+        }
+        target.textContent = elem.textContent;
+    }
+    // select the content
+    var currentFocus = document.activeElement;
+    target.focus();
+    target.setSelectionRange(0, target.value.length);
+
+    // copy the selection
+    var succeed;
+    try {
+        succeed = document.execCommand("copy");
+    } catch (e) {
+        succeed = false;
+    }
+    // restore original focus
+    if (currentFocus && typeof currentFocus.focus === "function") {
+        currentFocus.focus();
+    }
+
+    if (isInput) {
+        // restore prior selection
+        elem.setSelectionRange(origSelectionStart, origSelectionEnd);
+    } else {
+        // clear temporary content
+        target.textContent = "";
+    }
+    return succeed;
 }

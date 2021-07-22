@@ -45,7 +45,7 @@ function ScotlandYard(game_id) {
     /**
      * Searches for a player in the list of connected players
      * @param {String} player_id ID of the player to be found
-     * @returns {Player} index of the player in players if found, else -1
+     * @returns {Player} index of the player in players if found, else undefined
      */
     function getPlayer(player_id) {
         return players.find(player => player.getID() === player_id);
@@ -121,11 +121,17 @@ function ScotlandYard(game_id) {
 
     // setters
     this.setColor = (player_id, color) => {
-        try {
-            getPlayer(player_id).setColor(color);
-        } catch (error) {
-            throw new Exception("Can't set color", error);
+        let player = getPlayer(player_id);
+        if(player === undefined) return false;
+        if (player.isMrX() && color === 'X') {
+            player.setColor('X');
+            return true;
         }
+        if (!player.isMrX() && available_colors.includes(color)) {
+            player.setColor(color);
+            return true;
+        }
+        return false;
     };
 
     this.setMrX = (player_id) => {

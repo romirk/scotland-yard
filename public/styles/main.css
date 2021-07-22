@@ -44,3 +44,7 @@ form>div {
 #error {
     color: red;
 }
+
+a:hover {
+    color: red;
+}

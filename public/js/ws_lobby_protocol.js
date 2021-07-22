@@ -64,7 +64,6 @@
      exports.REQUEST_MRX = {
         type: "REQUEST_MRX",
         data: {
-            game_id: null,
             player_id: null
         }
     }
@@ -87,7 +86,6 @@
     exports.SET_MRX = {
         type: "SET_MRX",
         data: {
-            game_id: null,
             player_id: null
         }
     }

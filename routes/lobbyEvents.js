@@ -34,6 +34,16 @@ function createEvents(io, socket) {
         }
     });
 
+    //request change of Mr X event
+    socket.on(LobbyMessages.REQUEST_MRX.type, msg =>{
+        let data = JSON.parse(msg).data;
+        let newXId = data.player_id;
+        multiplayer.setMrX(socket.game_id, newXId);
+        let setMrXObj = LobbyMessages.SET_MRX;
+        setMrXObj.data.player_id = newXId;
+        io.to(socket.game_id).emit(LobbyMessages.SET_MRX.type, JSON.stringify(setMrXObj));
+    })
+
     socket.on('disconnect', () => {
         let disConObj = LobbyMessages.PLAYER_DISCONNECTED;
         multiplayer.disconnect(socket.player_id);

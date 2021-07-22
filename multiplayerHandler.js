@@ -120,3 +120,5 @@ module.exports.getAllPlayerIDsInGame = game_id => games[game_id].getPlayerIDs();
 module.exports.getAllPlayerNamesInGame = game_id => games[game_id].getPlayerNames();
 
 module.exports.setColor = (game_id, player_id, color) => games[game_id].setColor(player_id, color);
+
+module.exports.setMrX = (game_id, player_id) => games[game_id].setMrX(player_id);

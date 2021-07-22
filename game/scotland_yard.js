@@ -139,7 +139,7 @@ function ScotlandYard(game_id) {
         if (player === undefined)
             throw new Exception("Invalid player ID");
         let index = players.indexOf(player);
-        players[0].unsetMrX();
+        players[0].unsetMrX(player.getColor());
         players.splice(index, 1);
         players.unshift(player);
         player.setMrX();

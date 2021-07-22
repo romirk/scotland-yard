@@ -46,7 +46,7 @@ socket.on(Messages.PLAYER_DISCONNECTED.type, msg => {
 
 socket.on(Messages.SET_COLOR.type, msg => {
     let data = JSON.parse(msg).data;
-    let i = players.map(player => player.player_id).indexOf(data.player_id);
+    let i = players.findIndex(player => player.player_id === data.player_id);
     available_colors.push(players[i].color);
     players[i].color = data.color;
     updateAvailableColors(data.color);
@@ -54,11 +54,30 @@ socket.on(Messages.SET_COLOR.type, msg => {
     updateUI();
 });
 
+socket.on(Messages.SET_MRX.type, msg => {
+    let data = JSON.parse(msg).data;
+    let newXIndex = players.findIndex(player => player.player_id === data.player_id);
+    let oldXIndex = players.findIndex(player => player.isMrX === true);
+    players[oldXIndex].isMrX = false;
+    players[newXIndex].isMrX = true;
+    players[oldXIndex].color = players[newXIndex].color;
+    players[newXIndex].color = 'X';
+    updateUI();
+})
+
 function setColor(color) {
     let reqColObj = Messages.REQUEST_COLOR;
     reqColObj.data.color = color;
     socket.emit(Messages.REQUEST_COLOR.type, JSON.stringify(reqColObj));
 }
+
+function setMrX(newXId) {
+    if(!isHost) return;
+    let reqXObj = Messages.REQUEST_MRX;
+    reqXObj.data.player_id = newXId;
+    socket.emit(Messages.REQUEST_MRX.type, JSON.stringify(reqXObj));
+}
+
 
 function updateUI() {
     let html = "";

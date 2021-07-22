@@ -1,5 +1,3 @@
-const GameMessages = require('../public/js/ws_protocol');
-const multiplayer = require('../multiplayerHandler');
 const lobbyEvents = require('./lobbyEvents');
 const gameEvents = require('./gameEvents');
 

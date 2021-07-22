@@ -4,7 +4,8 @@
     "description": "Multiplayer real-time scotland yard game",
     "main": "server.js",
     "scripts": {
-        "start": "npm i && node server"
+        "start": "npm i && node server",
+        "run": "nodemon server"
     },
     "repository": {
         "type": "git",

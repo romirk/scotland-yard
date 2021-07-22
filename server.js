@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config()
 
-const routes = require('./routes/routes');
+const routes = require('./routes/httpRoutes');
 const wsRoutes = require('./routes/websocketRoutes');
 
 const app = express();

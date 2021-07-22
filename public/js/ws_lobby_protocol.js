@@ -38,13 +38,22 @@
     }
 
     /**
+     * server to client
+     */
+    exports.PLAYER_DISCONNECTED = {
+        type: "PLAYER_DISCONNECTED",
+        data: {
+            game_id: null,
+            player_id: null
+        }
+    }
+
+    /**
      * client to server
      */
     exports.REQUEST_COLOR = {
         type: "REQUEST_COLOR",
         data: {
-            game_id: null,
-            player_id: null,
             color: null
         }
     }

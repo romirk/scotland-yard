@@ -45,7 +45,7 @@ function ScotlandYard(game_id) {
     /**
      * Searches for a player in the list of connected players
      * @param {String} player_id ID of the player to be found
-     * @returns {Player} index of the player in players if found, else undefined
+     * @returns {Player} player if found, else undefined
      */
     function getPlayer(player_id) {
         return players.find(player => player.getID() === player_id);
@@ -154,8 +154,13 @@ function ScotlandYard(game_id) {
         // precondition checks
         if (players.length !== 6)
             throw new Exception("Invalid number of players.", { "players": players.length });
-        // TODO init logic
+        if (state !== GAME_STATES.PENDING)
+            throw new Exception("Game already initialized");
+        
         mrX = players[0];
+        moves = 0;
+        turn = 0;
+        state = GAME_STATES.RUNNING;
     }
 
     /**
@@ -210,13 +215,25 @@ function ScotlandYard(game_id) {
             throw new Exception("Invalid move");
     }
 
-    this.removePlayer = player_id => {
-        //TODO remove player logic
-
+    this.removePlayer = player_id => {      
+        if (state === GAME_STATES.PENDING || state === GAME_STATES.STOPPED) {
+            let i = players.map(player => player.getID()).indexOf(player_id);
+            console.log(`removing ${player_id} at position ${i}`);
+            available_colors.push(players[i].getColor());
+            available_locations.push(players[i].getLocation());
+            players.splice(i, 1);
+            return true;
+        }
+        this.end();
+        return false;
     }
 
     this.move = (id, location) => {
         // TODO implement move logic
+    }
+
+    this.end = () => {
+        state = GAME_STATES.STOPPED;
     }
 };
 

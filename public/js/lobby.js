@@ -12,6 +12,7 @@ connectedObj.data.player_id = player_id;
 connectedObj.data.name = name;
 connectedObj.data.color = color;
 connectedObj.data.isMrX = isMrX;
+
 socket.emit(Messages.CONNECT.type, JSON.stringify(connectedObj));
 
 socket.on(Messages.ACKNOWLEDGE.type, (msg) => {
@@ -35,6 +36,14 @@ socket.on(Messages.PLAYER_CONNECTED.type, msg => {
     updateUI();
 });
 
+socket.on(Messages.PLAYER_DISCONNECTED.type, msg => {
+    let data = JSON.parse(msg).data;
+    let i = players.map(player => player.player_id).indexOf(data.player_id);
+    available_colors.push(players[i].color);
+    players.splice(i, 1);
+    updateUI();
+})
+
 socket.on(Messages.SET_COLOR.type, msg => {
     let data = JSON.parse(msg).data;
     let i = players.map(player => player.player_id).indexOf(data.player_id);
@@ -47,14 +56,19 @@ socket.on(Messages.SET_COLOR.type, msg => {
 
 function setColor(color) {
     let reqColObj = Messages.REQUEST_COLOR;
-    reqColObj.data = { player_id: player_id, game_id: game_id, color: color };
+    reqColObj.data.color = color;
     socket.emit(Messages.REQUEST_COLOR.type, JSON.stringify(reqColObj));
 }
 
 function updateUI() {
     let html = "";
     players.forEach(player => {
-        html += `<div class="row"><div class="col player" style="background-color: var(--color-${player.color})"><span class="material-icons" style="position: relative; top: 0.5vh">${player.isMrX ? "help_outline" : "person"}</span> ${player.name} ${player.player_id === player_id ? '(You)' : ''}</div></div>\n`;
+        html += `<div class="row">\n
+            \t<div class="col player" style="background-color: var(--color-${player.color})">\n
+                \t\t<span class="material-icons" style="position: relative; top: 0.5vh">${player.isMrX ? "help_outline" : "person"}</span> 
+                ${player.name} ${player.player_id === player_id ? '(You)' : ''}\n
+            \t</div>\n
+        </div>\n`;
     });
     document.getElementById("players").innerHTML = html;
     // TODO update color UI

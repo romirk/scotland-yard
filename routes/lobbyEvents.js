@@ -5,11 +5,13 @@ function createEvents(io, socket) {
 
     // connect event
     socket.on(LobbyMessages.CONNECT.type, msg => {
-        let data = JSON.parse(msg).data;
-        console.log(`ws-lobby-connected: ${data}`);
         
+        let data = JSON.parse(msg).data;
+        console.log(`ws-lobby-connected: ${data.player_id}`);
+        socket.player_id = data.player_id;
         let ackObj = LobbyMessages.ACKNOWLEDGE;
         let game_id = ackObj.data.game_id = multiplayer.getGameByPlayer(data.player_id);
+        socket.game_id = game_id;
         ackObj.data.players = multiplayer.getAllPlayersInGame(game_id);
         socket.join(game_id);
         socket.emit(LobbyMessages.ACKNOWLEDGE.type, JSON.stringify(ackObj));
@@ -23,14 +25,21 @@ function createEvents(io, socket) {
     // request color event
     socket.on(LobbyMessages.REQUEST_COLOR.type, msg => {
         let data = JSON.parse(msg).data;
-        let result = multiplayer.setColor(data.game_id, data.player_id, data.color);
+        let result = multiplayer.setColor(socket.game_id, socket.player_id, data.color);
 
         if (result) {
             let setColorObj = LobbyMessages.SET_COLOR;
             setColorObj.data = data;
-            io.to(data.game_id).emit(LobbyMessages.SET_COLOR.type, JSON.stringify(setColorObj));
+            io.to(socket.game_id).emit(LobbyMessages.SET_COLOR.type, JSON.stringify(setColorObj));
         }
-    })
+    });
+
+    socket.on('disconnect', () => {
+        let disConObj = LobbyMessages.PLAYER_DISCONNECTED;
+        multiplayer.disconnect(socket.player_id);
+        disConObj.data = {game_id: socket.game_id, player_id: socket.player_id};
+        io.to(socket.game_id).emit(LobbyMessages.PLAYER_DISCONNECTED.type, JSON.stringify(disConObj));
+    });
 
     return socket;
 }

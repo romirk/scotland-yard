@@ -7,7 +7,7 @@ class Map:
     """
     def __init__(self, mapdata: list[list[list[int]]] = []) -> None:
         self.N = len(mapdata)
-        self.stations: Station = []
+        self.stations: list[Station] = []
 
         for i in range(self.__N):
             station = Station(i)

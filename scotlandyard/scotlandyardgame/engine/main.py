@@ -20,6 +20,7 @@ class GameState(Enum):
 class ScotlandYard:
     """
     Instance of a ```ScotlandYard``` game. Stores all game information and handles game logic.
+
     """
 
     def __init__(self, gameID: str) -> None:
@@ -69,7 +70,7 @@ class ScotlandYard:
         """Get a list of connected player names"""
         return [p.name for p in self.players]
 
-    def isValidMove(self, player_id, location, ticket) -> bool:
+    def isValidMove(self, player_id: str, location: int, ticket: str) -> bool:
         """checks if player with ```player_id``` can move to ```location``` using ```ticket```"""
         player = self.getPlayerByID(player_id)
         return player is not None \

@@ -30,11 +30,19 @@ class ScotlandYard:
         self.moves: int = 0
         self.turn: int = 0
 
-    def getPlayer(self, playerID: str) -> Player:
+    def getPlayerByID(self, playerID: str) -> Player:
         """returns ```Player``` in current game with ID ```playerID```"""
         return self.players[playerID]
 
     def getPlayerAt(self, loc: int) -> Player:
         """returns ```Player``` in current game with location ```loc```"""
         for player in self.players.items():
-            pass
+            if player.location == loc:
+                return player
+
+    def isValidMove(self, player_id, location, ticket) -> bool:
+        player = self.getPlayerByID(player_id)
+        return player is not None \
+            and (ticket != "special" or player.is_mr_x) \
+            and player.getTickets(ticket) > 0 \
+            and player

@@ -1,15 +1,14 @@
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 
 urlpatterns = [
-    # ex: /polls/
     path('', views.index, name='index'),
-    path('lobby', views.lobby, name='lobby')
-    # ex: /polls/5/
-    # path('<int:question_id>/', views.detail, name='detail'),
+    path('lobby', views.lobby, name='lobby'),
+    path('new', views.new, name='new'),
+    re_path(r'^(?P<game_id>[\w-]+)$', views.join),
     # # ex: /polls/5/results/
     # path('<int:question_id>/results/', views.results, name='results'),
     # # ex: /polls/5/vote/

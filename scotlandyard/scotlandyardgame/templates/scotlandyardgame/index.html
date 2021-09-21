@@ -62,7 +62,7 @@
         if (params.errmsg !== undefined) {
             alert(decodeURIComponent(errmsg));
         }
-        if ('{{ isJoining }}' === 'true') {
+        if ({{ isJoining }}) {
             document.getElementById("room").innerHTML = "Joining room: <b>{{ game_id }}</b>. <a class=link-light href=/>Create your own room.</a><br><br>";
         }
     </script>

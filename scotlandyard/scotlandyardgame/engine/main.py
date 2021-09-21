@@ -1,6 +1,6 @@
 from enum import Enum, auto
-from player import Player
-from map import Map
+from .player import Player
+from .map import Map
 
 SURFACE_MOVES = [3, 8, 13, 18, 24]
 MOVE_LIMIT = 24
@@ -83,3 +83,6 @@ class ScotlandYard:
         self.__turn = (self.__turn + 1) % 6
         if not self.__turn:
             self.__moves += 1
+
+    def addPlayer(self, player_id: str, player_name: str):
+        raise NotImplementedError()

@@ -7,10 +7,8 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('lobby', views.lobby, name='lobby'),
-    path('new', views.new, name='new'),
-    re_path(r'^(?P<game_id>[\w-]+)$', views.join),
-    # # ex: /polls/5/results/
-    # path('<int:question_id>/results/', views.results, name='results'),
-    # # ex: /polls/5/vote/
-    # path('<int:question_id>/vote/', views.vote, name='vote'),
-] + static(settings.MEDIA_URL, document_root="./static/")
+    # path('new', views.new, name='new'),
+    re_path(r'^(?P<game_id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$', views.index, {
+        'isJoining': "true"
+    })
+] + static(settings.MEDIA_URL, document_root=settings.STATIC_ROOT)

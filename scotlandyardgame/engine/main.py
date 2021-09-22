@@ -1,6 +1,9 @@
 from enum import Enum, auto
-from .player import Player
+from hashlib import new
+from random import randrange
+
 from .map import Map
+from .player import Player
 
 SURFACE_MOVES = [3, 8, 13, 18, 24]
 MOVE_LIMIT = 24
@@ -61,7 +64,7 @@ class ScotlandYard:
         for player in self.players.items():
             if player.location == loc:
                 return player
-    
+
     def getPlayerIDs(self) -> list[str]:
         """Get a list of connected player IDs"""
         return [p.ID for p in self.players]
@@ -85,4 +88,33 @@ class ScotlandYard:
             self.__moves += 1
 
     def addPlayer(self, player_id: str, player_name: str):
-        raise NotImplementedError()
+        # raise NotImplementedError()
+        print(f"\tregistering {player_name}...")
+        if len(self.players) >= MAX_PLAYERS:
+            raise RuntimeError("Game is full!")
+        if player_id in self.players:
+            raise ValueError("player already connected")
+
+        is_mr_x = not self.players  # true when self.players is empty
+        print(f"\t\tMr. X: {is_mr_x}")
+
+        if is_mr_x:
+            col = 'X'
+        else:
+            col_index = randrange(len(self.__available_colors))
+            col = self.__available_colors[col_index]
+            del self.__available_colors[col_index]
+        
+        print(f"\t\tcolor: {col}")
+
+        loc_index = randrange(len(self.__available_locations))
+        loc = self.__available_locations[loc_index]
+        del self.__available_locations[loc_index]
+
+        print(f"\t\tlocation: {loc}")
+
+        newPlayer = Player(player_id, player_name, loc, col, is_mr_x)
+
+        print("\tdone.")
+
+        self.players[player_id] = newPlayer

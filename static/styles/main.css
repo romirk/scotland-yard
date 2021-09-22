@@ -45,6 +45,10 @@ form>div {
     color: red;
 }
 
-a:hover {
-    color: red;
+.link-light {
+    transition: 0.3s;
+}
+
+.link-light:hover {
+    color: rgb(255, 64,129);
 }

@@ -9,7 +9,7 @@ class Middleware:
     def __call__(self, request: HttpRequest):
         if "player_id" not in request.session:
             request.session["player_id"] = str(uuid4())
-        print("player id: " + request.session["player_id"])
+        print("player id: \033[36m" + request.session["player_id"] + "\033[0m")
 
         response = self.get_response(request)
         return response

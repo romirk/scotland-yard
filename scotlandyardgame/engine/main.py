@@ -52,34 +52,33 @@ class ScotlandYard:
     def ID(self, newID: str):
         raise AttributeError("ID assignment not allowed.")
 
-    # methods
+    # private methods
 
-    def getPlayerByID(self, playerID: str) -> Player:
+    def __getPlayerByID(self, playerID: str) -> Player:
         """returns ```Player``` in current game with ID ```playerID```"""
         return self.players[playerID]
 
-    def getPlayerAt(self, loc: int) -> Player:
+    def __getPlayerAt(self, loc: int) -> Player:
         """returns ```Player``` in current game with location ```loc```"""
         for player in self.players.items():
             if player.location == loc:
                 return player
 
-    def getPlayerIDs(self) -> list[str]:
-        """Get a list of connected player IDs"""
-        return [p.ID for p in self.players]
-
-    def getPlayerNames(self) -> list[str]:
-        """Get a list of connected player names"""
-        return [p.name for p in self.players]
-
-    def isValidMove(self, player_id: str, location: int, ticket: str) -> bool:
+    def __isValidMove(self, player_id: str, location: int, ticket: str) -> bool:
         """checks if player with ```player_id``` can move to ```location``` using ```ticket```"""
-        player = self.getPlayerByID(player_id)
+        player = self.__getPlayerByID(player_id)
         return player is not None \
             and (ticket != "special" or player.is_mr_x) \
             and player.getTickets(ticket) > 0 \
             and location in MAP.stations[player.location].getNeighbours(ticket) \
-            and (self.getPlayerAt(location) is None or (not player.is_mr_x and self.getPlayerAt(location) == self.__mrX))
+            and (self.__getPlayerAt(location) is None or (not player.is_mr_x and self.getPlayerAt(location) == self.__mrX))
+
+    def __advanceTurn(self):
+        self.__turn = (self.__turn + 1) % 6
+        if not self.__turn:
+            self.__moves += 1
+
+    # public methods
 
     def setMrX(self, player_id: str):
         player = self.getPlayerByID(player_id)
@@ -89,11 +88,14 @@ class ScotlandYard:
         self.__mrX = player
         oldX.color = player.color
         player.color = 'X'
+    
+    def getPlayerIDs(self) -> list[str]:
+        """Get a list of connected player IDs"""
+        return [p.ID for p in self.players]
 
-    def advanceTurn(self):
-        self.__turn = (self.__turn + 1) % 6
-        if not self.__turn:
-            self.__moves += 1
+    def getPlayerNames(self) -> list[str]:
+        """Get a list of connected player names"""
+        return [p.name for p in self.players]
 
     def addPlayer(self, player_id: str, player_name: str):
         # raise NotImplementedError()

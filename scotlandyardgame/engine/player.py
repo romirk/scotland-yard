@@ -21,7 +21,6 @@ class Player:
         self.color: str = player_color
         self.is_mr_x: bool = is_mr_x
 
-
     # getters
 
     @property
@@ -43,7 +42,6 @@ class Player:
         self.__player_location = newLocation if 1 <= newLocation <= 200 else self.__player_location
 
     # methods
-
     def getTickets(self, type: str) -> int:
         """returns number of tickets of type ```type``` available to this player."""
         return self.__tickets[type]
@@ -58,3 +56,4 @@ class Player:
         if type not in ["taxi", "bus", "underground"]:
             raise ValueError(f"cannot gain ticket of type '{type}.'")
         self.__tickets[type] -= 1
+    

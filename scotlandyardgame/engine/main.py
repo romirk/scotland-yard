@@ -81,6 +81,15 @@ class ScotlandYard:
             and location in MAP.stations[player.location].getNeighbours(ticket) \
             and (self.getPlayerAt(location) is None or (not player.is_mr_x and self.getPlayerAt(location) == self.__mrX))
 
+    def setMrX(self, player_id: str):
+        player = self.getPlayerByID(player_id)
+        oldX = self.__mrX
+        oldX.is_mr_x = False
+        player.is_mr_x = True
+        self.__mrX = player
+        oldX.color = player.color
+        player.color = 'X'
+
     def advanceTurn(self):
         self.__turn = (self.__turn + 1) % 6
         if not self.__turn:

@@ -1,5 +1,4 @@
 from enum import Enum, auto
-from hashlib import new
 from random import randrange
 
 from .map import Map

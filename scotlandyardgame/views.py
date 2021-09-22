@@ -1,36 +1,33 @@
 from django.http import HttpRequest
-from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
-from django.template import loader
 from django.urls import reverse
-from django.utils.http import urlencode
 
 from . import multiplayer
 
 
-def index(request: HttpRequest, game_id='', isJoining="false", error=None):
+def index(request: HttpRequest, game_id='', error=None):
     player_id = request.session["player_id"]
     context = {
         'game_id': game_id,
+        'isJoining': "true" if game_id != '' else "false",
         'player_id': player_id,
-        'isJoining': isJoining,
-        'action': '/' if isJoining == "false" else '/lobby',
-        'error': error
+        'error': error,
+        'action': '/lobby' if game_id != '' else '/'
     }
+    print(context)
 
-    if request.method == "POST":
+    if request.method == "POST":  # (create and) join game
         player_name = request.POST.get("player_name")
         if not player_name:
-            context["error"] = "empty name"
-            return redirect(reverse("index"), context)
+            return redirect("index", error='empty name')
 
         try:
             game_id = multiplayer.createRoom()
             multiplayer.joinRoom(game_id, player_id, player_name)
         except Exception as e:
-            print(f"\033[31merror creating lobby: {e}\033[0m")
-            context["error"] = str(e)
-            return redirect(reverse("index"), context)
+            print(f"\033[31merror creating lobby: {context}\033[0m")
+
+            return redirect(reverse("index", kwargs={'error': "could not join game: " + str(e)}))
 
         print("\033[32mjoined\033[0m, redirecting to lobby")
         return redirect(reverse("lobby"))

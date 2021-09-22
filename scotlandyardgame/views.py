@@ -37,14 +37,7 @@ def index(request: HttpRequest, game_id='', error=None):
 
 def lobby(request: HttpRequest):
     player_id = request.session["player_id"]
-    game_id = multiplayer.getGameWithPlayer(player_id)
-    player = multiplayer.games[game_id].getPlayerByID(player_id)
-    context = {
-        'game_id': game_id,
-        'player_id': player_id,
-        'name': player.name,
-        'color': player.color,
-        'isMrX': "true" if player.is_mr_x else "false"
-    }
-    print(f"{player.name} in lobby")
+    game_id = multiplayer.getGameIDWithPlayer(player_id)
+    context = multiplayer.games[game_id].getPlayerInfo(player_id)
+    print(f"{context.name} in lobby")
     return render(request, 'scotlandyardgame/lobby.html', context=context)

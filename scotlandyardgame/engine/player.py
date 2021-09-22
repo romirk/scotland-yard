@@ -2,7 +2,7 @@ class Player:
 
     def __init__(self, player_id: str, player_name: str, player_location: int, player_color: str, is_mr_x: bool) -> None:
         # private
-        self.__player_id: str = player_id
+        self.__ID: str = player_id
         self.__player_location: int = player_location
         self.__tickets: dict[str, int] = {
             "taxi": 4,
@@ -25,7 +25,7 @@ class Player:
 
     @property
     def ID(self) -> str:
-        return self.__player_id
+        return self.__ID
 
     @property
     def location(self) -> int:

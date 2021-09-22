@@ -21,5 +21,5 @@ def joinRoom(game_id: str, player_id: str, player_name: str):
     player_games[player_id] = game_id
 
 
-def getGameWithPlayer(player_id: str) -> str:
+def getGameIDWithPlayer(player_id: str) -> str:
     return player_games[player_id] if player_id in player_games else None

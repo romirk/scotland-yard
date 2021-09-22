@@ -80,15 +80,6 @@ class ScotlandYard:
 
     # public methods
 
-    def setMrX(self, player_id: str):
-        player = self.getPlayerByID(player_id)
-        oldX = self.__mrX
-        oldX.is_mr_x = False
-        player.is_mr_x = True
-        self.__mrX = player
-        oldX.color = player.color
-        player.color = 'X'
-    
     def getPlayerIDs(self) -> list[str]:
         """Get a list of connected player IDs"""
         return [p.ID for p in self.players]
@@ -96,6 +87,26 @@ class ScotlandYard:
     def getPlayerNames(self) -> list[str]:
         """Get a list of connected player names"""
         return [p.name for p in self.players]
+
+    def getPlayerInfo(self, player_id: str) -> dict:
+        p = self.__getPlayerByID(player_id)
+        return {
+            "game_id": self.__ID,
+            "player_id": player_id,
+            "name": p.name, 
+            "color": p.color, 
+            "location": p.location, 
+            "is_mr_x": p.is_mr_x
+            }
+
+    def setMrX(self, player_id: str):
+        player = self.__getPlayerByID(player_id)
+        oldX = self.__mrX
+        oldX.is_mr_x = False
+        player.is_mr_x = True
+        self.__mrX = player
+        oldX.color = player.color
+        player.color = 'X'
 
     def addPlayer(self, player_id: str, player_name: str):
         # raise NotImplementedError()
@@ -114,7 +125,7 @@ class ScotlandYard:
             col_index = randrange(len(self.__available_colors))
             col = self.__available_colors[col_index]
             del self.__available_colors[col_index]
-        
+
         print(f"\t\tcolor: {col}")
 
         loc_index = randrange(len(self.__available_locations))

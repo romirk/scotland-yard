@@ -2,6 +2,7 @@ from enum import Enum, auto
 from random import randrange
 
 from .map import Map
+from .mapdata import MAPDATA
 from .player import Player
 
 SURFACE_MOVES = [3, 8, 13, 18, 24]
@@ -9,7 +10,7 @@ MOVE_LIMIT = 24
 MAX_PLAYERS = 6
 TICKET_TYPES = ["taxi", "bus", "underground", "special"]
 
-MAP = Map([])
+MAP = Map(MAPDATA)
 
 
 class GameState(Enum):

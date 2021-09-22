@@ -19,7 +19,7 @@ def index(request: HttpRequest, game_id='', error=None):
     if request.method == "POST":  # (create and) join game
         player_name = request.POST.get("player_name")
         if not player_name:
-            return redirect("index", error='empty name')
+            return redirect(reverse("index"), args=["empty name"])
 
         try:
             game_id = multiplayer.createRoom()
@@ -27,7 +27,7 @@ def index(request: HttpRequest, game_id='', error=None):
         except Exception as e:
             print(f"\033[31merror creating lobby: {context}\033[0m")
 
-            return redirect(reverse("index", kwargs={'error': "could not join game: " + str(e)}))
+            return redirect(reverse("indexerror", args=["could not join game: " + str(e)]))
 
         print("\033[32mjoined\033[0m, redirecting to lobby")
         return redirect(reverse("lobby"))

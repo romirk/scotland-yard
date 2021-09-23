@@ -1,4 +1,4 @@
-from .engine.main import ScotlandYard
+from .engine.main import ScotlandYard, GameState
 from uuid import uuid4
 
 games: dict[str, ScotlandYard] = {}
@@ -23,3 +23,8 @@ def joinRoom(game_id: str, player_id: str, player_name: str):
 
 def getGameIDWithPlayer(player_id: str) -> str:
     return player_games[player_id] if player_id in player_games else None
+
+
+def getPlayerConnectedGame(player_id: str) -> str:
+    game_id = getGameIDWithPlayer(player_id)
+    return game_id if game_id is not None and games[game_id].state != GameState.STOPPED else None

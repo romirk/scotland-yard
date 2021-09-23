@@ -31,7 +31,7 @@
             <div class="container">
                 <div class="title">
                     <h1>Scotland Yard</h1>
-                    <form action="{{ action }}" method="post" style="margin: auto;" id="start">{% csrf_token %}
+                    <form action="/" method="post" style="margin: auto;" id="start">{% csrf_token %}
                         {% if error is not None %}
                         <span id="error">{{ error }}</span>
                         {% endif %}

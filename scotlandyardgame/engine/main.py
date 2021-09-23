@@ -136,7 +136,8 @@ class ScotlandYard:
         print(f"\t\tlocation: {loc}")
 
         newPlayer = Player(player_id, player_name, loc, col, is_mr_x)
+        self.players[player_id] = newPlayer
 
-        print("\tdone.")
+        print("\tdone.\ntotal players connected: " + str(len(self.players)))
 
         self.players[player_id] = newPlayer

@@ -1,23 +1,11 @@
-from enum import Enum, auto
-from random import randrange, choice
+from random import choice, randrange
+from typing import Final
 
+from .constants import *
 from .map import Map
-from .mapdata import MAPDATA
 from .player import Player
 
-SURFACE_MOVES = [3, 8, 13, 18, 24]
-MOVE_LIMIT = 24
-MAX_PLAYERS = 6
-TICKET_TYPES = ["taxi", "bus", "underground", "special"]
-
 MAP = Map(MAPDATA)
-
-
-class GameState(Enum):
-    PENDING = auto()
-    CONNECTING = auto()
-    RUNNING = auto()
-    STOPPED = auto()
 
 
 class ScotlandYard:
@@ -28,15 +16,11 @@ class ScotlandYard:
 
     def __init__(self, gameID: str) -> None:
         # private
-        self.__ID: str = gameID
+        self.__ID: Final = gameID
         self.__players: dict[str, Player] = {}
 
-        self.__available_locations: list[int] = [
-            13, 26, 29, 34, 50, 53, 91, 94, 103, 112, 117, 132, 138, 141, 155, 174, 197, 198
-        ]
-        self.__available_colors: list[str] = [
-            'red', 'blue', 'purple', 'green', 'yellow', 'orange'
-        ]
+        self.__available_locations: list[int] = AVAILABLE_MOVES.copy()
+        self.__available_colors: list[str] = AVAILABLE_COLORS.copy()
 
         # cycle = everyone gets 1 move
         self.__moves: int = 0
@@ -102,6 +86,18 @@ class ScotlandYard:
         return [p.name for p in self.__players]
 
     def getPlayerInfo(self, player_id: str) -> dict:
+        """
+        returns a ```dict``` containing information about a specified player
+
+        {
+            "game_id",
+            "player_id",
+            "name",
+            "color",
+            "location",
+            "is_mr_x"
+        }
+        """
         p = self.__getPlayerByID(player_id)
         return {
             "game_id": self.__ID,
@@ -126,13 +122,14 @@ class ScotlandYard:
         player.color = 'X'
 
     def addPlayer(self, player_id: str, player_name: str):
+        """add a player to the game"""
         print(f"\tregistering {player_name}...")
-        if len(self.players) >= MAX_PLAYERS:
+        if len(self.__players) >= MAX_PLAYERS:
             raise RuntimeError("Game is full!")
-        if player_id in self.players:
+        if player_id in self.__players:
             raise ValueError("player already connected")
 
-        is_mr_x = not self.players  # true when self.players is empty
+        is_mr_x = not self.__players  # true when self.players is empty
         print(f"\t\tMr. X: {is_mr_x}")
 
         if is_mr_x:
@@ -151,13 +148,14 @@ class ScotlandYard:
         print(f"\t\tlocation: {loc}")
 
         newPlayer = Player(player_id, player_name, loc, col, is_mr_x)
-        self.players[player_id] = newPlayer
+        self.__players[player_id] = newPlayer
 
-        print("\tdone.\ntotal players connected: " + str(len(self.players)))
+        print("\tdone.\ntotal players connected: " + str(len(self.__players)))
 
-        self.players[player_id] = newPlayer
+        self.__players[player_id] = newPlayer
 
     def removePlayer(self, player_id: str):
+        """remove a player from the game"""
         if self.state == GameState.CONNECTING:
             raise RuntimeError(
                 "Players will not be removed during CONNECTING state")
@@ -169,30 +167,32 @@ class ScotlandYard:
         print(f"removing player {player_id} from {self.ID}")
 
         if player.is_mr_x:
-            newX = choice(self.players)
+            newX = choice(self.__players)
             self.setMrX(newX)
 
         self.__available_colors.append(player.color)
 
         if self.state == GameState.PENDING:
             self.__available_locations.append(player.location)
-        del self.players[player_id]
+        del self.__players[player_id]
 
     def start(self):
-        if len(self.players) != 6:
+        if len(self.__players) != MAX_PLAYERS:
             raise RuntimeError(
-                f"Invalid number of players: {len(self.players)}")
+                f"Invalid number of players: {len(self.__players)}")
         if self.state != GameState.PENDING:
             raise RuntimeError("Game alreaady started")
 
-        state = GameState.RUNNING
+        self.state = GameState.RUNNING
 
-    def end(self, reason):
+    def end(self, reason: str = ""):
+        """end the game, optionally specify reason"""
         self.state = GameState.STOPPED
         self.stop_reason = reason
         print(f"game ended: {reason}")
 
     def move(self, player_id: str, location: int, ticket: str):
+        """perform a move"""
         if self.__cycle >= MOVE_LIMIT:
             raise RuntimeError(f"Game has finished {MOVE_LIMIT} cycles")
         player = self.__getPlayerByID(player_id)

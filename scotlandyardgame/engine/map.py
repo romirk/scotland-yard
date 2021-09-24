@@ -8,6 +8,7 @@ class Map:
     """
 
     def __init__(self, mapdata: list[list[list[int]]] = []) -> None:
+        print("initializing map")
         self.N = len(mapdata)
         self.stations: list[Station] = []
 

@@ -6,7 +6,7 @@ from . import multiplayer
 
 
 def redirectWithError(location, errmsg):
-    redirect(reverse(location, kwargs={"error": errmsg}))
+    return redirect(reverse(location, kwargs={"error": errmsg}))
 
 
 def index(request: HttpRequest, game_id='', error=None):

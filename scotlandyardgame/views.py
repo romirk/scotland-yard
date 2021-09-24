@@ -24,6 +24,9 @@ def index(request: HttpRequest, game_id='', error=None):
         if game_id is not None:
             print("player already connected, redirecting")
             return redirect("lobby")
+    else:
+        if game_id not in multiplayer.games:
+            return redirectWithError("indexerror", f"no such game with ID {game_id}")
 
     if request.method == "POST":  # (create and) join game
         player_name = request.POST.get("player_name")

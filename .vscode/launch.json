@@ -5,13 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "pwa-node",
+            "name": "Python: Django",
+            "type": "python",
             "request": "launch",
-            "name": "Launch Program",
-            "skipFiles": [
-                "<node_internals>/**"
+            "program": "${workspaceFolder}\\manage.py",
+            "args": [
+                "runserver",
+                "0.0.0.0:80"
             ],
-            "program": "${workspaceFolder}\\server.js"
+            "django": true
         }
     ]
 }

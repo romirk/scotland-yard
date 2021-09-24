@@ -1,5 +1,5 @@
 from enum import Enum, auto
-from random import randrange
+from random import randrange, choice
 
 from .map import Map
 from .mapdata import MAPDATA
@@ -29,17 +29,22 @@ class ScotlandYard:
     def __init__(self, gameID: str) -> None:
         # private
         self.__ID: str = gameID
+        self.__players: dict[str, Player] = {}
+
         self.__available_locations: list[int] = [
-            34, 174, 132, 26, 198, 141, 94, 29, 53, 13, 112, 103, 155, 138, 117, 91, 197, 50]
-        self.__available_colors: list[str] = ['red', 'blue',
-                                              'purple', 'green', 'yellow', 'orange']
+            13, 26, 29, 34, 50, 53, 91, 94, 103, 112, 117, 132, 138, 141, 155, 174, 197, 198
+        ]
+        self.__available_colors: list[str] = [
+            'red', 'blue', 'purple', 'green', 'yellow', 'orange'
+        ]
+
+        # cycle = everyone gets 1 move
         self.__moves: int = 0
-        self.__turn: int = 0
+        self.__cycle: int = 0
         self.__mrX: Player = None
 
         # public
         self.state: GameState = GameState.PENDING
-        self.players: dict[str, Player] = {}
 
     # getters
 
@@ -50,18 +55,20 @@ class ScotlandYard:
     # setters
 
     @ID.setter
-    def ID(self, newID: str):
+    def ID(self, *args):
         raise AttributeError("ID assignment not allowed.")
 
     # private methods
 
     def __getPlayerByID(self, playerID: str) -> Player:
         """returns ```Player``` in current game with ID ```playerID```"""
-        return self.players[playerID]
+        if playerID not in self.__players:
+            raise ValueError("player does not exist in this game")
+        return self.__players[playerID]
 
     def __getPlayerAt(self, loc: int) -> Player:
         """returns ```Player``` in current game with location ```loc```"""
-        for player in self.players.items():
+        for player in self.__players.items():
             if player.location == loc:
                 return player
 
@@ -74,31 +81,40 @@ class ScotlandYard:
             and location in MAP.stations[player.location].getNeighbours(ticket) \
             and (self.__getPlayerAt(location) is None or (not player.is_mr_x and self.getPlayerAt(location) == self.__mrX))
 
+    def __getWhoseTurn(self) -> Player:
+        # TODO get whose turn
+        if not self.__moves:
+            return self.__mrX
+
     def __advanceTurn(self):
-        self.__turn = (self.__turn + 1) % 6
-        if not self.__turn:
+        self.__cycle = (self.__cycle + 1) % 6
+        if not self.__cycle:
             self.__moves += 1
 
     # public methods
 
     def getPlayerIDs(self) -> list[str]:
         """Get a list of connected player IDs"""
-        return [p.ID for p in self.players]
+        return [p.ID for p in self.__players]
 
     def getPlayerNames(self) -> list[str]:
         """Get a list of connected player names"""
-        return [p.name for p in self.players]
+        return [p.name for p in self.__players]
 
     def getPlayerInfo(self, player_id: str) -> dict:
         p = self.__getPlayerByID(player_id)
         return {
             "game_id": self.__ID,
             "player_id": player_id,
-            "name": p.name, 
-            "color": p.color, 
-            "location": p.location, 
+            "name": p.name,
+            "color": p.color,
+            "location": p.location,
             "is_mr_x": p.is_mr_x
-            }
+        }
+
+    def setColor(self, player_id: str, color: str):
+        # TODO set color
+        pass
 
     def setMrX(self, player_id: str):
         player = self.__getPlayerByID(player_id)
@@ -110,7 +126,6 @@ class ScotlandYard:
         player.color = 'X'
 
     def addPlayer(self, player_id: str, player_name: str):
-        # raise NotImplementedError()
         print(f"\tregistering {player_name}...")
         if len(self.players) >= MAX_PLAYERS:
             raise RuntimeError("Game is full!")
@@ -141,3 +156,52 @@ class ScotlandYard:
         print("\tdone.\ntotal players connected: " + str(len(self.players)))
 
         self.players[player_id] = newPlayer
+
+    def removePlayer(self, player_id: str):
+        if self.state == GameState.CONNECTING:
+            raise RuntimeError(
+                "Players will not be removed during CONNECTING state")
+        player = self.__getPlayerByID(player_id)
+
+        if self.state == GameState.RUNNING:
+            self.end("player disconnected during game")
+
+        print(f"removing player {player_id} from {self.ID}")
+
+        if player.is_mr_x:
+            newX = choice(self.players)
+            self.setMrX(newX)
+
+        self.__available_colors.append(player.color)
+
+        if self.state == GameState.PENDING:
+            self.__available_locations.append(player.location)
+        del self.players[player_id]
+
+    def start(self):
+        if len(self.players) != 6:
+            raise RuntimeError(
+                f"Invalid number of players: {len(self.players)}")
+        if self.state != GameState.PENDING:
+            raise RuntimeError("Game alreaady started")
+
+        state = GameState.RUNNING
+
+    def end(self, reason):
+        self.state = GameState.STOPPED
+        self.stop_reason = reason
+        print(f"game ended: {reason}")
+
+    def move(self, player_id: str, location: int, ticket: str):
+        if self.__cycle >= MOVE_LIMIT:
+            raise RuntimeError(f"Game has finished {MOVE_LIMIT} cycles")
+        player = self.__getPlayerByID(player_id)
+
+        if(self.__isValidMove(player_id, location, ticket)):
+            player.discard(ticket)
+            player.location = location
+            if not player.is_mr_x:
+                self.__mrX.gain(ticket)
+            self.__advanceTurn()
+        else:
+            raise ValueError("Invalid move.")

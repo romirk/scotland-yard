@@ -67,12 +67,6 @@ class ScotlandYard:
             and location in MAP.stations[player.location].getNeighbours(ticket) \
             and (self.__getPlayerAt(location) is None or (not player.is_mr_x and self.getPlayerAt(location) == self.__mrX))
 
-    def __getWhoseTurn(self) -> str:
-        if not self.__moves:
-            return self.__mrX.ID
-        else:
-            self.__order[self.__moves - 1]
-
     def __advanceTurn(self):
         self.__moves = (self.__moves + 1) % 6
         if not self.__moves:
@@ -100,6 +94,7 @@ class ScotlandYard:
             "name",
             "color",
             "location",
+            "tickets",
             "is_mr_x"
         }
         """
@@ -110,8 +105,15 @@ class ScotlandYard:
             "name": p.name,
             "color": p.color,
             "location": p.location,
+            "tickets": p.getAllTickets(),
             "is_mr_x": p.is_mr_x
         }
+
+    def getWhoseTurn(self) -> str:
+        if not self.__moves:
+            return self.__mrX.ID
+        else:
+            self.__order[self.__moves - 1]
 
     def setColor(self, player_id: str, color: str):
         if color not in self.__available_colors:
@@ -174,7 +176,7 @@ class ScotlandYard:
         if self.state == GameState.CONNECTING:
             raise RuntimeError(
                 "Players will not be removed during CONNECTING state")
-                
+
         player = self.__getPlayerByID(player_id)
 
         if self.state == GameState.RUNNING:

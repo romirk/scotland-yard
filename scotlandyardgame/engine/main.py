@@ -174,6 +174,7 @@ class ScotlandYard:
         if self.state == GameState.CONNECTING:
             raise RuntimeError(
                 "Players will not be removed during CONNECTING state")
+                
         player = self.__getPlayerByID(player_id)
 
         if self.state == GameState.RUNNING:

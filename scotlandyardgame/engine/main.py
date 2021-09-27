@@ -30,6 +30,7 @@ class ScotlandYard:
 
         # public
         self.state: GameState = GameState.PENDING
+        self.rollCall: set[str] = set()
 
     # getters
 
@@ -67,7 +68,6 @@ class ScotlandYard:
             and (self.__getPlayerAt(location) is None or (not player.is_mr_x and self.getPlayerAt(location) == self.__mrX))
 
     def __getWhoseTurn(self) -> str:
-        # TODO get whose turn
         if not self.__moves:
             return self.__mrX.ID
         else:
@@ -199,6 +199,8 @@ class ScotlandYard:
                 f"Invalid number of players: {len(self.__players)}")
         if self.state != GameState.PENDING:
             raise RuntimeError("Game alreaady started")
+        if self.rollCall != set(self.getPlayerIDs()):
+            raise RuntimeError("Roll call doesn't match players")
 
         self.state = GameState.RUNNING
 
@@ -211,6 +213,7 @@ class ScotlandYard:
     def move(self, player_id: str, location: int, ticket: Ticket):
         """perform a move"""
         if self.__cycle >= CYCLE_LIMIT:
+            self.end(EndState.MR_X_WINS)
             raise RuntimeError(f"Game has finished {CYCLE_LIMIT} cycles")
 
         player = self.__getPlayerByID(player_id)

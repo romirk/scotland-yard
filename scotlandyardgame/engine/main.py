@@ -109,8 +109,15 @@ class ScotlandYard:
         }
 
     def setColor(self, player_id: str, color: str):
-        # TODO set color
-        pass
+        if color not in self.__available_colors:
+            raise ValueError("Color not available.")
+        player = self.__getPlayerByID(player_id)
+        if player.is_mr_x:
+            raise RuntimeError("Cannot assign color to Mr. X.")
+        oldColor = player.color
+        player.color = color
+        self.__available_colors.remove(color)
+        self.__available_colors.append(oldColor)
 
     def setMrX(self, player_id: str):
         player = self.__getPlayerByID(player_id)

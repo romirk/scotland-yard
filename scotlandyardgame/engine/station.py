@@ -9,7 +9,7 @@ class Station:
             "taxi": set(),
             "bus": set(),
             "underground": set(),
-            "special": set()
+            "black": set()
         }
 
     def getNeighbours(self, type: str) -> set[int]:

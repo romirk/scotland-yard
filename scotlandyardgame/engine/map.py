@@ -1,5 +1,5 @@
 from .station import Station
-TYPES = "taxi bus underground special".split()
+TYPES = "taxi bus underground black".split()
 
 
 class Map:

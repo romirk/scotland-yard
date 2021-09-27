@@ -1,19 +1,22 @@
+from scotlandyardgame.engine.constants import Ticket
+
+
 class Player:
 
     def __init__(self, player_id: str, player_name: str, player_location: int, player_color: str, is_mr_x: bool) -> None:
         # private
         self.__ID: str = player_id
         self.__player_location: int = player_location
-        self.__tickets: dict[str, int] = {
-            "taxi": 4,
-            "bus": 3,
-            "underground": 3,
-            "black": 5,
-            "times_two": 2
+        self.__tickets: dict[Ticket, int] = {
+            Ticket.TAXI : 4,
+            Ticket.BUS: 3,
+            Ticket.UNDERGROUND: 3,
+            Ticket.BLACK: 5,
+            Ticket.DOUBLE: 2
         } if is_mr_x else {
-            "taxi": 10,
-            "bus": 8,
-            "underground": 4
+            Ticket.TAXI: 10,
+            Ticket.BUS: 8,
+            Ticket.UNDERGROUND: 4
         }
 
         # public
@@ -42,18 +45,18 @@ class Player:
         self.__player_location = newLocation if 1 <= newLocation <= 200 else self.__player_location
 
     # methods
-    def getTickets(self, type: str) -> int:
+    def getTickets(self, type: Ticket) -> int:
         """returns number of tickets of type ```type``` available to this player."""
         return self.__tickets[type]
 
-    def discard(self, type):
+    def discard(self, type: Ticket):
         """player uses a ticket."""
         self.__tickets[type] -= 1 if self.__tickets[type] else 0
 
-    def gain(self, type):
+    def gain(self, type: Ticket):
         if not self.is_mr_x:
             raise TypeError("non-Mr. X Player cannot gain a ticket.")
-        if type not in ["taxi", "bus", "underground"]:
+        if  type not in [Ticket.TAXI, Ticket.BUS, Ticket.UNDERGROUND]:
             raise ValueError(f"cannot gain ticket of type '{type}.'")
-        self.__tickets[type] -= 1
+        self.__tickets[type] += 1
     

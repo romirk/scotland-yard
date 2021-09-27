@@ -7,7 +7,6 @@ from .mapdata import MAPDATA
 SURFACE_MOVES = [3, 8, 13, 18, 24]
 CYCLE_LIMIT = 24
 MAX_PLAYERS = 6
-TICKET_TYPES = ["taxi", "bus", "underground", "special"]
 
 AVAILABLE_MOVES = [
     13, 26, 29, 34, 50, 53, 91, 94, 103, 112, 117, 132, 138, 141, 155, 174, 197, 198
@@ -28,4 +27,11 @@ class EndState(Enum):
     DETECTIVES_WIN = auto()
     MR_X_WINS = auto()
     ABORTED = auto()
+
+class Ticket(Enum):
+    TAXI = "taxi"
+    BUS = "bus"
+    UNDERGROUND = "underground"
+    BLACK = "black"
+    DOUBLE = "double"
     

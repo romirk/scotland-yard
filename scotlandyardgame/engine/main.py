@@ -57,11 +57,11 @@ class ScotlandYard:
             if player.location == loc:
                 return player
 
-    def __isValidMove(self, player_id: str, location: int, ticket: str) -> bool:
+    def __isValidMove(self, player_id: str, location: int, ticket: Ticket) -> bool:
         """checks if player with ```player_id``` can move to ```location``` using ```ticket```"""
         player = self.__getPlayerByID(player_id)
         return player is not None \
-            and (ticket != "special" or player.is_mr_x) \
+            and (ticket not in [Ticket.BLACK, Ticket.DOUBLE] or player.is_mr_x) \
             and player.getTickets(ticket) > 0 \
             and location in MAP.stations[player.location].getNeighbours(ticket) \
             and (self.__getPlayerAt(location) is None or (not player.is_mr_x and self.getPlayerAt(location) == self.__mrX))
@@ -208,7 +208,7 @@ class ScotlandYard:
         self.stop_reason = reason
         print(f"game ended: {reason}")
 
-    def move(self, player_id: str, location: int, ticket: str):
+    def move(self, player_id: str, location: int, ticket: Ticket):
         """perform a move"""
         if self.__cycle >= CYCLE_LIMIT:
             raise RuntimeError(f"Game has finished {CYCLE_LIMIT} cycles")

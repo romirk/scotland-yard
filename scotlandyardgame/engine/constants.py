@@ -5,7 +5,7 @@ from enum import Enum, auto
 from .mapdata import MAPDATA
 
 SURFACE_MOVES = [3, 8, 13, 18, 24]
-MOVE_LIMIT = 24
+CYCLE_LIMIT = 24
 MAX_PLAYERS = 6
 TICKET_TYPES = ["taxi", "bus", "underground", "special"]
 
@@ -22,3 +22,10 @@ class GameState(Enum):
     CONNECTING = auto()
     RUNNING = auto()
     STOPPED = auto()
+
+class EndState(Enum):
+    NOT_ENDED = auto()
+    DETECTIVES_WIN = auto()
+    MR_X_WINS = auto()
+    ABORTED = auto()
+    

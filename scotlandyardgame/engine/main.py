@@ -18,6 +18,7 @@ class ScotlandYard:
         # private
         self.__ID: Final = gameID
         self.__players: dict[str, Player] = {}
+        self.__order: list[str] = []
 
         self.__available_locations: list[int] = AVAILABLE_MOVES.copy()
         self.__available_colors: list[str] = AVAILABLE_COLORS.copy()
@@ -65,15 +66,19 @@ class ScotlandYard:
             and location in MAP.stations[player.location].getNeighbours(ticket) \
             and (self.__getPlayerAt(location) is None or (not player.is_mr_x and self.getPlayerAt(location) == self.__mrX))
 
-    def __getWhoseTurn(self) -> Player:
+    def __getWhoseTurn(self) -> str:
         # TODO get whose turn
         if not self.__moves:
-            return self.__mrX
+            return self.__mrX.ID
+        else:
+            self.__order[self.__moves - 1]
 
     def __advanceTurn(self):
-        self.__cycle = (self.__cycle + 1) % 6
-        if not self.__cycle:
-            self.__moves += 1
+        self.__moves = (self.__moves + 1) % 6
+        if not self.__moves:
+            self.__cycle += 1
+        if self.__cycle >= CYCLE_LIMIT:
+            self.end(EndState.MR_X_WINS)
 
     # public methods
 
@@ -127,6 +132,8 @@ class ScotlandYard:
         self.__mrX = player
         oldX.color = player.color
         player.color = 'X'
+        self.__order.remove(player.ID)
+        self.__order.insert(randrange(len(self.__order)), oldX.ID)
 
     def addPlayer(self, player_id: str, player_name: str):
         """add a player to the game"""
@@ -156,6 +163,7 @@ class ScotlandYard:
 
         newPlayer = Player(player_id, player_name, loc, col, is_mr_x)
         self.__players[player_id] = newPlayer
+        self.__order.insert(randrange(len(self.__order)), newPlayer.ID)
 
         print("\tdone.\ntotal players connected: " + str(len(self.__players)))
 
@@ -169,7 +177,7 @@ class ScotlandYard:
         player = self.__getPlayerByID(player_id)
 
         if self.state == GameState.RUNNING:
-            self.end("player disconnected during game")
+            self.end(EndState.ABORTED)
 
         print(f"removing player {player_id} from {self.ID}")
 
@@ -182,6 +190,7 @@ class ScotlandYard:
         if self.state == GameState.PENDING:
             self.__available_locations.append(player.location)
         del self.__players[player_id]
+        self.__order.remove(player_id)
 
     def start(self):
         if len(self.__players) != MAX_PLAYERS:
@@ -192,7 +201,7 @@ class ScotlandYard:
 
         self.state = GameState.RUNNING
 
-    def end(self, reason: str = ""):
+    def end(self, reason: EndState):
         """end the game, optionally specify reason"""
         self.state = GameState.STOPPED
         self.stop_reason = reason
@@ -200,15 +209,26 @@ class ScotlandYard:
 
     def move(self, player_id: str, location: int, ticket: str):
         """perform a move"""
-        if self.__cycle >= MOVE_LIMIT:
-            raise RuntimeError(f"Game has finished {MOVE_LIMIT} cycles")
+        if self.__cycle >= CYCLE_LIMIT:
+            raise RuntimeError(f"Game has finished {CYCLE_LIMIT} cycles")
+
         player = self.__getPlayerByID(player_id)
 
-        if(self.__isValidMove(player_id, location, ticket)):
-            player.discard(ticket)
-            player.location = location
-            if not player.is_mr_x:
-                self.__mrX.gain(ticket)
-            self.__advanceTurn()
-        else:
+        if player_id != self.__getWhoseTurn():
+            raise RuntimeError("Not this player's turn")
+
+        if not self.__isValidMove(player_id, location, ticket):
             raise ValueError("Invalid move.")
+
+        player.discard(ticket)
+
+        if not player.is_mr_x and self.__getPlayerAt(location) == self.__mrX:
+            # game over
+            self.end(EndState.DETECTIVES_WIN)
+            return
+
+        player.location = location
+        if not player.is_mr_x:
+            self.__mrX.gain(ticket)
+
+        self.__advanceTurn()

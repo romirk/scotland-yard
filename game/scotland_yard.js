@@ -122,7 +122,7 @@ function ScotlandYard(game_id) {
     // setters
     this.setColor = (player_id, color) => {
         let player = getPlayer(player_id);
-        if(player === undefined) return false;
+        if (player === undefined) return false;
         if (player.isMrX() && color === 'X') {
             player.setColor('X');
             return true;
@@ -156,7 +156,7 @@ function ScotlandYard(game_id) {
             throw new Exception("Invalid number of players.", { "players": players.length });
         if (state !== GAME_STATES.PENDING)
             throw new Exception("Game already initialized");
-        
+
         mrX = players[0];
         moves = 0;
         turn = 0;
@@ -215,7 +215,7 @@ function ScotlandYard(game_id) {
             throw new Exception("Invalid move");
     }
 
-    this.removePlayer = player_id => {      
+    this.removePlayer = player_id => {
         if (state === GAME_STATES.PENDING || state === GAME_STATES.STOPPED) {
             let i = players.map(player => player.getID()).indexOf(player_id);
             console.log(`removing ${player_id} at position ${i}`);

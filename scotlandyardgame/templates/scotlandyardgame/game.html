@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scotland Yard</title>
+    <link rel="stylesheet" href="/styles/game.css">
+</head>
+
+<body>
+    <!-- <canvas id="canvas"></canvas> -->
+    <svg id="textsvg">
+        <path id="textpath"></path>
+    </svg>
+    <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
+    <script src="/js/anime.min.js"></script>
+    <script>
+
+        opentype.load('/styles/fonts/Comfortaa.ttf', function (err, font) {
+            if (err) {
+                console.log('Font could not be loaded: ' + err);
+            } else {
+                const path = font.getPath('scotlandyard', 0, 150, 72);
+                document.getElementById("textpath").setAttribute("d", path.toPathData());
+            }
+        });
+        
+        anime({
+            targets: '#textpath',
+            strokeDashoffset: [anime.setDashoffset, 0],
+            easing: 'easeInOutSine',
+            duration: 1500,
+            delay: function (el, i) { return i * 250 },
+            direction: 'alternate',
+            loop: true,
+            // update: () => console.log("update")      
+        });
+    </script>
+</body>
+
+</html>

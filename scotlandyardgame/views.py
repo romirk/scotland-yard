@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from . import multiplayer
+import scotlandyardgame
 
 
 def redirectWithError(location, errmsg):
@@ -18,7 +19,7 @@ def index(request: HttpRequest, game_id='', error=None):
         'player_id': player_id,
         'error': error,
     }
-    
+
     if not isJoining:
         game_id = multiplayer.getPlayerConnectedGame(player_id)
         if game_id is not None:
@@ -40,7 +41,7 @@ def index(request: HttpRequest, game_id='', error=None):
 
         except Exception as e:
 
-            print(f"\033[31merror creating lobby: {context}\033[0m")
+            print(f"\033[31merror creating lobby: {e}\n({context})\033[0m")
             return redirect(reverse("indexerror", args=["could not join game: " + str(e)]))
 
         print("\033[32mjoined\033[0m, redirecting to lobby")
@@ -55,3 +56,11 @@ def lobby(request: HttpRequest):
     context = multiplayer.games[game_id].getPlayerInfo(player_id)
     print(f"{context['name']} in lobby")
     return render(request, 'scotlandyardgame/lobby.html', context=context)
+
+
+def game(request: HttpRequest):
+    player_id = request.session["player_id"]
+    game_id = multiplayer.getGameIDWithPlayer(player_id)
+    context = multiplayer.games[game_id].getPlayerInfo(player_id)
+    print(f"{context['name']} in game")
+    return render(request, 'scotlandyardgame/game.html', context=context)

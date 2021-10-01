@@ -37,7 +37,7 @@
             <div class="container" id="main" x-gameid="ewrewr">
                 <div id="gamecodebox">
                     <span id="link"></span>
-                    <button id="copy-link" class="btn btn-primary" onclick="copyInvite()">Copy</button>
+                    <button id="copy-link" class="btn btn-primary">Copy</button>
                 </div>
                 <!-- <div id="player-list"> -->
                 <div id="players" class="list-group">
@@ -58,7 +58,7 @@
         const color = '{{ color }}';
         const isMrX = {% if isMrX %} true {% else %} false {% endif %};
     </script>
-    <script src="/js/lobby.js" type="text/javascript"></script>
+    <script src="/js/lobby.js" type="module"></script>
 </body>
 
 </html>

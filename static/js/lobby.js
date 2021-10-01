@@ -1,71 +1,16 @@
-import { copyToClipboard } from "./utils";
+import { copyToClipboard } from "./utils.js";
 
 const players = [];
 const available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
 const isHost = player_id === game_id;
 
-let socket = io();
-const Messages = this.LobbyMessages;
+document.getElementById("link").innerText = window.location.host + '/' + game_id;
 
-$('#link').html(window.location.host + '/' + game_id)
+const socket = new WebSocket('ws://' + window.location.host + '/ws/' + game_id);
 
-let connectedObj = Messages.CONNECT;
-connectedObj.data.player_id = player_id;
-connectedObj.data.name = name;
-connectedObj.data.color = color;
-connectedObj.data.isMrX = isMrX;
-
-socket.emit(Messages.CONNECT.type, JSON.stringify(connectedObj));
-
-socket.on(Messages.ACKNOWLEDGE.type, (msg) => {
-    let data = JSON.parse(msg).data;
-    console.log("connected to", data.game_id)
-    console.log("connected players:", data.players);
-    data.players.forEach(player => {
-        players.push(player);
-        updateAvailableColors(player.color);
-    });
-    updateUI();
-});
-
-socket.on(Messages.PLAYER_CONNECTED.type, msg => {
-    let data = JSON.parse(msg).data;
-    console.log("player joined: ", data);
-    if (data.player_id === player_id || players.map(p => p.player_id).includes(data.player_id));
-    else
-        players.push(data)
-    updateAvailableColors(data.color)
-    updateUI();
-});
-
-// socket.on(Messages.PLAYER_DISCONNECTED.type, msg => {
-//     let data = JSON.parse(msg).data;
-//     let i = players.map(player => player.player_id).indexOf(data.player_id);
-//     available_colors.push(players[i].color);
-//     players.splice(i, 1);
-//     updateUI();
-// })
-
-socket.on(Messages.SET_COLOR.type, msg => {
-    let data = JSON.parse(msg).data;
-    let i = players.findIndex(player => player.player_id === data.player_id);
-    available_colors.push(players[i].color);
-    players[i].color = data.color;
-    updateAvailableColors(data.color);
-    console.log(`${players[i].name} changed to ${data.color}`);
-    updateUI();
-});
-
-socket.on(Messages.SET_MRX.type, msg => {
-    let data = JSON.parse(msg).data;
-    let newXIndex = players.findIndex(player => player.player_id === data.player_id);
-    let oldXIndex = players.findIndex(player => player.isMrX === true);
-    players[oldXIndex].isMrX = false;
-    players[newXIndex].isMrX = true;
-    players[oldXIndex].color = players[newXIndex].color;
-    players[newXIndex].color = 'X';
-    updateUI();
-})
+socket.onmessage = msg => console.log("[ws/server]", msg.data);
+socket.onclose = () => console.log("socket closed");
+socket.onopen = () => socket.send("hello server");
 
 function setColor(color) {
     let reqColObj = Messages.REQUEST_COLOR;
@@ -74,7 +19,7 @@ function setColor(color) {
 }
 
 function setMrX(newXId) {
-    if(!isHost) return;
+    if (!isHost) return;
     let reqXObj = Messages.REQUEST_MRX;
     reqXObj.data.player_id = newXId;
     socket.emit(Messages.REQUEST_MRX.type, JSON.stringify(reqXObj));
@@ -103,5 +48,7 @@ function updateAvailableColors(unavailableColor) {
 function copyInvite() {
     var e = document.getElementById('link');
     copyToClipboard(e);
+    console.log("copied");
 }
 
+document.getElementById("copy-link").addEventListener("click", copyInvite)

@@ -135,7 +135,10 @@ class ScotlandYard:
         oldX.color = player.color
         player.color = 'X'
         self.__order.remove(player.ID)
-        self.__order.insert(randrange(len(self.__order)), oldX.ID)
+        if self.__order:
+            self.__order.insert(randrange(len(self.__order)), oldX.ID)
+        else:
+            self.__order.append(oldX.ID)
 
     def addPlayer(self, player_id: str, player_name: str):
         """add a player to the game"""
@@ -165,7 +168,10 @@ class ScotlandYard:
 
         newPlayer = Player(player_id, player_name, loc, col, is_mr_x)
         self.__players[player_id] = newPlayer
-        self.__order.insert(randrange(len(self.__order)), newPlayer.ID)
+        if self.__order:
+            self.__order.insert(randrange(len(self.__order)), newPlayer.ID)
+        else:
+            self.__order.append(newPlayer.ID)
 
         print("\tdone.\ntotal players connected: " + str(len(self.__players)))
 

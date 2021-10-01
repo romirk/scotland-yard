@@ -11,30 +11,39 @@
 
 <body>
     <!-- <canvas id="canvas"></canvas> -->
-    <svg id="textsvg">
-        <path id="textpath"></path>
+    <svg id="textsvg"></svg>
+    <path id="playerheadpath" stroke-width="4" stroke="#7A6AC0" fill="#0000" />
+    </path>
+    <path id="playerbodypath" stroke-width="4" stroke="#7A6AC0" fill="#0000" d="M 100 100 L 125 50 L 150 100 L 112 100">
+    </path>
     </svg>
     <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
     <script src="/js/anime.min.js"></script>
     <script>
+        function circlePath(cx, cy, r) {
+            return 'M ' + cx + ' ' + cy + ' m -' + r + ', 0 a ' + r + ',' + r + ' 0 1,0 ' + (r * 2) + ',0 a ' + r + ',' + r + ' 0 1,0 -' + (r * 2) + ',0';
+        }
+        document.getElementById("playerheadpath").setAttribute("d", circlePath(125, 25, 25));
 
         opentype.load('/styles/fonts/Comfortaa.ttf', function (err, font) {
             if (err) {
                 console.log('Font could not be loaded: ' + err);
             } else {
                 const path = font.getPath('scotlandyard', 0, 150, 72);
-                document.getElementById("textpath").setAttribute("d", path.toPathData());
+                // document.getElementById("textpath").setAttribute("d", path.toPathData());
             }
         });
-        
+
         anime({
-            targets: '#textpath',
+            targets: '#playerbodypath, #playerheadpath',
             strokeDashoffset: [anime.setDashoffset, 0],
             easing: 'easeInOutSine',
             duration: 1500,
             delay: function (el, i) { return i * 250 },
-            direction: 'alternate',
-            loop: true,
+            // translateX: [100, 150],
+            // translateY: [100, 200]
+            // direction: 'alternate',
+            // loop: true,
             // update: () => console.log("update")      
         });
     </script>

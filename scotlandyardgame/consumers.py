@@ -11,7 +11,7 @@ class GameRTConsumer(AsyncWebsocketConsumer):
         self.game_id = self.scope['url_route']['kwargs']['game_id']
         game = getGameByID(self.game_id)
 
-        # print(f"ws-connecting: {self.channel_name} {self.game_id}")
+        print(f"ws-connecting: {self.channel_name} {self.game_id}")
 
         if game is not None:
             print("accepted")

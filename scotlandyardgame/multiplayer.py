@@ -19,11 +19,16 @@ def getGameIDWithPlayer(player_id: str) -> str:
 def getGameState(game_id: str) -> GameState:
     return getGameByID(game_id).state
 
-
 def getPlayerConnectedGame(player_id: str) -> str:
     game_id = getGameIDWithPlayer(player_id)
     return game_id if game_id is not None and games[game_id].state != GameState.STOPPED else None
 
+
+def getPlayerInfo(player_id : str) -> dict:
+    return getGameByID(getGameIDWithPlayer(player_id)).getPlayerInfo(player_id)
+
+def getPlayerIDs(game_id: str) -> list[str]:
+    return getGameByID(game_id).getPlayerIDs()
 
 def createRoom() -> str:
     game_id = str(uuid4())

@@ -6,7 +6,7 @@ const isHost = player_id === game_id;
 
 document.getElementById("link").innerText = window.location.host + '/' + game_id;
 
-const socket = new WebSocket('ws://' + window.location.host + '/ws/' + game_id);
+const socket = new WebSocket('ws://' + window.location.host + '/ws/lobby/' + game_id);
 
 socket.onmessage = msg => console.log("[ws/server]", msg.data);
 socket.onclose = () => console.log("socket closed");

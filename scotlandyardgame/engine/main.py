@@ -167,6 +167,7 @@ class ScotlandYard:
         print(f"\t\tlocation: {loc}")
 
         newPlayer = Player(player_id, player_name, loc, col, is_mr_x)
+
         self.__players[player_id] = newPlayer
         if self.__order:
             self.__order.insert(randrange(len(self.__order)), newPlayer.ID)

@@ -1,8 +1,11 @@
 import json
 from os import name
+
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-from .multiplayer import *
+from .multiplayer import (getGameByID, getGameIDWithPlayer, getPlayerIDs,
+                          getPlayerInfo)
+from .protocols import LobbyProtocol
 
 mapPlayerToConn: dict[str, AsyncWebsocketConsumer] = dict()
 
@@ -25,20 +28,16 @@ class LobbyRTConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         print(f"[ws/client] {text_data}")
-
-        message = text_data.split()
-        type = message[0]
         
+        data = LobbyProtocol.parse(text_data)
+
         if type == "JOIN":
             # JOIN player_id
-            player_id = message[1]
+            player_id = data.player_id
             if getGameIDWithPlayer(player_id) != self.game_id:
                 raise RuntimeError
-            playerInfo = getPlayerInfo(player_id)
-            await self.channel_layer.group_send(f"NEW_PLAYER {player_id} {playerInfo['name']} {playerInfo['color']} {playerInfo['is_mr_x']}")
-            connected_players = [getPlayerInfo(p) for p in getPlayerIDs(self.game_id)]
-            self.send(f"ACKNOWLEDGE {len(connected_players)}" +\
-                "\n".join(f"{p_info['player_id']} {p_info['name']} {p_info['color']} {p_info['is_mr_x']}" for p_info in connected_players))
+            await self.channel_layer.group_send(LobbyProtocol.newPlayer(self.game_id, player_id))
+            await self.send(LobbyProtocol.acknowledge(self.game_id))
         
         else:
             raise ValueError

@@ -1,4 +1,4 @@
-import {copyToClipboard} from "./utils.js";
+import { copyToClipboard } from "./utils.js";
 
 const players = [];
 const available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
@@ -15,16 +15,15 @@ socket.onmessage = msg => {
     let tokens = msg.data.split(' ');
     let key = tokens[0];
     if (key === "ACKNOWLEDGE") {
-        // let n = tokens[1];
         let playerdata = msg.data.split('\n').slice(1);
         playerdata.forEach(playerstr => {
             let info = playerstr.split(' ');
-            players.push({player_id: info[0], name: info[1], color: info[2]})
+            players.push({ player_id: info[0], name: info[1], color: info[2] })
         });
-        updateUI();
     } else if (key === "NEW_PLAYER")
         if (!players.map(e => e.player_id).includes(tokens[1]))
-            players.push({player_id: tokens[1], name: tokens[2], color: tokens[3]});
+            players.push({ player_id: tokens[1], name: tokens[2], color: tokens[3] });
+    updateUI();
     console.log(players);
 }
 

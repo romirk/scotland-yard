@@ -53,6 +53,7 @@ class Player:
         return self.__tickets[type]
 
     def getAllTickets(self) -> dict[Ticket, int]:
+        """returns all tickets available to this player."""
         return self.__tickets.copy()
 
     def discard(self, type: Ticket):
@@ -60,6 +61,7 @@ class Player:
         self.__tickets[type] -= 1 if self.__tickets[type] else 0
 
     def gain(self, type: Ticket):
+        """Mr. X gains a ticket"""
         if not self.is_mr_x:
             raise TypeError("non-Mr. X Player cannot gain a ticket.")
         if type not in [Ticket.TAXI, Ticket.BUS, Ticket.UNDERGROUND]:

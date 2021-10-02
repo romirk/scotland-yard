@@ -1,4 +1,4 @@
-import { copyToClipboard } from "./utils.js";
+import {copyToClipboard} from "./utils.js";
 
 const players = [];
 const available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
@@ -10,19 +10,19 @@ const socket = new WebSocket('ws://' + window.location.host + '/ws/lobby/' + gam
 
 socket.onmessage = msg => console.log("[ws/server]", msg.data);
 socket.onclose = () => console.log("socket closed");
-socket.onopen = () => socket.send("hello server");
+socket.onopen = () => socket.send("JOIN " + player_id);
 
 function setColor(color) {
     let reqColObj = Messages.REQUEST_COLOR;
     reqColObj.data.color = color;
-    socket.emit(Messages.REQUEST_COLOR.type, JSON.stringify(reqColObj));
+    // socket.emit(Messages.REQUEST_COLOR.type, JSON.stringify(reqColObj));
 }
 
 function setMrX(newXId) {
     if (!isHost) return;
     let reqXObj = Messages.REQUEST_MRX;
     reqXObj.data.player_id = newXId;
-    socket.emit(Messages.REQUEST_MRX.type, JSON.stringify(reqXObj));
+    // socket.emit(Messages.REQUEST_MRX.type, JSON.stringify(reqXObj));
 }
 
 

@@ -27,14 +27,14 @@
         }
         document.getElementById("playerheadpath").setAttribute("d", circlePath(125, 30, 18));
 
-        opentype.load('/styles/fonts/Comfortaa.ttf', function (err, font) {
-            if (err) {
-                console.log('Font could not be loaded: ' + err);
-            } else {
-                const path = font.getPath('scotlandyard', 0, 150, 72);
-                // document.getElementById("textpath").setAttribute("d", path.toPathData());
-            }
-        });
+    opentype.load('/styles/fonts/Comfortaa.ttf', function (err, font) {
+        if (err) {
+            console.log('Font could not be loaded: ' + err);
+        } else {
+            const path = font.getPath('scotlandyard', 0, 150, 72);
+            // document.getElementById("textpath").setAttribute("d", path.toPathData());
+        }
+    });
 
         // let t = anime.timeline()
         anime({

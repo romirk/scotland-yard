@@ -1,6 +1,7 @@
-from .engine.main import ScotlandYard
-from .engine.constants import MAX_PLAYERS, GameState
 from uuid import uuid4
+
+from .engine.constants import MAX_PLAYERS, GameState
+from .engine.main import ScotlandYard
 
 games: dict[str, ScotlandYard] = {}
 player_games: dict[str, str] = {}
@@ -69,5 +70,6 @@ def move(game_id: str, player_id: str, location: int, ticket: str):
 
 def leaveRoom(game_id: str, player_id: str):
     game = getGameByID(game_id)
-    game.removePlayer(player_id)
-    print(f"removed {player_id} from {game_id}")
+    if game.state != GameState.CONNECTING:
+        game.removePlayer(player_id)
+        print(f"removed {player_id} from {game_id}")

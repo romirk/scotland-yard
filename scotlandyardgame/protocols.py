@@ -14,6 +14,7 @@ class LobbyProtocol:
 
     @staticmethod
     def parse(msg: str) -> LobbyProtocol:
+        """parse incoming ws client message"""
         tokens = msg.split()
         keyword = tokens[0]
 
@@ -28,15 +29,17 @@ class LobbyProtocol:
         return ret
 
     @staticmethod
-    def acknowledge(game_id: str):
+    def acknowledge(game_id: str) -> str:
+        """acknowledge ws connection"""
         players = [getPlayerInfo(p) for p in getPlayerIDs(game_id)]
-        return f"ACKNOWLEDGE {len(players)}" + "\n".join(
-            f"{p_info['player_id']} {p_info['name']} {p_info['color']} {p_info['is_mr_x']}" for p_info in players
+        return f"ACKNOWLEDGE {len(players)}\n" + "\n".join(
+            f"{p_info['player_id']} {p_info['name']} {p_info['color']}" for p_info in players
         )
 
     def newPlayer(game_id: str, player_id: str) -> dict:
+        """Group method: notify lobby of new player"""
         playerInfo = getPlayerInfo(player_id)
         return {
-            "type": "NEW_PLAYER",
-            "text": f"NEW_PLAYER {player_id} {playerInfo['name']} {playerInfo['color']} {playerInfo['is_mr_x']}"
+            "type": "ws.send",
+            "text": f"NEW_PLAYER {player_id} {playerInfo['name']} {playerInfo['color']}"
         }

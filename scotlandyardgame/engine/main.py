@@ -129,8 +129,6 @@ class ScotlandYard:
     def setMrX(self, player_id: str):
         player = self.__getPlayerByID(player_id)
         oldX = self.__mrX
-        oldX.is_mr_x = False
-        player.is_mr_x = True
         self.__mrX = player
         oldX.color = player.color
         player.color = 'X'
@@ -166,7 +164,7 @@ class ScotlandYard:
 
         print(f"\t\tlocation: {loc}")
 
-        newPlayer = Player(player_id, player_name, loc, col, is_mr_x)
+        newPlayer = Player(player_id, player_name, loc, col)
 
         self.__players[player_id] = newPlayer
         if self.__order:

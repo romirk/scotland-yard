@@ -3,7 +3,6 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 
 from . import multiplayer
-import scotlandyardgame
 
 
 def redirectWithError(location, errmsg):
@@ -53,6 +52,8 @@ def index(request: HttpRequest, game_id='', error=None):
 def lobby(request: HttpRequest):
     player_id = request.session["player_id"]
     game_id = multiplayer.getGameIDWithPlayer(player_id)
+    if game_id is None:
+        return redirectWithError("indexerror", "not in game")
     context = multiplayer.games[game_id].getPlayerInfo(player_id)
     print(f"{context['name']} in lobby")
     return render(request, 'scotlandyardgame/lobby.html', context=context)

@@ -54,18 +54,19 @@ class ScotlandYard:
 
     def __getPlayerAt(self, loc: int) -> Player:
         """returns ```Player``` in current game with location ```loc```"""
-        for player in self.__players.items():
+        for player in self.__players.values():
             if player.location == loc:
                 return player
 
     def __isValidMove(self, player_id: str, location: int, ticket: Ticket) -> bool:
         """checks if player with ```player_id``` can move to ```location``` using ```ticket```"""
         player = self.__getPlayerByID(player_id)
-        return player is not None \
-            and (ticket not in [Ticket.BLACK, Ticket.DOUBLE] or player.is_mr_x) \
-            and player.getTickets(ticket) > 0 \
-            and location in MAP.stations[player.location].getNeighbours(ticket) \
-            and (self.__getPlayerAt(location) is None or (not player.is_mr_x and self.getPlayerAt(location) == self.__mrX))
+        return (player is not None
+                and (ticket not in [Ticket.BLACK, Ticket.DOUBLE] or player.is_mr_x)
+                and player.getTickets(ticket) > 0
+                and location in MAP.stations[player.location].getNeighbours(ticket)
+                and (self.__getPlayerAt(location) is None
+                     or (not player.is_mr_x and self.__getPlayerAt(location) == self.__mrX)))
 
     def __advanceTurn(self):
         self.__moves = (self.__moves + 1) % 6
@@ -78,11 +79,11 @@ class ScotlandYard:
 
     def getPlayerIDs(self) -> list[str]:
         """Get a list of connected player IDs"""
-        return [p.ID for p in self.__players]
+        return [p for p in self.__players]
 
     def getPlayerNames(self) -> list[str]:
         """Get a list of connected player names"""
-        return [p.name for p in self.__players]
+        return [p.name for p in self.__players.values()]
 
     def getPlayerInfo(self, player_id: str) -> dict:
         """
@@ -227,7 +228,7 @@ class ScotlandYard:
 
         player = self.__getPlayerByID(player_id)
 
-        if player_id != self.__getWhoseTurn():
+        if player_id != self.getWhoseTurn():
             raise RuntimeError("Not this player's turn")
 
         if not self.__isValidMove(player_id, location, ticket):

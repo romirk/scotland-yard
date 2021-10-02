@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from .multiplayer import getPlayerInfo, getPlayerIDs
 
 
@@ -11,6 +12,7 @@ class LobbyProtocol:
         self.player_id = player_id
         self.color = None
 
+    @staticmethod
     def parse(msg: str) -> LobbyProtocol:
         tokens = msg.split()
         keyword = tokens[0]
@@ -25,12 +27,16 @@ class LobbyProtocol:
 
         return ret
 
+    @staticmethod
     def acknowledge(game_id: str):
-        connected_players = [getPlayerInfo(p) for p in getPlayerIDs(game_id)]
-        return f"ACKNOWLEDGE {len(connected_players)}" + "\n".join(
-            f"{p_info['player_id']} {p_info['name']} {p_info['color']} {p_info['is_mr_x']}" for p_info in connected_players
+        players = [getPlayerInfo(p) for p in getPlayerIDs(game_id)]
+        return f"ACKNOWLEDGE {len(players)}" + "\n".join(
+            f"{p_info['player_id']} {p_info['name']} {p_info['color']} {p_info['is_mr_x']}" for p_info in players
         )
 
-    def newPlayer(game_id: str, player_id: str):
+    def newPlayer(game_id: str, player_id: str) -> dict:
         playerInfo = getPlayerInfo(player_id)
-        f"NEW_PLAYER {player_id} {playerInfo['name']} {playerInfo['color']} {playerInfo['is_mr_x']}"
+        return {
+            "type": "NEW_PLAYER",
+            "text": f"NEW_PLAYER {player_id} {playerInfo['name']} {playerInfo['color']} {playerInfo['is_mr_x']}"
+        }

@@ -1,7 +1,8 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 
+from .engine.constants import GameState
 from .multiplayer import (getGameByID, getGameIDWithPlayer, leaveRoom,
-                          setColor, setMrX)
+                          setColor, setMrX, startGame)
 from .protocols import LobbyProtocol
 
 mapPlayerToConn: dict[str, AsyncWebsocketConsumer] = dict()
@@ -22,6 +23,7 @@ class SYConsumer(AsyncWebsocketConsumer):
             await self.send("hello client")
 
     async def disconnect(self, close_code):
+        print(f"disconnecting {self.channel_name} with close code {close_code}")
         if hasattr(self, 'player_id'):
             leaveRoom(self.game_id, self.player_id)
             await self.channel_layer.group_send(self.game_id, LobbyProtocol.remove(self.player_id))
@@ -65,6 +67,13 @@ class LobbyRTConsumer(SYConsumer):
                 print(e)
             else:
                 await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(self.player_id))
+        elif data.type == "READY":
+            try:
+                startGame(self.game_id)
+            except RuntimeError as e:
+                print(e)
+            else:
+                await self.channel_layer.group_send(self.game_id, LobbyProtocol.startGame())
         else:
             raise ValueError()
 

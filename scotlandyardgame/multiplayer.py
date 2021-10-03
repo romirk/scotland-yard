@@ -1,6 +1,7 @@
-from .engine.main import ScotlandYard
-from .engine.constants import MAX_PLAYERS, GameState
 from uuid import uuid4
+
+from .engine.constants import MAX_PLAYERS, GameState
+from .engine.main import ScotlandYard
 
 games: dict[str, ScotlandYard] = {}
 player_games: dict[str, str] = {}
@@ -38,6 +39,14 @@ def joinRoom(game_id: str, player_id: str, player_name: str):
     game = getGameByID(game_id)
     game.addPlayer(player_id, player_name)
     player_games[player_id] = game_id
+
+
+def setMrX(game_id: str, player_id: str):
+    getGameByID(game_id).setMrX(player_id)
+
+
+def setColor(game_id: str, player_id: str, color: str):
+    getGameByID(game_id).setColor(player_id, color)
 
 
 def startGame(game_id: str):

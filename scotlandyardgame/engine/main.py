@@ -11,7 +11,6 @@ MAP = Map(MAPDATA)
 class ScotlandYard:
     """
     Instance of a ```ScotlandYard``` game. Stores all game information and handles game logic.
-
     """
 
     def __init__(self, gameID: str) -> None:
@@ -68,6 +67,7 @@ class ScotlandYard:
             and (self.__getPlayerAt(location) is None or (not player.is_mr_x and self.getPlayerAt(location) == self.__mrX))
 
     def __advanceTurn(self):
+        """called at the end of move to advance turn"""
         self.__moves = (self.__moves + 1) % 6
         if not self.__moves:
             self.__cycle += 1
@@ -110,12 +110,14 @@ class ScotlandYard:
         }
 
     def getWhoseTurn(self) -> str:
+        """return player ID of the player whose turn it currently is"""
         if not self.__moves:
             return self.__mrX.ID
         else:
             self.__order[self.__moves - 1]
 
     def setColor(self, player_id: str, color: str):
+        """set player color"""
         if color not in self.__available_colors:
             raise ValueError("Color not available.")
         player = self.__getPlayerByID(player_id)
@@ -127,10 +129,9 @@ class ScotlandYard:
         self.__available_colors.append(oldColor)
 
     def setMrX(self, player_id: str):
+        """set a player to Mr. X, unsetting the previous Mr. X, if they exist"""
         player = self.__getPlayerByID(player_id)
         oldX = self.__mrX
-        oldX.is_mr_x = False
-        player.is_mr_x = True
         self.__mrX = player
         oldX.color = player.color
         player.color = 'X'
@@ -166,7 +167,7 @@ class ScotlandYard:
 
         print(f"\t\tlocation: {loc}")
 
-        newPlayer = Player(player_id, player_name, loc, col, is_mr_x)
+        newPlayer = Player(player_id, player_name, loc, col)
 
         self.__players[player_id] = newPlayer
         if self.__order:
@@ -203,6 +204,7 @@ class ScotlandYard:
         self.__order.remove(player_id)
 
     def start(self):
+        """do precondition checks and set gamestate"""
         if len(self.__players) != MAX_PLAYERS:
             raise RuntimeError(
                 f"Invalid number of players: {len(self.__players)}")

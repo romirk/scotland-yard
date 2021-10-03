@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .multiplayer import getPlayerInfo, getPlayerIDs
+from .multiplayer import getPlayerIDs, getPlayerInfo
 
 
 class LobbyProtocol:
@@ -37,7 +37,7 @@ class LobbyProtocol:
         )
 
     @staticmethod
-    def newPlayer(game_id: str, player_id: str) -> dict:
+    def newPlayer(player_id: str) -> dict:
         """Group method: notify lobby of new player"""
         playerInfo = getPlayerInfo(player_id)
         return {
@@ -53,3 +53,10 @@ class LobbyProtocol:
             "text": f"SET_COLOR {player_id} {newColor}"
         }
 
+    @staticmethod
+    def setMrX(player_id: str) -> dict:
+        """set player to Mr. X for the lobby"""
+        return {
+            "type": "ws.send",
+            "text": f"SET_MRX {player_id}"
+        }

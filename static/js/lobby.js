@@ -1,4 +1,4 @@
-import { copyToClipboard } from "./utils.js";
+import {copyToClipboard} from "./utils.js";
 
 const players = [];
 const available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
@@ -41,7 +41,7 @@ function updateUI() {
     players.forEach(player => {
         html += `<div class="row">\n
             \t<div class="col player" style="background-color: var(--color-${player.color})">\n
-                \t\t<span class="material-icons" style="position: relative; top: 0.5vh">${player.color == 'X' ? "help_outline" : "person"}</span> 
+                \t\t<span class="material-icons">${player.color === 'X' ? "help_outline" : "person"}</span> 
                 ${player.name} ${player.player_id === player_id ? '(You)' : ''}\n
             \t</div>\n
         </div>\n`;
@@ -56,11 +56,11 @@ function updateAvailableColors(unavailableColor) {
 }
 
 function copyInvite() {
-    var e = document.getElementById('link');
+    const e = document.getElementById('link');
     copyToClipboard(e);
     console.log("copied");
 }
 
 document.getElementById("copy-link").addEventListener("click", copyInvite);
-window.sc =setColor
+window.sc = setColor
 window.sm = setMrX

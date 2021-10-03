@@ -49,7 +49,7 @@ main {
     height: 100%;
 }
 
-form>div {
+form > div {
     margin: 1vh;
 }
 
@@ -62,5 +62,6 @@ form>div {
 }
 
 .link-light:hover {
-    color: rgb(255, 64,129);
+    color: rgb(255, 64, 129);
 }
+

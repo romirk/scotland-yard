@@ -38,8 +38,8 @@
                 <div id="players" class="list-group"></div>
                 <div id="gamecodebox">
                     <span id="link" style="display: none;"></span>
-                    <button id="copy-link" class="btn btn-primary">
-                        <span class="material-icons-outlined">content_copy</span> Copy Invite
+                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" id="copy-link">
+                        <span class="material-icons">content_copy</span> Copy Invite
                     </button>
                 </div>
         </main>
@@ -74,7 +74,7 @@
             duration: 1000,
             easing: 'easeInQuad',
             update: () => layout.style.background =
-                ` linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`
+                `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`
         });
     </script>
     <script src="/js/lobby.js" type="module"></script>

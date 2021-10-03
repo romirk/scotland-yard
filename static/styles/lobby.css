@@ -21,3 +21,8 @@ div#gamecodebox {
     padding: 3vh;
     font-size: 16px;
 }
+
+.player .material-icons {
+    position: relative;
+    top: 0.5vh;
+}

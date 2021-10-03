@@ -3,6 +3,7 @@ function copyToClipboard(elem) {
     var targetId = "_hiddenCopyText_";
     var isInput = elem.tagName === "INPUT" || elem.tagName === "TEXTAREA";
     var origSelectionStart, origSelectionEnd;
+    var temp = false;
     if (isInput) {
         // can just use the original source element for the selection and copy
         target = elem;
@@ -10,6 +11,7 @@ function copyToClipboard(elem) {
         origSelectionEnd = elem.selectionEnd;
     } else {
         // must use a temporary form element for the selection and copy
+        temp = true;
         target = document.getElementById(targetId);
         if (!target) {
             var target = document.createElement("textarea");
@@ -45,6 +47,7 @@ function copyToClipboard(elem) {
         // clear temporary content
         target.textContent = "";
     }
+    if(temp) target.remove();
     return succeed;
 }
 

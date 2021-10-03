@@ -20,11 +20,16 @@ def getGameIDWithPlayer(player_id: str) -> str:
 def getGameState(game_id: str) -> GameState:
     return getGameByID(game_id).state
 
-
 def getPlayerConnectedGame(player_id: str) -> str:
     game_id = getGameIDWithPlayer(player_id)
     return game_id if game_id is not None and games[game_id].state != GameState.STOPPED else None
 
+
+def getPlayerInfo(player_id : str) -> dict:
+    return getGameByID(getGameIDWithPlayer(player_id)).getPlayerInfo(player_id)
+
+def getPlayerIDs(game_id: str) -> list[str]:
+    return getGameByID(game_id).getPlayerIDs()
 
 def createRoom() -> str:
     game_id = str(uuid4())
@@ -73,5 +78,6 @@ def move(game_id: str, player_id: str, location: int, ticket: str):
 
 def leaveRoom(game_id: str, player_id: str):
     game = getGameByID(game_id)
-    game.removePlayer(player_id)
-    print(f"removed {player_id} from {game_id}")
+    if game.state != GameState.CONNECTING:
+        game.removePlayer(player_id)
+        print(f"removed {player_id} from {game_id}")

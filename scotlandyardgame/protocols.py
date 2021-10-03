@@ -4,7 +4,7 @@ from .multiplayer import getPlayerIDs, getPlayerInfo
 
 
 class LobbyProtocol:
-    ACCEPTED_KEYWORDS = ["JOIN", "REQCOLOR", "REQMRX"]
+    ACCEPTED_KEYWORDS = ["JOIN", "REQCOLOR", "REQMRX", "READY"]
 
     def __init__(self, type: str, player_id: str) -> None:
         # purely for returning from parser
@@ -59,4 +59,20 @@ class LobbyProtocol:
         return {
             "type": "ws.send",
             "text": f"SET_MRX {player_id}"
+        }
+
+    @staticmethod
+    def startGame():
+        """issue game start command"""
+        return {
+            "type": "ws.send",
+            "text": "STARTGAME"
+        }
+
+    @staticmethod
+    def remove(player_id: str):
+        """remove player from lobby"""
+        return {
+            "type": "ws.send",
+            "text": f"DISCONNECT {player_id}"
         }

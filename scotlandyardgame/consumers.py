@@ -24,8 +24,12 @@ class SYConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         if hasattr(self, 'player_id'):
             leaveRoom(self.game_id, self.player_id)
+            await self.channel_layer.group_send(self.game_id, LobbyProtocol.remove(self.player_id))
             del mapPlayerToConn[self.player_id]
         await self.channel_layer.group_discard(self.game_id, self.channel_name)
+
+    async def ws_send(self, event):
+        await self.send(event["text"])
 
 
 class LobbyRTConsumer(SYConsumer):
@@ -63,9 +67,6 @@ class LobbyRTConsumer(SYConsumer):
                 await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(self.player_id))
         else:
             raise ValueError()
-
-    async def ws_send(self, event):
-        await self.send(event["text"])
 
 
 class GameRTConsumer(SYConsumer):

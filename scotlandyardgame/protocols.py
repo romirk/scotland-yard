@@ -44,3 +44,12 @@ class LobbyProtocol:
             "type": "ws.send",
             "text": f"NEW_PLAYER {player_id} {playerInfo['name']} {playerInfo['color']}"
         }
+
+    @staticmethod
+    def setColor(player_id: str, newColor: str) -> dict:
+        """set player's color for the lobby"""
+        return {
+            "type": "ws.send",
+            "text": f"SET_COLOR {player_id} {newColor}"
+        }
+

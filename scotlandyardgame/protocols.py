@@ -36,6 +36,7 @@ class LobbyProtocol:
             f"{p_info['player_id']} {p_info['name']} {p_info['color']}" for p_info in players
         )
 
+    @staticmethod
     def newPlayer(game_id: str, player_id: str) -> dict:
         """Group method: notify lobby of new player"""
         playerInfo = getPlayerInfo(player_id)

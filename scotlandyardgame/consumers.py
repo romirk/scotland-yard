@@ -32,17 +32,18 @@ class LobbyRTConsumer(SYConsumer):
         print(f"\033[36m[ws/client\033[33m{' ' + self.player_id[:8] if hasattr(self, 'player_id') else ''}\033[36m]\033[0m {text_data}")
 
         data = LobbyProtocol.parse(text_data)
+        self.player_id = data.player_id
 
         if data.type == "JOIN":
             # JOIN player_id
-            player_id = self.player_id = data.player_id
-            if getGameIDWithPlayer(player_id) != self.game_id:
+            if getGameIDWithPlayer(self.player_id) != self.game_id:
                 raise RuntimeError
-            await self.channel_layer.group_send(self.game_id, LobbyProtocol.newPlayer(self.game_id, player_id))
+            await self.channel_layer.group_send(self.game_id, LobbyProtocol.newPlayer(self.game_id, self.player_id))
             await self.send(LobbyProtocol.acknowledge(self.game_id))
 
         elif data.type == "REQCOLOR":
-            raise NotImplementedError("REQCOLOR")
+            color = data.color
+
         elif data.type == "REQMRX":
             raise NotImplementedError("REQMRX")
 

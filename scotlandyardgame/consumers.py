@@ -5,8 +5,6 @@ from .multiplayer import (getGameByID, getGameIDWithPlayer, leaveRoom,
                           setColor, setMrX, startGame)
 from .protocols import LobbyProtocol
 
-mapPlayerToConn: dict[str, AsyncWebsocketConsumer] = dict()
-
 
 class SYConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -27,7 +25,6 @@ class SYConsumer(AsyncWebsocketConsumer):
         if hasattr(self, 'player_id'):
             leaveRoom(self.game_id, self.player_id)
             await self.channel_layer.group_send(self.game_id, LobbyProtocol.remove(self.player_id))
-            del mapPlayerToConn[self.player_id]
         await self.channel_layer.group_discard(self.game_id, self.channel_name)
 
     async def ws_send(self, event):
@@ -75,7 +72,7 @@ class LobbyRTConsumer(SYConsumer):
             else:
                 await self.channel_layer.group_send(self.game_id, LobbyProtocol.startGame())
         else:
-            raise ValueError()
+            raise ValueError("invalid ws command")
 
 
 class GameRTConsumer(SYConsumer):

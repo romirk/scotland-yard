@@ -3,7 +3,7 @@ import { copyToClipboard } from "./utils.js";
 const players = [];
 const available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
 
-document.getElementById("link").innerText = window.location.host + '/' + game_id;
+document.getElementById("link").innerHTML = window.location.host + '/' + game_id;
 
 const socket = new WebSocket('ws://' + window.location.host + '/ws/lobby/' + game_id);
 
@@ -32,10 +32,7 @@ function setColor(color) {
 }
 
 function setMrX(newXId) {
-    if (!isHost) return;
-    let reqXObj = Messages.REQUEST_MRX;
-    reqXObj.data.player_id = newXId;
-    // socket.emit(Messages.REQUEST_MRX.type, JSON.stringify(reqXObj));
+    socket.send(`REQMRX ${player_id} ${color}`)
 }
 
 
@@ -64,4 +61,6 @@ function copyInvite() {
     console.log("copied");
 }
 
-document.getElementById("copy-link").addEventListener("click", copyInvite)
+document.getElementById("copy-link").addEventListener("click", copyInvite);
+window.sc =setColor
+window.sm = setMrX

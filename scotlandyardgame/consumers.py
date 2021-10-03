@@ -43,10 +43,16 @@ class LobbyRTConsumer(SYConsumer):
 
         elif data.type == "REQCOLOR":
             color = data.color
+            try:
+                setColor(self.game_id, self.player_id, color)
+            except Exception as e:
+                print(e)
+            else:
+                self.channel_layer.group_send(self.game_id, LobbyProtocol.setColor(self.game_id, self.player_id))
+
 
         elif data.type == "REQMRX":
-            raise NotImplementedError("REQMRX")
-
+            
 
         else:
             raise ValueError

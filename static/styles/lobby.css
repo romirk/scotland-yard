@@ -1,3 +1,12 @@
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 #players {
     text-align: center;
     width: 30%;
@@ -9,6 +18,8 @@
     padding: 2vh;
     margin: 1vh;
     border-radius: 10px;
+    background-color: var(--bg-color);
+    /* animation: fadein 1s; */
 }
 
 #main {

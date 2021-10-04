@@ -12,6 +12,7 @@ class SYConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.game_id = self.scope['url_route']['kwargs']['game_id']
         game = getGameByID(self.game_id)
+        LobbyProtocol.trackdisconnected = trackdisconnected
 
         print(
             f"ws-connecting: {self.channel_name} \033[33m{self.game_id}\033[0m")

@@ -1,9 +1,11 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-from .engine.constants import GameState
-from .multiplayer import (getGameByID, getGameIDWithPlayer, leaveRoom,
+from .engine.constants import MAX_PLAYERS, GameState
+from .multiplayer import (getGameByID, getGameIDWithPlayer, getMrX, getPlayerIDs, joinRoom, leaveRoom,
                           setColor, setMrX, startGame)
 from .protocols import LobbyProtocol
+
+trackdisconnected = set()
 
 
 class SYConsumer(AsyncWebsocketConsumer):
@@ -21,10 +23,17 @@ class SYConsumer(AsyncWebsocketConsumer):
             await self.send("hello client")
 
     async def disconnect(self, close_code):
-        print(f"disconnecting {self.channel_name} with close code {close_code}")
+        print(
+            f"disconnecting {self.channel_name} with close code {close_code}")
         if hasattr(self, 'player_id'):
-            leaveRoom(self.game_id, self.player_id)
+            # leaveRoom(self.game_id, self.player_id)
+            if getGameByID(self.game_id).state == GameState.PENDING:
+                trackdisconnected.add(self.player_id)
+            else:
+                leaveRoom(self.game_id, self.player_id)
             await self.channel_layer.group_send(self.game_id, LobbyProtocol.remove(self.player_id))
+            await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(getMrX(self.game_id)))
+
         await self.channel_layer.group_discard(self.game_id, self.channel_name)
 
     async def ws_send(self, event):
@@ -39,12 +48,15 @@ class LobbyRTConsumer(SYConsumer):
         )
 
         data = LobbyProtocol.parse(text_data)
-        self.player_id = data.player_id
+        self.player_id = data.player_id if not hasattr(
+            self, 'player_id') else self.player_id
 
         if data.type == "JOIN":
             # JOIN player_id
             if getGameIDWithPlayer(self.player_id) != self.game_id:
                 raise RuntimeError
+            if self.player_id in trackdisconnected:
+                trackdisconnected.remove(self.player_id)
             await self.channel_layer.group_send(self.game_id, LobbyProtocol.newPlayer(self.player_id))
             await self.send(LobbyProtocol.acknowledge(self.game_id))
 
@@ -65,6 +77,16 @@ class LobbyRTConsumer(SYConsumer):
             else:
                 await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(self.player_id))
         elif data.type == "READY":
+            c = 0
+            for player in getPlayerIDs(self.game_id):
+                if player in trackdisconnected:
+                    leaveRoom(self.game_id, player)
+                    trackdisconnected.remove(player)
+                else:
+                    c += 1
+
+            if c < MAX_PLAYERS:
+                return
             try:
                 startGame(self.game_id)
             except RuntimeError as e:

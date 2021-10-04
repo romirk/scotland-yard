@@ -63,13 +63,17 @@ socket.onmessage = msg => {
 }
 
 function reqColor(color) {
-    socket.send(`REQCOLOR ${player_id} ${color}`)
+    socket.send(`REQCOLOR ${player_id} ${color}`);
 }
 
 function reqMrX() {
-    socket.send(`REQMRX ${player_id} ${color}`)
+    socket.send(`REQMRX ${player_id}`);
 }
 
+function leave() {
+    socket.send(`DISCONNECT ${player_id}`);
+    window.location.assign("/");
+}
 
 function updateUI() {
     let html = "";
@@ -116,5 +120,6 @@ function copyInvite() {
 }
 
 document.getElementById("copy-link").addEventListener("click", copyInvite);
+document.getElementById("leave").addEventListener("click", leave);
 window.sc = reqColor
 window.sm = reqMrX

@@ -26,3 +26,7 @@ div#gamecodebox {
     position: relative;
     top: 0.5vh;
 }
+
+#copy-link {
+    border-radius: 5px;
+}

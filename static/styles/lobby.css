@@ -1,3 +1,12 @@
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 #players {
     text-align: center;
     width: 30%;
@@ -9,6 +18,8 @@
     padding: 2vh;
     margin: 1vh;
     border-radius: 10px;
+    background-color: var(--bg-color);
+    /* animation: fadein 1s; */
 }
 
 #main {
@@ -25,4 +36,14 @@ div#gamecodebox {
 .player .material-icons {
     position: relative;
     top: 0.5vh;
+}
+
+#copy-link {
+    border-radius: 5px;
+    background-color: #0d6efd;
+}
+
+#start {
+    background-color: #1ED760;
+    display: none;
 }

@@ -27,8 +27,7 @@
                 <span class="mdl-layout-title display-1" id="logo">scotlandyard</span>
                 <div class="mdl-layout-spacer"></div>
                 <nav class="mdl-navigation">
-                    <a class="mdl-navigation__link" href="help.html">Help</a>
-
+                    <a class="btn btn-danger" id="leave">Leave</a>
                 </nav>
             </div>
         </header>
@@ -38,8 +37,12 @@
                 <div id="players" class="list-group"></div>
                 <div id="gamecodebox">
                     <span id="link" style="display: none;"></span>
-                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" id="copy-link">
+                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored"
+                        id="copy-link">
                         <span class="material-icons">content_copy</span> Copy Invite
+                    </button>
+                    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="start">
+                        <span class="material-icons">play_arrow</span> Start
                     </button>
                 </div>
         </main>
@@ -48,34 +51,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
-    <script src="/js/anime.min.js"></script>
-
 
     <script>
         const player_id = '{{ player_id }}';
         const game_id = '{{ game_id }}';
         const name = '{{ name }}';
         const color = '{{ color }}';
-
-        let grad = {
-            c1r: 109, c1g: 182, c1b: 243,
-            c2r: 195, c2g: 208, c2b: 56
-        }
-        const layout = document.getElementById("layout");
-
-        anime({
-            targets: grad,
-            c1r: 0,
-            c1g: 0,
-            c1b: 0,
-            c2r: 133,
-            c2g: 78,
-            c2b: 241,
-            duration: 1000,
-            easing: 'easeInQuad',
-            update: () => layout.style.background =
-                `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`
-        });
     </script>
     <script src="/js/lobby.js" type="module"></script>
 </body>

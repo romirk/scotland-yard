@@ -1,14 +1,15 @@
+import { available_colors, colorGrads, grad } from "./constants.js";
 import { copyToClipboard } from "./utils.js";
+import anime from "./anime.es.js"
 
 const players = [];
-const available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
 
 document.getElementById("link").innerHTML = window.location.host + '/' + game_id;
 
 const socket = new WebSocket(`ws${location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws/lobby/${game_id}`);
 
-socket.onclose = () => console.log("socket closed");
 socket.onopen = () => socket.send("JOIN " + player_id);
+socket.onclose = () => console.log("socket closed");
 
 socket.onmessage = msg => {
     console.log("[ws/server]", msg.data);
@@ -24,23 +25,20 @@ socket.onmessage = msg => {
         if (!players.map(e => e.player_id).includes(tokens[1]))
             players.push({ player_id: tokens[1], name: tokens[2], color: tokens[3] });
         updateAvailableColors(tokens[2]);
-    }
-    else if (key === "SET_MRX") {
+    } else if (key === "SET_MRX") {
         let oldX = players.findIndex(player => player.color === 'X');
         let newX = players.findIndex(player => player.player_id === tokens[1]);
         players[oldX].color = players[newX.color];
         players[newX].color = 'X';
-    }
-    else if (key === "SET_COLOR") {
+    } else if (key === "SET_COLOR") {
         let p = players.findIndex(player => player.player_id === tokens[1]);
         available_colors.push(players[p].color)
         players[p].color = tokens[2];
     }
     else if (key === "STARTGAME") {
-        alert("starting game"); // TODO do this better
+        console.log("starting game"); // TODO do this better
         window.location.assign("/game");
-    }
-    else if (key === "DISCONNECT") {
+    } else if (key === "DISCONNECT") {
         players.splice(players.findIndex(p => p.player_id === tokens[1]), 1);
     }
     updateUI();
@@ -48,26 +46,59 @@ socket.onmessage = msg => {
 }
 
 function reqColor(color) {
-    socket.send(`REQCOLOR ${player_id} ${color}`)
+    socket.send(`REQCOLOR ${player_id} ${color}`);
 }
 
 function reqMrX() {
-    socket.send(`REQMRX ${player_id} ${color}`)
+    socket.send(`REQMRX ${player_id}`);
 }
 
+function start() {
+    if (players.length !== 6) return;
+    socket.send(`READY ${player_id}`);
+
+}
+
+function leave() {
+    socket.send(`DISCONNECT ${player_id}`);
+    window.location.assign("/");
+}
 
 function updateUI() {
     let html = "";
     players.forEach(player => {
-        html += `<div class="row">\n
-            \t<div class="col player" style="background-color: var(--color-${player.color})">\n
-                \t\t<span class="material-icons">${player.color === 'X' ? "help_outline" : "person"}</span> 
-                ${player.name} ${player.player_id === player_id ? '(You)' : ''}\n
-            \t</div>\n
-        </div>\n`;
+        html +=
+            `<div class="row">\n
+                \t<div class="col player" style="--bg-color: var(--color-${player.color})">\n
+                    \t\t<span class="material-icons">${player.color === 'X' ? "help_outline" : "person"}</span> 
+                    ${player.name} ${player.player_id === player_id ? '(You)' : ''}\n
+                \t</div>\n
+            </div>\n`;
     });
     document.getElementById("players").innerHTML = html;
+
+    const self = players.find(p => p.player_id === player_id);
+    const layout = document.getElementById("layout");
+
+    anime({
+        targets: grad,
+        c1r: 0,
+        c1g: 0,
+        c1b: 0,
+        c2r: colorGrads[self.color][0],
+        c2g: colorGrads[self.color][1],
+        c2b: colorGrads[self.color][2],
+        duration: 1000,
+        easing: 'easeInQuad',
+        update: () => layout.style.background =
+            `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`
+    });
+
+    if (players.length === 6) {
+        document.getElementById("start").style.display = "initial";
+    }
     // TODO update color UI
+
 }
 
 function updateAvailableColors(unavailableColor) {
@@ -76,11 +107,12 @@ function updateAvailableColors(unavailableColor) {
 }
 
 function copyInvite() {
-    const e = document.getElementById('link');
-    copyToClipboard(e);
+    copyToClipboard(document.getElementById('link'));
     console.log("copied");
 }
 
 document.getElementById("copy-link").addEventListener("click", copyInvite);
-window.sc = reqColor
-window.sm = reqMrX
+document.getElementById("leave").addEventListener("click", leave);
+document.getElementById("start").addEventListener("click", start);
+document.getElementById("reqc").addEventListener("click", reqColor);
+document.getElementById("reqm").addEventListener("click", reqMrX);

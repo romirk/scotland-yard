@@ -21,7 +21,6 @@ class SYConsumer(AsyncWebsocketConsumer):
             print("accepted")
             await self.channel_layer.group_add(self.game_id, self.channel_name)
             await self.accept()
-            await self.send("hello client")
 
     async def disconnect(self, close_code):
         print(
@@ -77,6 +76,8 @@ class LobbyRTConsumer(SYConsumer):
                 print(e)
             else:
                 await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(self.player_id))
+        elif data.type == "DISCONNECT":
+            leaveRoom(self.game_id, self.player_id)
         elif data.type == "READY":
             c = 0
             for player in getPlayerIDs(self.game_id):

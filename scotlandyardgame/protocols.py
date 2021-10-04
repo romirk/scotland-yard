@@ -19,7 +19,7 @@ class LobbyProtocol:
         keyword = tokens[0]
 
         if len(tokens) < 2 or keyword not in LobbyProtocol.ACCEPTED_KEYWORDS:
-            raise ValueError("invalid message")
+            raise ValueError(f"invalid message: {msg}")
 
         ret = LobbyProtocol(keyword, tokens[1])
 

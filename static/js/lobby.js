@@ -28,7 +28,7 @@ socket.onmessage = msg => {
     } else if (key === "SET_MRX") {
         let oldX = players.findIndex(player => player.color === 'X');
         let newX = players.findIndex(player => player.player_id === tokens[1]);
-        players[oldX].color = players[newX.color];
+        players[oldX].color = players[newX].color;
         players[newX].color = 'X';
     } else if (key === "SET_COLOR") {
         let p = players.findIndex(player => player.player_id === tokens[1]);

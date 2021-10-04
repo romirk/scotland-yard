@@ -33,6 +33,7 @@ socket.onmessage = msg => {
     } else if (key === "SET_COLOR") {
         let p = players.findIndex(player => player.player_id === tokens[1]);
         available_colors.push(players[p].color)
+        available_colors.splice(available_colors.findIndex(color => color === tokens[2]), 1);
         players[p].color = tokens[2];
     }
     else if (key === "STARTGAME") {
@@ -116,3 +117,5 @@ document.getElementById("leave").addEventListener("click", leave);
 document.getElementById("start").addEventListener("click", start);
 document.getElementById("reqc").addEventListener("click", reqColor);
 document.getElementById("reqm").addEventListener("click", reqMrX);
+window.sc = reqColor
+window.sm = reqMrX

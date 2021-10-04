@@ -1,11 +1,12 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .engine.constants import MAX_PLAYERS, GameState
-from .multiplayer import (getGameByID, getGameIDWithPlayer, getMrX, getPlayerIDs, joinRoom, leaveRoom,
+from .multiplayer import (getGameByID, getGameIDWithPlayer, getMrX, getPlayerIDs, leaveRoom,
                           setColor, setMrX, startGame)
 from .protocols import LobbyProtocol
 
 trackdisconnected = set()
+# TODO set timeout period
 
 
 class SYConsumer(AsyncWebsocketConsumer):

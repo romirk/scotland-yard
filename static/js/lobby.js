@@ -1,8 +1,8 @@
+import { available_colors, colorGrads } from "./constants.js";
 import { copyToClipboard } from "./utils.js";
 import anime from "./anime.es.js"
 
 const players = [];
-const available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
 const grad = {
     c1r: 109,
     c1g: 182,
@@ -12,22 +12,12 @@ const grad = {
     c2b: 56
 }
 
-const colorGrads = {
-    "red": [189, 40, 40],
-    "purple": [133, 78, 241],
-    "blue": [30, 73, 169],
-    "green": [83, 169, 30],
-    "yellow": [221, 165, 33],
-    "orange": [207, 106, 19],
-    "X": [255, 255, 255]
-};
-
 document.getElementById("link").innerHTML = window.location.host + '/' + game_id;
 
 const socket = new WebSocket(`ws://${window.location.host}/ws/lobby/${game_id}`);
 
-socket.onclose = () => console.log("socket closed");
 socket.onopen = () => socket.send("JOIN " + player_id);
+socket.onclose = () => console.log("socket closed");
 
 socket.onmessage = msg => {
     console.log("[ws/server]", msg.data);
@@ -70,6 +60,12 @@ function reqMrX() {
     socket.send(`REQMRX ${player_id}`);
 }
 
+function start() {
+    if (players.length !== 6) return;
+    socket.send(`READY ${player_id}`);
+
+}
+
 function leave() {
     socket.send(`DISCONNECT ${player_id}`);
     window.location.assign("/");
@@ -78,12 +74,13 @@ function leave() {
 function updateUI() {
     let html = "";
     players.forEach(player => {
-        html += `<div class="row">\n
-            \t<div class="col player" style="--bg-color: var(--color-${player.color})">\n
-                \t\t<span class="material-icons">${player.color === 'X' ? "help_outline" : "person"}</span> 
-                ${player.name} ${player.player_id === player_id ? '(You)' : ''}\n
-            \t</div>\n
-        </div>\n`;
+        html +=
+            `<div class="row">\n
+                \t<div class="col player" style="--bg-color: var(--color-${player.color})">\n
+                    \t\t<span class="material-icons">${player.color === 'X' ? "help_outline" : "person"}</span> 
+                    ${player.name} ${player.player_id === player_id ? '(You)' : ''}\n
+                \t</div>\n
+            </div>\n`;
     });
     document.getElementById("players").innerHTML = html;
 
@@ -104,6 +101,9 @@ function updateUI() {
             `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`
     });
 
+    if (players.length === 6) {
+        document.getElementById("start").style.display = "initial";
+    }
     // TODO update color UI
 
 }
@@ -114,12 +114,12 @@ function updateAvailableColors(unavailableColor) {
 }
 
 function copyInvite() {
-    const e = document.getElementById('link');
-    copyToClipboard(e);
+    copyToClipboard(document.getElementById('link'));
     console.log("copied");
 }
 
 document.getElementById("copy-link").addEventListener("click", copyInvite);
 document.getElementById("leave").addEventListener("click", leave);
-window.sc = reqColor
-window.sm = reqMrX
+document.getElementById("start").addEventListener("click", start);
+document.getElementById("reqc").addEventListener("click", reqColor);
+document.getElementById("reqm").addEventListener("click", reqMrX);

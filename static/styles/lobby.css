@@ -41,3 +41,8 @@ div#gamecodebox {
 #copy-link {
     border-radius: 5px;
 }
+
+#start {
+    background-color: #1ED760;
+    display: none;
+}

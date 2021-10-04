@@ -110,6 +110,10 @@ class ScotlandYard:
             "is_mr_x": p.is_mr_x
         }
 
+    def getMrX(self) -> str:
+        """returns the ID of Mr. X"""
+        return self.__mrX.ID if self.__mrX is not None else None
+
     def getWhoseTurn(self) -> str:
         """return player ID of the player whose turn it currently is"""
         if not self.__moves:
@@ -133,14 +137,17 @@ class ScotlandYard:
         """set a player to Mr. X, unsetting the previous Mr. X, if they exist"""
         player = self.__getPlayerByID(player_id)
         oldX = self.__mrX
+
+        if oldX is not None:
+            oldX.color = player.color
+            if self.__order:
+                self.__order.insert(randrange(len(self.__order)), oldX.ID)
+            else:
+                self.__order.append(oldX.ID)
+
         self.__mrX = player
-        oldX.color = player.color
         player.color = 'X'
         self.__order.remove(player.ID)
-        if self.__order:
-            self.__order.insert(randrange(len(self.__order)), oldX.ID)
-        else:
-            self.__order.append(oldX.ID)
 
     def addPlayer(self, player_id: str, player_name: str):
         """add a player to the game"""
@@ -180,6 +187,9 @@ class ScotlandYard:
 
         self.__players[player_id] = newPlayer
 
+        if is_mr_x:
+            self.__mrX = newPlayer
+
     def removePlayer(self, player_id: str):
         """remove a player from the game"""
         if self.state == GameState.CONNECTING:
@@ -187,15 +197,12 @@ class ScotlandYard:
                 "Players will not be removed during CONNECTING state")
 
         player = self.__getPlayerByID(player_id)
+        isX = player.is_mr_x
 
         if self.state == GameState.RUNNING:
             self.end(EndState.ABORTED)
 
         print(f"removing player {player_id} from {self.ID}")
-
-        if player.is_mr_x:
-            newX = choice(self.__players)
-            self.setMrX(newX)
 
         self.__available_colors.append(player.color)
 
@@ -203,6 +210,13 @@ class ScotlandYard:
             self.__available_locations.append(player.location)
         del self.__players[player_id]
         self.__order.remove(player_id)
+
+        if isX:
+            if len(self.__players):
+                self.__mrX = choice(self.__players)
+                self.setMrX(self.__mrX.ID)
+            else:
+                self.__mrX = None
 
     def start(self):
         """do precondition checks and set gamestate"""

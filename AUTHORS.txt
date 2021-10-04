@@ -1,0 +1,6 @@
+Multiplayer Online Scotland Yard
+https://github.com/romirk/scotland-yard
+
+by:
+    Romir Kulshrestha <romir.kulshrestha@gmail.com>
+    Bhavvya Sarna

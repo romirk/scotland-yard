@@ -103,3 +103,26 @@ class LobbyProtocol:
             "type": "ws.send",
             "text": f"ABORT"
         }
+
+class GameProtocol:
+    # TODO GameProtocol
+    ACCEPTED_KEYWORDS = ["JOIN", "READY"]
+
+    def __init__(self, type: str, player_id: str) -> None:
+        # purely for returning from parser
+        self.type = type
+        self.player_id = player_id
+        self.color = None
+
+    @staticmethod
+    def parse(msg: str) -> LobbyProtocol:
+        """parse incoming ws client message"""
+        tokens = msg.split()
+        keyword = tokens[0]
+
+        if len(tokens) < 2 or keyword not in LobbyProtocol.ACCEPTED_KEYWORDS:
+            raise ValueError("invalid message")
+
+        ret = LobbyProtocol(keyword, tokens[1])
+
+        return ret

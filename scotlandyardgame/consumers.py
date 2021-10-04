@@ -3,10 +3,9 @@ from asyncio import sleep
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .engine.constants import MAX_PLAYERS, GameState
-from .multiplayer import (getGameByID, getGameHost, getGameIDWithPlayer,
-                          getMrX, getPlayerIDs, leaveRoom, setColor,
-                          setMrX, startGame)
-from .protocols import LobbyProtocol
+from .multiplayer import (getGameByID, getGameIDWithPlayer, getMrX, getPlayerIDs, joinRoom, leaveRoom,
+                          setColor, setMrX, startGame)
+from .protocols import GameProtocol, LobbyProtocol
 
 trackdisconnected = set()
 
@@ -138,4 +137,10 @@ class LobbyRTConsumer(SYConsumer):
 class GameRTConsumer(SYConsumer):
 
     async def receive(self, text_data):
-        print(f"[ws/client] {text_data}")
+        print(
+            f"\033[36m[ws/client\033[33m{' ' + self.player_id[:8] if hasattr(self, 'player_id') else ''}\033[36m]\033[0m {text_data}"
+        )
+
+        data = GameProtocol.parse(text_data)
+        self.player_id = data.player_id if not hasattr(
+            self, 'player_id') else self.player_id

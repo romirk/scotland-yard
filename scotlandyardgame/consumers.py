@@ -76,6 +76,8 @@ class LobbyRTConsumer(SYConsumer):
                 print(e)
             else:
                 await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(self.player_id))
+        elif data.type == "DISCONNECT":
+            leaveRoom(self.game_id, self.player_id)
         elif data.type == "READY":
             c = 0
             for player in getPlayerIDs(self.game_id):

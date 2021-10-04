@@ -37,7 +37,7 @@ socket.onmessage = msg => {
         players[p].color = tokens[2];
     }
     else if (key === "STARTGAME") {
-        alert("starting game"); // TODO do this better
+        console.log("starting game"); // TODO do this better
         window.location.assign("/game");
     }
     else if (key === "DISCONNECT") {

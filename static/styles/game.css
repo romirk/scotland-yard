@@ -1,6 +1,9 @@
 html, body {
     height: 100%;
     width: 100%;
+    padding: 0;
+    border: 0;
+    margin: 0;
 }
 
 #board-wrap {
@@ -21,4 +24,10 @@ html, body {
 
 #textpath {
     stroke-dashoffset: 0;
+}
+
+svg {
+    padding: 0;
+    margin: 0;
+    background-color: #252423;
 }

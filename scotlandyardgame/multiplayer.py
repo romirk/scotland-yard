@@ -1,6 +1,7 @@
-from .engine.main import ScotlandYard
-from .engine.constants import MAX_PLAYERS, GameState
 from uuid import uuid4
+
+from .engine.constants import MAX_PLAYERS, GameState
+from .engine.main import ScotlandYard
 
 games: dict[str, ScotlandYard] = {}
 player_games: dict[str, str] = {}
@@ -25,6 +26,18 @@ def getPlayerConnectedGame(player_id: str) -> str:
     return game_id if game_id is not None and games[game_id].state != GameState.STOPPED else None
 
 
+def getPlayerInfo(player_id: str) -> dict:
+    return getGameByID(getGameIDWithPlayer(player_id)).getPlayerInfo(player_id)
+
+
+def getPlayerIDs(game_id: str) -> list[str]:
+    return getGameByID(game_id).getPlayerIDs()
+
+
+def getMrX(game_id: str) -> str:
+    return getGameByID(game_id).getMrX()
+
+
 def createRoom() -> str:
     game_id = str(uuid4())
     game = ScotlandYard(game_id)
@@ -38,6 +51,14 @@ def joinRoom(game_id: str, player_id: str, player_name: str):
     game = getGameByID(game_id)
     game.addPlayer(player_id, player_name)
     player_games[player_id] = game_id
+
+
+def setMrX(game_id: str, player_id: str):
+    getGameByID(game_id).setMrX(player_id)
+
+
+def setColor(game_id: str, player_id: str, color: str):
+    getGameByID(game_id).setColor(player_id, color)
 
 
 def startGame(game_id: str):
@@ -64,5 +85,7 @@ def move(game_id: str, player_id: str, location: int, ticket: str):
 
 def leaveRoom(game_id: str, player_id: str):
     game = getGameByID(game_id)
-    game.removePlayer(player_id)
-    print(f"removed {player_id} from {game_id}")
+    if game.state != GameState.CONNECTING:
+        del player_games[player_id]
+        game.removePlayer(player_id)
+        print(f"removed {player_id} from {game_id}")

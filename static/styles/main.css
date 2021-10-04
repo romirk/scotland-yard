@@ -9,8 +9,21 @@
     --color-X: #3F484E;
 }
 
+@font-face {
+    font-family: 'comfortaa';
+    src: url('/styles/fonts/Comfortaa.ttf') format('truetype')
+}
+
+body * {
+    font-family: 'comfortaa';
+}
+
+#logo {
+    font-family: "comfortaa";
+}
+
 .layout-transparent {
-    background: linear-gradient(#6DB6F3, #C3D038) center / cover;
+    background: linear-gradient(45deg, #6DB6F3, #C3D038) center / cover;
 }
 
 .layout-transparent .mdl-layout__header,
@@ -26,7 +39,6 @@
     width: max-content;
     height: 100%;
     text-align: center;
-    /* font-family: Georgia, 'Times New Roman', Times, serif; */
 }
 
 main {
@@ -37,7 +49,7 @@ main {
     height: 100%;
 }
 
-form>div {
+form > div {
     margin: 1vh;
 }
 
@@ -50,5 +62,6 @@ form>div {
 }
 
 .link-light:hover {
-    color: rgb(255, 64,129);
+    color: rgb(255, 64, 129);
 }
+

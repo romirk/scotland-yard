@@ -4,8 +4,12 @@ import anime from "./anime.es.js"
 const players = [];
 const available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
 const grad = {
-    c1r: 109, c1g: 182, c1b: 243,
-    c2r: 195, c2g: 208, c2b: 56
+    c1r: 109,
+    c1g: 182,
+    c1b: 243,
+    c2r: 195,
+    c2g: 208,
+    c2b: 56
 }
 
 const colorGrads = {
@@ -39,23 +43,19 @@ socket.onmessage = msg => {
         if (!players.map(e => e.player_id).includes(tokens[1]))
             players.push({ player_id: tokens[1], name: tokens[2], color: tokens[3] });
         updateAvailableColors(tokens[2]);
-    }
-    else if (key === "SET_MRX") {
+    } else if (key === "SET_MRX") {
         let oldX = players.findIndex(player => player.color === 'X');
         let newX = players.findIndex(player => player.player_id === tokens[1]);
         players[oldX].color = players[newX.color];
         players[newX].color = 'X';
-    }
-    else if (key === "SET_COLOR") {
+    } else if (key === "SET_COLOR") {
         let p = players.findIndex(player => player.player_id === tokens[1]);
         available_colors.push(players[p].color)
         players[p].color = tokens[2];
-    }
-    else if (key === "STARTGAME") {
+    } else if (key === "STARTGAME") {
         alert("starting game"); // TODO do this better
         window.location.assign("/game");
-    }
-    else if (key === "DISCONNECT") {
+    } else if (key === "DISCONNECT") {
         players.splice(players.findIndex(p => p.player_id === tokens[1]), 1);
     }
     updateUI();
@@ -79,7 +79,7 @@ function updateUI() {
     let html = "";
     players.forEach(player => {
         html += `<div class="row">\n
-            \t<div class="col player" style="background-color: var(--color-${player.color})">\n
+            \t<div class="col player" style="--bg-color: var(--color-${player.color})">\n
                 \t\t<span class="material-icons">${player.color === 'X' ? "help_outline" : "person"}</span> 
                 ${player.name} ${player.player_id === player_id ? '(You)' : ''}\n
             \t</div>\n

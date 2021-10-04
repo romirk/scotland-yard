@@ -5,7 +5,7 @@ const available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 
 
 document.getElementById("link").innerHTML = window.location.host + '/' + game_id;
 
-const socket = new WebSocket(`ws://${window.location.host}/ws/lobby/${game_id}`);
+const socket = new WebSocket(`ws${location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws/lobby/${game_id}`);
 
 socket.onclose = () => console.log("socket closed");
 socket.onopen = () => socket.send("JOIN " + player_id);
@@ -37,7 +37,7 @@ socket.onmessage = msg => {
         players[p].color = tokens[2];
     }
     else if (key === "STARTGAME") {
-        alert("starting game"); // TODO do this better
+        console.log("starting game"); // TODO do this better
         window.location.assign("/game");
     }
     else if (key === "DISCONNECT") {

@@ -4,7 +4,8 @@ from .multiplayer import getPlayerIDs, getPlayerInfo
 
 
 class LobbyProtocol:
-    ACCEPTED_KEYWORDS = ["JOIN", "REQCOLOR", "REQMRX", "READY"]
+    ACCEPTED_KEYWORDS = ["JOIN", "REQCOLOR", "REQMRX", "READY", "DISCONNECT"]
+    trackdisconnected = set()
 
     def __init__(self, type: str, player_id: str) -> None:
         # purely for returning from parser
@@ -19,7 +20,7 @@ class LobbyProtocol:
         keyword = tokens[0]
 
         if len(tokens) < 2 or keyword not in LobbyProtocol.ACCEPTED_KEYWORDS:
-            raise ValueError("invalid message")
+            raise ValueError(f"invalid message: {msg}")
 
         ret = LobbyProtocol(keyword, tokens[1])
 
@@ -31,7 +32,7 @@ class LobbyProtocol:
     @staticmethod
     def acknowledge(game_id: str) -> str:
         """acknowledge ws connection"""
-        players = [getPlayerInfo(p) for p in getPlayerIDs(game_id)]
+        players = [getPlayerInfo(p) for p in getPlayerIDs(game_id) if p not in LobbyProtocol.trackdisconnected]
         return f"ACKNOWLEDGE {len(players)}\n" + "\n".join(
             f"{p_info['player_id']} {p_info['name']} {p_info['color']}" for p_info in players
         )

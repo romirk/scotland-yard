@@ -5,7 +5,7 @@ const available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 
 
 document.getElementById("link").innerHTML = window.location.host + '/' + game_id;
 
-const socket = new WebSocket(`wss://${window.location.host}/ws/lobby/${game_id}`);
+const socket = new WebSocket(`ws${location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws/lobby/${game_id}`);
 
 socket.onclose = () => console.log("socket closed");
 socket.onopen = () => socket.send("JOIN " + player_id);

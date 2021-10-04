@@ -21,7 +21,6 @@ class SYConsumer(AsyncWebsocketConsumer):
             print("accepted")
             await self.channel_layer.group_add(self.game_id, self.channel_name)
             await self.accept()
-            await self.send("hello client")
 
     async def disconnect(self, close_code):
         print(

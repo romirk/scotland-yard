@@ -1,16 +1,8 @@
-import { available_colors, colorGrads } from "./constants.js";
+import { available_colors, colorGrads, grad } from "./constants.js";
 import { copyToClipboard } from "./utils.js";
 import anime from "./anime.es.js"
 
 const players = [];
-const grad = {
-    c1r: 109,
-    c1g: 182,
-    c1b: 243,
-    c2r: 195,
-    c2g: 208,
-    c2b: 56
-}
 
 document.getElementById("link").innerHTML = window.location.host + '/' + game_id;
 

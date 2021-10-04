@@ -1,7 +1,22 @@
 import { copyToClipboard } from "./utils.js";
+import anime from "./anime.es.js"
 
 const players = [];
 const available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
+const grad = {
+    c1r: 109, c1g: 182, c1b: 243,
+    c2r: 195, c2g: 208, c2b: 56
+}
+
+const colorGrads = {
+    "red": [189, 40, 40],
+    "purple": [133, 78, 241],
+    "blue": [30, 73, 169],
+    "green": [83, 169, 30],
+    "yellow": [221, 165, 33],
+    "orange": [207, 106, 19],
+    "X": [255, 255, 255]
+};
 
 document.getElementById("link").innerHTML = window.location.host + '/' + game_id;
 
@@ -67,7 +82,26 @@ function updateUI() {
         </div>\n`;
     });
     document.getElementById("players").innerHTML = html;
+
+    const self = players.find(p => p.player_id === player_id);
+    const layout = document.getElementById("layout");
+
+    anime({
+        targets: grad,
+        c1r: 0,
+        c1g: 0,
+        c1b: 0,
+        c2r: colorGrads[self.color][0],
+        c2g: colorGrads[self.color][1],
+        c2b: colorGrads[self.color][2],
+        duration: 1000,
+        easing: 'easeInQuad',
+        update: () => layout.style.background =
+            `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`
+    });
+
     // TODO update color UI
+
 }
 
 function updateAvailableColors(unavailableColor) {

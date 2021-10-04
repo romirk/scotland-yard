@@ -1,3 +1,6 @@
+from scotlandyardgame.engine.constants import Ticket
+
+
 class Station:
     """
     One location on the game board.
@@ -12,8 +15,8 @@ class Station:
             "black": set()
         }
 
-    def getNeighbours(self, type: str) -> set[int]:
-        return self.neighbours[type]
+    def getNeighbours(self, ticket_type: Ticket) -> set[int]:
+        return self.neighbours[ticket_type]
 
-    def addNeighbour(self, type: str, station: int):
-        self.neighbours[type].add(station)
+    def addNeighbour(self, ticket_type: Ticket, station: int):
+        self.neighbours[ticket_type].add(station)

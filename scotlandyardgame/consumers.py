@@ -55,7 +55,7 @@ class LobbyRTConsumer(SYConsumer):
             except Exception as e:
                 print(e)
             else:
-                await self.channel_layer.group_send(self.game_id, LobbyProtocol.setColor(self.player_id))
+                await self.channel_layer.group_send(self.game_id, LobbyProtocol.setColor(self.player_id, color))
 
         elif data.type == "REQMRX":
             try:

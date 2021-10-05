@@ -1,4 +1,3 @@
-const available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
 const grad = {
     c1r: 109,
     c1g: 182,
@@ -17,4 +16,4 @@ const colorGrads = {
     "X": [255, 255, 255]
 };
 
-export { available_colors, colorGrads, grad };
+export { colorGrads, grad };

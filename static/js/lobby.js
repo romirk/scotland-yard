@@ -1,9 +1,11 @@
-import { available_colors, colorGrads, grad } from "./constants.js";
+import { colorGrads, grad } from "./constants.js";
 import { copyToClipboard } from "./utils.js";
 import anime from "./anime.es.js"
 
 const players = [];
 const los = [];
+let available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
+
 
 document.getElementById("link").innerHTML = window.location.host + '/' + game_id;
 
@@ -29,7 +31,6 @@ socket.onmessage = msg => {
             players.push({ player_id: tokens[1], name: tokens[2], color: tokens[3] });
         if (los.includes(tokens[1]))
             los.splice(los.findIndex(p => p === tokens[1]), 1);
-        updateAvailableColors(tokens[2]);
     } else if (key === "SET_MRX") {
         let oldX = players.findIndex(player => player.color === 'X');
         let newX = players.findIndex(player => player.player_id === tokens[1]);
@@ -39,8 +40,6 @@ socket.onmessage = msg => {
         players[newX].color = 'X';
     } else if (key === "SET_COLOR") {
         let p = players.findIndex(player => player.player_id === tokens[1]);
-        available_colors.push(players[p].color)
-        available_colors.splice(available_colors.findIndex(color => color === tokens[2]), 1);
         players[p].color = tokens[2];
     } else if (key === "STARTGAME") {
         console.log("starting game"); // TODO do this better
@@ -85,6 +84,8 @@ function updateUI() {
     const self = players[0];
     color = self.color;
 
+    let avail_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
+
     let html = "";
     players.forEach(player => {
         html +=
@@ -97,8 +98,11 @@ function updateUI() {
                     <div class="reqm" id="b-${player.player_id}"></div>
                 </div>
             </div>`;
+        let i = avail_colors.findIndex(c => c === player.color);
+        if (i !== -1)
+            avail_colors.splice(i, 1);
     });
-
+    available_colors = avail_colors;
     document.getElementById("players").innerHTML = html;
 
     if (isHost)
@@ -147,14 +151,20 @@ function updateUI() {
     for (let i = 0; i < colorListElements.length; i++) {
         const element = colorListElements[i];
         const c = element.getAttribute("set-col");
-        element.addEventListener("click", (e) => {            
+
+        function colorHandler() {
             drawPreview(c);
             reqColor(c);
-        });
+        }
+        console.log(available_colors.includes(c));
         if (c === color) {
             element.style.backgroundColor = `rgba(var(--color-${c}), 0.3)`;
+        } else if (!available_colors.includes(c)) {
+            element.style.backgroundColor = "#8b8b8b";
+            element.removeEventListener("click", colorHandler);
         } else {
-            element.style.backgroundColor = "initial";
+            element.style.backgroundColor = "";
+            element.addEventListener("click", colorHandler);
         }
     }
 }
@@ -166,14 +176,9 @@ function drawPreview(c) {
         targets: '#playerbody path',
         strokeDashoffset: [anime.setDashoffset, 0],
         easing: 'easeInOutSine',
-        delay: function (el, i, n) { return (n - i - 1) * 200 },
+        delay: function (el, i, n) { return (n - i - 1) * 300 },
         duration: 1000
     });
-}
-
-function updateAvailableColors(unavailableColor) {
-    let index = available_colors.indexOf(unavailableColor);
-    if (index !== -1) available_colors.splice(index, 1);
 }
 
 function copyInvite() {

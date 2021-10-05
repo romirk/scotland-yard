@@ -45,6 +45,8 @@ socket.onmessage = msg => {
         window.location.assign("/game");
     } else if (key === "DISCONNECT") {
         players.splice(players.findIndex(p => p.player_id === tokens[1]), 1);
+        if (tokens[[1]] === player_id) 
+            window.location.assign("/");
     }
     updateUI();
     console.log(players);
@@ -76,12 +78,15 @@ function updateUI() {
     let html = "";
     players.forEach(player => {
         html +=
-            `<div class="row">\n
-                \t<div class="col player" id="p-${player.player_id}"" style="--bg-color: var(--color-${player.color})">\n
-                    \t\t<span class="material-icons">${player.color === 'X' ? "help_outline" : "person"}</span> 
-                    ${player.name} ${player.player_id === player_id ? '(You)' : ''}\n
-                \t</div>\n
-            </div>\n`;
+            `<div class="row">
+                <div class="col player" style="--bg-color: var(--color-${player.color})">
+                    <div class="p-info">
+                        <span class="material-icons">${player.color === 'X' ? "help_outline" : "person"}</span> 
+                        ${player.name} ${player.player_id === player_id ? '(You)' : ''}
+                    </div>
+                    <div class="reqm" id="b-${player.player_id}"></div>
+                </div>
+            </div>`;
     });
 
     playersElement.innerHTML = html;
@@ -93,7 +98,9 @@ function updateUI() {
             btn.addEventListener("click", () => reqMrX(player.player_id));
             btn.className = "btn btn-warning reqm";
             btn.innerText = "Set Mr. X";
-            document.getElementById("p-" + player.player_id).appendChild(btn);
+            // btn.style.backgroundColor = `var(--color-${player.color})`;
+            btn.style.position = "relative";
+            document.getElementById("b-" + player.player_id).appendChild(btn);
         });
 
     const self = players.find(p => p.player_id === player_id);

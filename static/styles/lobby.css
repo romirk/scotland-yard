@@ -8,7 +8,7 @@
 }
 
 #players {
-    text-align: center;
+    /* text-align: center; */
     width: 30%;
     margin: auto;
     color: white;
@@ -19,8 +19,17 @@
     margin: 1vh;
     border-radius: 10px;
     background-color: var(--bg-color);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     /* animation: fadein 1s; */
 }
+
+.player .material-icons {
+    position: relative;
+    top: 0.5vh;
+}
+
 
 #main {
     margin: auto;
@@ -31,11 +40,6 @@ div#gamecodebox {
     text-align: center;
     padding: 3vh;
     font-size: 16px;
-}
-
-.player .material-icons {
-    position: relative;
-    top: 0.5vh;
 }
 
 #copy-link {

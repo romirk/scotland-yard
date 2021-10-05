@@ -4,9 +4,10 @@
     --color-blue: #132FD2;
     --color-green: #50EF3A;
     --color-purple: #6B30BA;
-    --color-yellow: #FFBF00;
+    --color-yellow: hsl(45, 100%, 50%);
     --color-orange: #EF7D0E;
     --color-X: #3F484E;
+    --compl-blue: #ffc107;
 }
 
 @font-face {

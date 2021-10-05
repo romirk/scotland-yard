@@ -3,6 +3,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.cache import patch_response_headers
 
+from scotlandyardgame.engine.constants import AVAILABLE_COLORS
+
 from . import multiplayer
 
 
@@ -57,6 +59,7 @@ def lobby(request: HttpRequest):
         return redirectWithError("indexerror", "not in game")
 
     context = multiplayer.games[game_id].getPlayerInfo(player_id)
+    context["colors"] = AVAILABLE_COLORS
     print(f"{context['name']} in lobby")
 
     res = render(request, 'scotlandyardgame/lobby.html', context=context)

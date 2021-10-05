@@ -81,12 +81,15 @@ function leave() {
 }
 
 function updateUI() {
-    const playersElement = document.getElementById("players");
+    players.sort((a, b) => a.player_id === player_id ? -1 : b.player_id === player_id ? 1 : 0);
+    const self = players[0];
+    color = self.color;
+
     let html = "";
     players.forEach(player => {
         html +=
             `<div class="row">
-                <div class="col player${los.includes(player.player_id) ? " los" : ""}" id="p-${player.player_id}" style="--bg-color: var(--color-${player.color})">
+                <div class="col player${los.includes(player.player_id) ? " los" : ""}" id="p-${player.player_id}" style="--bg-color: rgb(var(--color-${player.color}))">
                     <div class="p-info">
                         <span class="material-icons">${player.color === 'X' ? "help_outline" : "person"}</span> 
                         ${player.name} ${player.player_id === player_id ? '(You)' : ''}
@@ -96,7 +99,8 @@ function updateUI() {
             </div>`;
     });
 
-    playersElement.innerHTML = html;
+    document.getElementById("players").innerHTML = html;
+
     if (isHost)
         players.forEach(player => {
             if (player.color == 'X')
@@ -105,16 +109,12 @@ function updateUI() {
             btn.addEventListener("click", () => reqMrX(player.player_id));
             btn.className = "btn btn-warning reqm";
             btn.innerText = "Set Mr. X";
-            // btn.style.backgroundColor = `var(--color-${player.color})`;
             btn.style.position = "relative";
             if (los.includes(player.player_id))
                 btn.disabled = true;
             document.getElementById("b-" + player.player_id).appendChild(btn);
         });
 
-    const self = players.find(p => p.player_id === player_id);
-    color = self.color;
-    document.getElementById("selectedColor").value = self.color;
     const layout = document.getElementById("layout");
 
     anime({
@@ -134,27 +134,33 @@ function updateUI() {
     if (players.length === 6 && isHost) {
         document.getElementById("start").style.display = "initial";
     }
-    // TODO update color UI
-    document.getElementById("colorButton").style.backgroundColor = `var(--color-${self.color})`
-    if(self.color === 'X'){
+
+    // color UI
+    document.getElementById("colorButton").style.backgroundColor = `rgb(var(--color-${self.color}))`
+    if (self.color === 'X') {
         document.getElementById("colorButton").style.display = "none";
     }
-    else{
+    else {
         document.getElementById("colorButton").style.display = "initial";
     }
-
+    let colorListElements = document.getElementById("colorList").children;
+    for (let i = 0; i < colorListElements.length; i++) {
+        const element = colorListElements[i];
+        const c = element.getAttribute("set-col");
+        element.addEventListener("click", (e) => {            
+            drawPreview(c);
+            reqColor(c);
+        });
+        if (c === color) {
+            element.style.backgroundColor = `rgba(var(--color-${c}), 0.3)`;
+        } else {
+            element.style.backgroundColor = "initial";
+        }
+    }
 }
 
-function selectColor(e) {
-    console.log(e);
-    document.getElementById("selectedColor").value = 1;
-    drawPreview();
-}
-
-function drawPreview() {
-    console.log("preview");
-    let c = document.getElementById("selectedColor").value;
-    document.getElementById("playerbody").style.stroke = c;
+function drawPreview(c) {
+    document.getElementById("playerbody").style.stroke = `rgb(var(--color-${c}))`;
 
     anime({
         targets: '#playerbody path',
@@ -180,7 +186,6 @@ window.s = socket;
 document.getElementById("copy-link").addEventListener("click", copyInvite);
 document.getElementById("leave").addEventListener("click", leave);
 document.getElementById("start").addEventListener("click", start);
-document.getElementById("colorButton").addEventListener("click", drawPreview);
-document.getElementById("list-red").addEventListener("click", selectColor);
+document.getElementById("colorButton").addEventListener("click", () => drawPreview(color));
 window.sc = reqColor
 window.sm = reqMrX

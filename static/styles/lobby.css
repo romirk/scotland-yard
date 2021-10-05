@@ -56,12 +56,6 @@
     text-align: center;
 }
 
-#list-red {
-    background-color: rgba(197,17,17,0.3);
-    color: var(--color-red);
-}
-
-
 #copy-link {
     background-color: #0d6efd;
 }
@@ -83,3 +77,11 @@ body {
     width: 100%;
     height: 100%;
 }
+
+#playerheadpath {
+    transform-origin: 25% 30%;
+    transform: rotate(-90deg);
+}
+
+.modal-backdrop {background: none;}
+.modal{background: none;}

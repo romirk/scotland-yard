@@ -1,12 +1,12 @@
 :root {
     /* AMOGUS */
-    --color-red: #C51111;
-    --color-blue: #132FD2;
-    --color-green: #50EF3A;
-    --color-purple: #6B30BA;
-    --color-yellow: hsl(45, 100%, 50%);
-    --color-orange: #EF7D0E;
-    --color-X: #3F484E;
+    --color-red: 197, 17, 17;
+    --color-blue: 19, 47, 210;
+    --color-green: 80, 239, 58;
+    --color-purple: 107, 48, 186;
+    --color-yellow: 255, 191, 0;
+    --color-orange: 239, 125, 14;
+    --color-X: 63, 72, 78;
     --compl-blue: #ffc107;
 }
 

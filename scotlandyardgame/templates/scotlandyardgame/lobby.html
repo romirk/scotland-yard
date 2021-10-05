@@ -52,12 +52,11 @@
     </div>
     <span id="link" style="display: none;"></span>
 
-    <!-- Modal -->
     <div class="modal fade" id="colorModal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h6 class="modal-title">Select Color</h6>
+                    <h6 class="modal-title">select color</h6>
                     <button type="button" class="close" data-dismiss="modal">
                         &times;
                     </button>
@@ -67,28 +66,24 @@
                         <div id="preview" class="col-6">
                             <svg id="previewsvg" viewbox="0 0 100 100">
                                 <g id="playerbody" transform="translate(27, 0)">
-                                    <path id="playerheadpath" stroke-width="3" stroke="#7A6AC0" fill="#0000" />
-                                    <path id="playerbodypath" stroke-width="3" stroke="#7A6AC0" fill="#0000"
+                                    <path id="playerheadpath" stroke-width="3" fill="#0000" />
+                                    <path id="playerbodypath" stroke-width="3" fill="#0000"
                                         d="M 0 100 L 25 50 L 50 100 L 12 100" />
                                 </g>
                             </svg>
                         </div>
                         <div id="colorOptions" class="col-6">
                             <div id="colorList" class="list-group">
-                                <a id="list-red" class="list-group-item list-group-item-action"><span>Red</span></a>                            
-                                <a id="list-blue" class="list-group-item list-group-item-action">Blue</a>
-                                <a id="list-green" class="list-group-item list-group-item-action">Green</a>
-                                <a id="list-purple" class="list-group-item list-group-item-action">Purple</a>
-                                <a id="list-yellow" class="list-group-item list-group-item-action">Yellow</a>
-                                <a id="list-orange" class="list-group-item list-group-item-action">Orange</a>
-                              </div>
-                              <input type="hidden" id="selectedColor" />
+                                {% for c in colors %}
+                                <a id="list-{{c}}" set-col="{{c}}"
+                                    class="list-group-item list-group-item-action"><span style="color: rgb(var(--color-{{c}}));">{{c}}</span></a>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

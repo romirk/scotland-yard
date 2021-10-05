@@ -36,6 +36,7 @@ class SYConsumer(AsyncWebsocketConsumer):
             # leaveRoom(self.game_id, self.player_id)
             if getGameByID(self.game_id).state != GameState.CONNECTING:
                 trackdisconnected.add(self.player_id)
+                await self.channel_layer.group_send(self.game_id, LobbyProtocol.LOS(self.player_id))
                 await self.delayedRelease()
 
         await self.channel_layer.group_discard(self.game_id, self.channel_name)

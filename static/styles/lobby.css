@@ -51,3 +51,7 @@ div#gamecodebox {
     background-color: #1ED760;
     display: none;
 }
+
+.los {
+    opacity: 0.6;
+}

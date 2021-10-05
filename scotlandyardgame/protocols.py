@@ -73,6 +73,14 @@ class LobbyProtocol:
         }
 
     @staticmethod
+    def LOS(player_id: str):
+        """report LOs"""
+        return {
+            "type": "ws.send",
+            "text": f"LOS {player_id}"
+        }
+
+    @staticmethod
     def remove(player_id: str):
         """remove player from lobby"""
         return {

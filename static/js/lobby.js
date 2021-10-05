@@ -3,6 +3,7 @@ import { copyToClipboard } from "./utils.js";
 import anime from "./anime.es.js"
 
 const players = [];
+const los = [];
 
 document.getElementById("link").innerHTML = window.location.host + '/' + game_id;
 
@@ -26,6 +27,8 @@ socket.onmessage = msg => {
     } else if (key === "NEW_PLAYER") {
         if (!players.map(e => e.player_id).includes(tokens[1]))
             players.push({ player_id: tokens[1], name: tokens[2], color: tokens[3] });
+        if (los.includes(tokens[1]))
+            los.splice(los.findIndex(p => p === tokens[1]), 1);
         updateAvailableColors(tokens[2]);
     } else if (key === "SET_MRX") {
         let oldX = players.findIndex(player => player.color === 'X');
@@ -39,13 +42,15 @@ socket.onmessage = msg => {
         available_colors.push(players[p].color)
         available_colors.splice(available_colors.findIndex(color => color === tokens[2]), 1);
         players[p].color = tokens[2];
-    }
-    else if (key === "STARTGAME") {
+    } else if (key === "STARTGAME") {
         console.log("starting game"); // TODO do this better
         window.location.assign("/game");
+    } else if (key === "LOS") {
+        if (!los.includes(tokens[1]))
+            los.push(tokens[1]);
     } else if (key === "DISCONNECT") {
         players.splice(players.findIndex(p => p.player_id === tokens[1]), 1);
-        if (tokens[[1]] === player_id) 
+        if (tokens[[1]] === player_id)
             window.location.assign("/");
     }
     updateUI();
@@ -79,7 +84,7 @@ function updateUI() {
     players.forEach(player => {
         html +=
             `<div class="row">
-                <div class="col player" style="--bg-color: var(--color-${player.color})">
+                <div class="col player${los.includes(player.player_id) ? " los": ""}" id="p-${player.player_id}" style="--bg-color: var(--color-${player.color})">
                     <div class="p-info">
                         <span class="material-icons">${player.color === 'X' ? "help_outline" : "person"}</span> 
                         ${player.name} ${player.player_id === player_id ? '(You)' : ''}
@@ -100,6 +105,8 @@ function updateUI() {
             btn.innerText = "Set Mr. X";
             // btn.style.backgroundColor = `var(--color-${player.color})`;
             btn.style.position = "relative";
+            if (los.includes(player.player_id)) 
+                btn.disabled = true;
             document.getElementById("b-" + player.player_id).appendChild(btn);
         });
 

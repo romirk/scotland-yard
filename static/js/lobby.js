@@ -30,8 +30,9 @@ socket.onmessage = msg => {
     } else if (key === "SET_MRX") {
         let oldX = players.findIndex(player => player.color === 'X');
         let newX = players.findIndex(player => player.player_id === tokens[1]);
+        console.log(oldX);
         if (oldX !== -1)
-            players[oldX].color = players[newX.color];
+            players[oldX].color = players[newX].color;
         players[newX].color = 'X';
     } else if (key === "SET_COLOR") {
         let p = players.findIndex(player => player.player_id === tokens[1]);
@@ -53,12 +54,14 @@ function reqColor(color) {
     socket.send(`REQCOLOR ${player_id} ${color}`);
 }
 
-function reqMrX() {
-    socket.send(`REQMRX ${player_id}`);
+function reqMrX(pid) {
+    if (!isHost)
+        return;
+    socket.send(`REQMRX ${player_id} ${pid}`);
 }
 
 function start() {
-    if (players.length !== 6) return;
+    if (!isHost || players.length !== 6) return;
     socket.send(`READY ${player_id}`);
 
 }
@@ -69,17 +72,29 @@ function leave() {
 }
 
 function updateUI() {
+    const playersElement = document.getElementById("players");
     let html = "";
     players.forEach(player => {
         html +=
             `<div class="row">\n
-                \t<div class="col player" style="--bg-color: var(--color-${player.color})">\n
+                \t<div class="col player" id="p-${player.player_id}"" style="--bg-color: var(--color-${player.color})">\n
                     \t\t<span class="material-icons">${player.color === 'X' ? "help_outline" : "person"}</span> 
                     ${player.name} ${player.player_id === player_id ? '(You)' : ''}\n
                 \t</div>\n
             </div>\n`;
     });
-    document.getElementById("players").innerHTML = html;
+
+    playersElement.innerHTML = html;
+    if (isHost)
+        players.forEach(player => {
+            if (player.color == 'X')
+                return;
+            let btn = document.createElement("button");
+            btn.addEventListener("click", () => reqMrX(player.player_id));
+            btn.className = "btn btn-warning reqm";
+            btn.innerText = "Set Mr. X";
+            document.getElementById("p-" + player.player_id).appendChild(btn);
+        });
 
     const self = players.find(p => p.player_id === player_id);
     const layout = document.getElementById("layout");
@@ -121,6 +136,5 @@ document.getElementById("copy-link").addEventListener("click", copyInvite);
 document.getElementById("leave").addEventListener("click", leave);
 document.getElementById("start").addEventListener("click", start);
 document.getElementById("reqc").addEventListener("click", reqColor);
-document.getElementById("reqm").addEventListener("click", reqMrX);
 window.sc = reqColor
 window.sm = reqMrX

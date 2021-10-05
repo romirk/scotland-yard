@@ -11,6 +11,7 @@ class LobbyProtocol:
         self.type = type
         self.player_id = player_id
         self.color = None
+        self.target = None
 
     @staticmethod
     def parse(msg: str) -> LobbyProtocol:
@@ -25,6 +26,8 @@ class LobbyProtocol:
 
         if keyword == "REQCOLOR":
             ret.color = tokens[2]
+        elif keyword == "REQMRX":
+            ret.target = tokens[2]
 
         return ret
 

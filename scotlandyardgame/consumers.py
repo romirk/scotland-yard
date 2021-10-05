@@ -82,11 +82,11 @@ class LobbyRTConsumer(SYConsumer):
 
         elif data.type == "REQMRX":
             try:
-                setMrX(self.game_id, self.player_id)
+                setMrX(self.game_id, data.target)
             except Exception as e:
                 print(e)
             else:
-                await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(self.player_id))
+                await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(data.target))
         elif data.type == "DISCONNECT":
             leaveRoom(self.game_id, self.player_id)
         elif data.type == "READY":

@@ -59,6 +59,7 @@
         const game_id = '{{ game_id }}';
         const name = '{{ name }}';
         const color = '{{ color }}';
+        const isHost = {% if is_host %}true{% else %} false{% endif %};
     </script>
     <script src="/js/lobby.js" type="module"></script>
 </body>

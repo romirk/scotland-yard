@@ -100,7 +100,7 @@ class ScotlandYard:
             "color",
             "location",
             "tickets",
-            "is_mr_x"
+            "is_host"
         }
         """
         p = self.__getPlayerByID(player_id)
@@ -111,7 +111,7 @@ class ScotlandYard:
             "color": p.color,
             "location": p.location,
             "tickets": p.getAllTickets(),
-            "is_mr_x": p.is_mr_x
+            "is_host": p.ID == self.getHostID()
         }
 
     def getMrX(self) -> str:
@@ -161,10 +161,10 @@ class ScotlandYard:
         if player_id in self.__players:
             raise ValueError("player already connected")
 
-        is_mr_x = not self.__players  # true when self.players is empty
-        print(f"\t\tMr. X: {is_mr_x}")
+        is_host = not self.__players  # true when self.players is empty
+        print(f"\t\thost: {is_host}")
 
-        if is_mr_x:
+        if is_host:
             col = 'X'
         else:
             col_index = randrange(len(self.__available_colors))
@@ -191,7 +191,7 @@ class ScotlandYard:
 
         self.__players[player_id] = newPlayer
 
-        if is_mr_x:
+        if is_host:
             self.__mrX = self.__host = newPlayer
 
     def removePlayer(self, player_id: str):

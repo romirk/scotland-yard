@@ -5,7 +5,6 @@ from .multiplayer import getPlayerIDs, getPlayerInfo
 
 class LobbyProtocol:
     ACCEPTED_KEYWORDS = ["JOIN", "REQCOLOR", "REQMRX", "READY", "DISCONNECT"]
-    trackdisconnected = set()
 
     def __init__(self, type: str, player_id: str) -> None:
         # purely for returning from parser

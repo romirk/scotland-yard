@@ -9,7 +9,7 @@
 
 #players {
     /* text-align: center; */
-    width: 30%;
+    width: 42vw;
     margin: auto;
     color: white;
 }
@@ -30,20 +30,37 @@
     top: 0.5vh;
 }
 
+.button {
+    border-radius: 5px;
+    flex-grow: 1;
+    flex-basis: 0;
+    margin: 1vw;
+}
 
 #main {
     margin: auto;
 }
 
-div#gamecodebox {
-    margin: auto;
-    text-align: center;
+#buttons {
+    display: flex;
+    justify-content: center;
     padding: 3vh;
     font-size: 16px;
+    width: 35vw;
+    margin: auto;
 }
 
+.list-group-item {
+    text-align: center;
+}
+
+#list-red {
+    background-color: rgba(197,17,17,0.3);
+    color: var(--color-red);
+}
+
+
 #copy-link {
-    border-radius: 5px;
     background-color: #0d6efd;
 }
 

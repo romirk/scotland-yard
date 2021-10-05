@@ -129,10 +129,14 @@ function updateUI() {
             `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`
     });
 
-    if (players.length === 6) {
+    if (players.length === 6 && isHost) {
         document.getElementById("start").style.display = "initial";
     }
     // TODO update color UI
+    document.getElementById("colorButton").style.backgroundColor = `var(--color-${color})`
+    if(color === 'X'){
+        document.getElementById("colorButton").style.display = "none";
+    }
 
 }
 

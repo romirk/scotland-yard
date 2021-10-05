@@ -113,6 +113,8 @@ function updateUI() {
         });
 
     const self = players.find(p => p.player_id === player_id);
+    color = self.color;
+    document.getElementById("selectedColor").value = self.color;
     const layout = document.getElementById("layout");
 
     anime({
@@ -143,6 +145,26 @@ function updateUI() {
 
 }
 
+function selectColor(e) {
+    console.log(e);
+    document.getElementById("selectedColor").value = 1;
+    drawPreview();
+}
+
+function drawPreview() {
+    console.log("preview");
+    let c = document.getElementById("selectedColor").value;
+    document.getElementById("playerbody").style.stroke = c;
+
+    anime({
+        targets: '#playerbody path',
+        strokeDashoffset: [anime.setDashoffset, 0],
+        easing: 'easeInOutSine',
+        delay: function (el, i, n) { return (n - i - 1) * 200 },
+        duration: 1000
+    });
+}
+
 function updateAvailableColors(unavailableColor) {
     let index = available_colors.indexOf(unavailableColor);
     if (index !== -1) available_colors.splice(index, 1);
@@ -158,5 +180,7 @@ window.s = socket;
 document.getElementById("copy-link").addEventListener("click", copyInvite);
 document.getElementById("leave").addEventListener("click", leave);
 document.getElementById("start").addEventListener("click", start);
+document.getElementById("colorButton").addEventListener("click", drawPreview);
+document.getElementById("list-red").addEventListener("click", selectColor);
 window.sc = reqColor
 window.sm = reqMrX

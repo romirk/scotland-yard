@@ -133,9 +133,12 @@ function updateUI() {
         document.getElementById("start").style.display = "initial";
     }
     // TODO update color UI
-    document.getElementById("colorButton").style.backgroundColor = `var(--color-${color})`
-    if(color === 'X'){
+    document.getElementById("colorButton").style.backgroundColor = `var(--color-${self.color})`
+    if(self.color === 'X'){
         document.getElementById("colorButton").style.display = "none";
+    }
+    else{
+        document.getElementById("colorButton").style.display = "initial";
     }
 
 }
@@ -155,6 +158,5 @@ window.s = socket;
 document.getElementById("copy-link").addEventListener("click", copyInvite);
 document.getElementById("leave").addEventListener("click", leave);
 document.getElementById("start").addEventListener("click", start);
-document.getElementById("reqc").addEventListener("click", reqColor);
 window.sc = reqColor
 window.sm = reqMrX

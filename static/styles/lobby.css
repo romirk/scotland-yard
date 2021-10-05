@@ -52,6 +52,9 @@ div#gamecodebox {
     display: none;
 }
 
+body {
+    transition: opacity 0.2s;
+}
 .los {
     opacity: 0.6;
 }

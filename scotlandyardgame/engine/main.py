@@ -221,11 +221,15 @@ class ScotlandYard:
             return
 
         if isX:
-            self.__mrX = choice(self.__players)
+            print(self.__players)
+            newXID = choice(self.__order)
+            self.__mrX = self.__getPlayerByID(newXID)
             self.setMrX(self.__mrX.ID)
 
         if isHost:
-            self.__host = choice(self.__players)
+            p = self.__order + [self.__mrX.ID]
+            newHostID = choice(p)
+            self.__host = self.__getPlayerByID(newHostID)
 
     def start(self):
         """do precondition checks and set gamestate"""

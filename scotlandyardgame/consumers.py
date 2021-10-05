@@ -34,10 +34,14 @@ class SYConsumer(AsyncWebsocketConsumer):
             f"disconnecting {self.channel_name} with close code {close_code}")
         if hasattr(self, 'player_id'):
             # leaveRoom(self.game_id, self.player_id)
-            if getGameByID(self.game_id).state != GameState.CONNECTING:
+            game = getGameByID(self.game_id)
+            if game is not None and game.state != GameState.CONNECTING:
                 trackdisconnected.add(self.player_id)
                 await self.channel_layer.group_send(self.game_id, LobbyProtocol.LOS(self.player_id))
                 await self.delayedRelease()
+            else:
+                await self.channel_layer.group_send(self.game_id, LobbyProtocol.remove(self.player_id))
+                await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(getMrX(self.game_id)))
 
         await self.channel_layer.group_discard(self.game_id, self.channel_name)
 
@@ -45,7 +49,8 @@ class SYConsumer(AsyncWebsocketConsumer):
         await self.send(event["text"])
 
     async def delayedRelease(self, timeout: float = 2.0):
-        await sleep(timeout)
+        if timeout > 0:
+            await sleep(timeout)
         if self.player_id in trackdisconnected:
             leaveRoom(self.game_id, self.player_id)
             await self.channel_layer.group_send(self.game_id, LobbyProtocol.remove(self.player_id))
@@ -89,7 +94,10 @@ class LobbyRTConsumer(SYConsumer):
             else:
                 await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(data.target))
         elif data.type == "DISCONNECT":
-            leaveRoom(self.game_id, self.player_id)
+            trackdisconnected.add(self.player_id)
+            await self.delayedRelease(0)
+            await self.channel_layer.group_discard(self.game_id, self.channel_name)
+            await self.close()
         elif data.type == "READY":
             if getGameHost(self.game_id) != self.player_id:
                 print("Only host can start game")

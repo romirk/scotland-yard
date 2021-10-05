@@ -75,7 +75,9 @@ function start() {
 
 function leave() {
     socket.send(`DISCONNECT ${player_id}`);
-    window.location.assign("/");
+    document.body.classList.add("los");
+    document.getElementById("players").innerHTML = "";
+    setTimeout(() => window.location.assign("/"), 500);
 }
 
 function updateUI() {
@@ -84,7 +86,7 @@ function updateUI() {
     players.forEach(player => {
         html +=
             `<div class="row">
-                <div class="col player${los.includes(player.player_id) ? " los": ""}" id="p-${player.player_id}" style="--bg-color: var(--color-${player.color})">
+                <div class="col player${los.includes(player.player_id) ? " los" : ""}" id="p-${player.player_id}" style="--bg-color: var(--color-${player.color})">
                     <div class="p-info">
                         <span class="material-icons">${player.color === 'X' ? "help_outline" : "person"}</span> 
                         ${player.name} ${player.player_id === player_id ? '(You)' : ''}
@@ -105,7 +107,7 @@ function updateUI() {
             btn.innerText = "Set Mr. X";
             // btn.style.backgroundColor = `var(--color-${player.color})`;
             btn.style.position = "relative";
-            if (los.includes(player.player_id)) 
+            if (los.includes(player.player_id))
                 btn.disabled = true;
             document.getElementById("b-" + player.player_id).appendChild(btn);
         });

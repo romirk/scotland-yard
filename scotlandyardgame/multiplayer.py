@@ -10,11 +10,18 @@ player_games: dict[str, str] = {}
 def getGameByID(game_id: str) -> ScotlandYard:
     if game_id not in games:
         raise ValueError(f"invalid game ID {game_id}")
-    return games[game_id]
+    game = games[game_id]
+    if game.state == GameState.STOPPED:
+        del games[game_id]
+    return game
 
 
 def getGameIDWithPlayer(player_id: str) -> str:
-    return player_games[player_id] if player_id in player_games else None
+    id = player_games[player_id] if player_id in player_games else None
+    if id is not None and id not in games:
+        del player_games[player_id]
+        return None
+    return id
 
 
 def getGameState(game_id: str) -> GameState:
@@ -32,6 +39,10 @@ def getPlayerInfo(player_id: str) -> dict:
 
 def getPlayerIDs(game_id: str) -> list[str]:
     return getGameByID(game_id).getPlayerIDs()
+
+
+def getGameHost(game_id: str) -> str:
+    return getGameByID(game_id).getHostID()
 
 
 def getMrX(game_id: str) -> str:

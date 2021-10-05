@@ -1,8 +1,11 @@
+from asyncio import sleep
+
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .engine.constants import MAX_PLAYERS, GameState
-from .multiplayer import (getGameByID, getGameIDWithPlayer, getMrX, getPlayerIDs, joinRoom, leaveRoom,
-                          setColor, setMrX, startGame)
+from .multiplayer import (getGameByID, getGameHost, getGameIDWithPlayer,
+                          getMrX, getPlayerIDs, leaveRoom, setColor,
+                          setMrX, startGame)
 from .protocols import LobbyProtocol
 
 trackdisconnected = set()
@@ -11,7 +14,11 @@ trackdisconnected = set()
 class SYConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.game_id = self.scope['url_route']['kwargs']['game_id']
-        game = getGameByID(self.game_id)
+        try:
+            game = getGameByID(self.game_id)
+        except ValueError as e:
+            print(e)
+            return
         LobbyProtocol.trackdisconnected = trackdisconnected
 
         print(
@@ -28,17 +35,21 @@ class SYConsumer(AsyncWebsocketConsumer):
             f"disconnecting {self.channel_name} with close code {close_code}")
         if hasattr(self, 'player_id'):
             # leaveRoom(self.game_id, self.player_id)
-            if getGameByID(self.game_id).state == GameState.PENDING:
+            if getGameByID(self.game_id).state != GameState.CONNECTING:
                 trackdisconnected.add(self.player_id)
-            else:
-                leaveRoom(self.game_id, self.player_id)
-            await self.channel_layer.group_send(self.game_id, LobbyProtocol.remove(self.player_id))
-            await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(getMrX(self.game_id)))
+                await self.delayedRelease()
 
         await self.channel_layer.group_discard(self.game_id, self.channel_name)
 
     async def ws_send(self, event):
         await self.send(event["text"])
+
+    async def delayedRelease(self, timeout: float = 2.0):
+        await sleep(timeout)
+        if self.player_id in trackdisconnected:
+            leaveRoom(self.game_id, self.player_id)
+            await self.channel_layer.group_send(self.game_id, LobbyProtocol.remove(self.player_id))
+            await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(getMrX(self.game_id)))
 
 
 class LobbyRTConsumer(SYConsumer):
@@ -56,10 +67,10 @@ class LobbyRTConsumer(SYConsumer):
             # JOIN player_id
             if getGameIDWithPlayer(self.player_id) != self.game_id:
                 raise RuntimeError
-            if self.player_id in trackdisconnected:
-                trackdisconnected.remove(self.player_id)
             await self.channel_layer.group_send(self.game_id, LobbyProtocol.newPlayer(self.player_id))
             await self.send(LobbyProtocol.acknowledge(self.game_id))
+            if self.player_id in trackdisconnected:
+                trackdisconnected.remove(self.player_id)
 
         elif data.type == "REQCOLOR":
             color = data.color
@@ -78,6 +89,9 @@ class LobbyRTConsumer(SYConsumer):
             else:
                 await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(self.player_id))
         elif data.type == "READY":
+            if getGameHost(self.game_id) != self.player_id:
+                print("Only host can start game")
+                return
             c = 0
             for player in getPlayerIDs(self.game_id):
                 if player in trackdisconnected:

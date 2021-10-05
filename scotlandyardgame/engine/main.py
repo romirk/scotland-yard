@@ -26,6 +26,7 @@ class ScotlandYard:
         self.__moves: int = 0
         self.__cycle: int = 0
         self.__mrX: Player = None
+        self.__host: Player = None
 
         # public
         self.state: GameState = GameState.PENDING
@@ -76,6 +77,9 @@ class ScotlandYard:
             self.end(EndState.MR_X_WINS)
 
     # public methods
+
+    def getHostID(self) -> str:
+        return self.__host.ID
 
     def getPlayerIDs(self) -> list[str]:
         """Get a list of connected player IDs"""
@@ -188,7 +192,7 @@ class ScotlandYard:
         self.__players[player_id] = newPlayer
 
         if is_mr_x:
-            self.__mrX = newPlayer
+            self.__mrX = self.__host = newPlayer
 
     def removePlayer(self, player_id: str):
         """remove a player from the game"""
@@ -198,6 +202,7 @@ class ScotlandYard:
 
         player = self.__getPlayerByID(player_id)
         isX = player.is_mr_x
+        isHost = player.ID == self.getHostID()
 
         if self.state == GameState.RUNNING:
             self.end(EndState.ABORTED)
@@ -211,12 +216,16 @@ class ScotlandYard:
         del self.__players[player_id]
         self.__order.remove(player_id)
 
+        if not len(self.__players):
+            self.end(EndState.ABORTED)
+            return
+
         if isX:
-            if len(self.__players):
-                self.__mrX = choice(self.__players)
-                self.setMrX(self.__mrX.ID)
-            else:
-                self.__mrX = None
+            self.__mrX = choice(self.__players)
+            self.setMrX(self.__mrX.ID)
+
+        if isHost:
+            self.__host = choice(self.__players)
 
     def start(self):
         """do precondition checks and set gamestate"""

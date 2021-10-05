@@ -7,7 +7,7 @@ document.getElementById("link").innerHTML = window.location.host + '/' + game_id
 
 const socket = new WebSocket(`ws${location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws/lobby/${game_id}`);
 
-socket.onclose = () => console.log("socket closed");
+socket.onclose = () => window.location.assign("/");
 socket.onopen = () => socket.send("JOIN " + player_id);
 
 socket.onmessage = msg => {
@@ -16,10 +16,11 @@ socket.onmessage = msg => {
     let key = tokens[0];
     if (key === "ACKNOWLEDGE") {
         let playerdata = msg.data.split('\n').slice(1);
-        playerdata.forEach(playerstr => {
-            let info = playerstr.split(' ');
-            players.push({ player_id: info[0], name: info[1], color: info[2] })
-        });
+        if (parseInt(tokens[1]) !== 0)
+            playerdata.forEach(playerstr => {
+                let info = playerstr.split(' ');
+                players.push({ player_id: info[0], name: info[1], color: info[2] })
+            });
     } else if (key === "NEW_PLAYER") {
         if (!players.map(e => e.player_id).includes(tokens[1]))
             players.push({ player_id: tokens[1], name: tokens[2], color: tokens[3] });
@@ -28,7 +29,8 @@ socket.onmessage = msg => {
     else if (key === "SET_MRX") {
         let oldX = players.findIndex(player => player.color === 'X');
         let newX = players.findIndex(player => player.player_id === tokens[1]);
-        players[oldX].color = players[newX.color];
+        if (oldX !== -1)
+            players[oldX].color = players[newX.color];
         players[newX].color = 'X';
     }
     else if (key === "SET_COLOR") {
@@ -80,6 +82,8 @@ function copyInvite() {
     copyToClipboard(e);
     console.log("copied");
 }
+
+window.s = socket;
 
 document.getElementById("copy-link").addEventListener("click", copyInvite);
 window.sc = reqColor

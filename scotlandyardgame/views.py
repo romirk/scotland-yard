@@ -1,6 +1,7 @@
 from django.http import HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils.cache import patch_response_headers
 
 from . import multiplayer
 
@@ -54,9 +55,13 @@ def lobby(request: HttpRequest):
     game_id = multiplayer.getGameIDWithPlayer(player_id)
     if game_id is None:
         return redirectWithError("indexerror", "not in game")
+
     context = multiplayer.games[game_id].getPlayerInfo(player_id)
     print(f"{context['name']} in lobby")
-    return render(request, 'scotlandyardgame/lobby.html', context=context)
+
+    res = render(request, 'scotlandyardgame/lobby.html', context=context)
+    patch_response_headers(res, cache_timeout=2)
+    return res
 
 
 def game(request: HttpRequest):

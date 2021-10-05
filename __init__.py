@@ -8,7 +8,7 @@ from django.core.management import call_command
 from scotlandyard import settings as sysettings
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'scotlandyard.settings')
-port = int(os.environ.get("PORT", 5000))
+port = int(os.environ.get("PORT", 8000))
 
 django.setup()
 

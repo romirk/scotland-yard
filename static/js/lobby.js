@@ -73,30 +73,30 @@ socket.onmessage = msg => {
             los.push(tokens[1]);
     } else if (key === "DISCONNECT") {
         players.splice(players.findIndex(p => p.player_id === tokens[1]), 1);
-        if (tokens[[1]] === player_id)
+        if (tokens[[1]] === my.player_id)
             window.location.assign("/");
     }
     updateUI();
 }
 
 function reqColor(color) {
-    socket.send(`REQCOLOR ${player_id} ${color}`);
+    socket.send(`REQCOLOR ${my.player_id} ${color}`);
 }
 
 function reqMrX(pid) {
     if (!my.isHost)
         return;
-    socket.send(`REQMRX ${player_id} ${pid}`);
+    socket.send(`REQMRX ${my.player_id} ${pid}`);
 }
 
 function start() {
     if (!my.isHost || players.length !== 6) return;
-    socket.send(`READY ${player_id}`);
+    socket.send(`READY ${my.player_id}`);
 
 }
 
 function leave() {
-    socket.send(`DISCONNECT ${player_id}`);
+    socket.send(`DISCONNECT ${my.player_id}`);
     document.body.classList.add("los");
     document.getElementById("players").innerHTML = "";
     setTimeout(() => window.location.assign("/"), 500);

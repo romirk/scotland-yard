@@ -61,6 +61,8 @@ socket.onmessage = msg => {
         if (oldX !== -1)
             players[oldX].color = players[newX].color;
         players[newX].color = 'X';
+        if (tokens[[1]] === my.player_id)
+            my.color = tokens[2];
     } else if (key === "SET_COLOR") {
         let p = players.findIndex(player => player.player_id === tokens[1]);
         players[p].color = tokens[2];

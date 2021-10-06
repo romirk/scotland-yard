@@ -2,18 +2,32 @@ import { colorGrads, grad } from "./constants.js";
 import { copyToClipboard } from "./utils.js";
 import anime from "./anime.es.js"
 
+let info;
+try {
+    info = {
+        game_id: GAME_ID,
+        player_id: PLAYER_ID,
+        name: NAME,
+        color: color,
+        isHost: IS_HOST
+    };
+} catch (error) {
+    window.location.assign("/")
+}
+
+const my = info;
+
 const players = [];
 const los = [];
 let available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
 
 
-document.getElementById("link").innerHTML = window.location.host + '/' + game_id;
+document.getElementById("link").innerHTML = window.location.host + '/' + my.game_id;
 
-const socket = new WebSocket(`ws${location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws/lobby/${game_id}`);
+const socket = new WebSocket(`ws${location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws/lobby/${my.game_id}`);
 
 socket.onclose = () => window.location.assign("/");
-socket.onopen = () => socket.send("JOIN " + player_id);
-socket.onclose = () => console.log("socket closed");
+socket.onopen = () => socket.send("JOIN " + my.player_id);
 
 socket.onmessage = msg => {
     console.log("[ws/server]", msg.data);
@@ -24,17 +38,27 @@ socket.onmessage = msg => {
         if (parseInt(tokens[1]) !== 0)
             playerdata.forEach(playerstr => {
                 let info = playerstr.split(' ');
-                players.push({ player_id: info[0], name: info[1], color: info[2] })
+                players.push({ player_id: info[0], name: info[1], color: info[2] });
+                if (my.player_id === info[0]) {
+                    my.color = info[2];
+                    my.isHost = info[3] === "True";
+                }
             });
+        return;
     } else if (key === "NEW_PLAYER") {
         if (!players.map(e => e.player_id).includes(tokens[1]))
             players.push({ player_id: tokens[1], name: tokens[2], color: tokens[3] });
+            if (my.player_id === tokens[1]) {
+                my.color = tokens[3];
+                my.isHost = tokens[4] === "True";
+            }
         if (los.includes(tokens[1]))
             los.splice(los.findIndex(p => p === tokens[1]), 1);
+    } else if (key === "SET_HOST") {
+        my.isHost = my.player_id === tokens[1];
     } else if (key === "SET_MRX") {
         let oldX = players.findIndex(player => player.color === 'X');
         let newX = players.findIndex(player => player.player_id === tokens[1]);
-        console.log(oldX);
         if (oldX !== -1)
             players[oldX].color = players[newX].color;
         players[newX].color = 'X';
@@ -53,7 +77,6 @@ socket.onmessage = msg => {
             window.location.assign("/");
     }
     updateUI();
-    console.log(players);
 }
 
 function reqColor(color) {
@@ -61,13 +84,13 @@ function reqColor(color) {
 }
 
 function reqMrX(pid) {
-    if (!isHost)
+    if (!my.isHost)
         return;
     socket.send(`REQMRX ${player_id} ${pid}`);
 }
 
 function start() {
-    if (!isHost || players.length !== 6) return;
+    if (!my.isHost || players.length !== 6) return;
     socket.send(`READY ${player_id}`);
 
 }
@@ -79,10 +102,10 @@ function leave() {
     setTimeout(() => window.location.assign("/"), 500);
 }
 
+
+
 function updateUI() {
     players.sort((a, b) => a.player_id === player_id ? -1 : b.player_id === player_id ? 1 : 0);
-    const self = players[0];
-    color = self.color;
 
     let avail_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
 
@@ -93,7 +116,7 @@ function updateUI() {
                 <div class="col player${los.includes(player.player_id) ? " los" : ""}" id="p-${player.player_id}" style="--bg-color: rgb(var(--color-${player.color}))">
                     <div class="p-info">
                         <span class="material-icons">${player.color === 'X' ? "help_outline" : "person"}</span> 
-                        ${player.name} ${player.player_id === player_id ? '(You)' : ''}
+                        ${player.name} ${player.player_id === my.player_id ? '(You)' : ''}
                     </div>
                     <div class="reqm" id="b-${player.player_id}"></div>
                 </div>
@@ -105,7 +128,7 @@ function updateUI() {
     available_colors = avail_colors;
     document.getElementById("players").innerHTML = html;
 
-    if (isHost)
+    if (my.isHost)
         players.forEach(player => {
             if (player.color == 'X')
                 return;
@@ -126,46 +149,61 @@ function updateUI() {
         c1r: 0,
         c1g: 0,
         c1b: 0,
-        c2r: colorGrads[self.color][0],
-        c2g: colorGrads[self.color][1],
-        c2b: colorGrads[self.color][2],
+        c2r: colorGrads[my.color][0],
+        c2g: colorGrads[my.color][1],
+        c2b: colorGrads[my.color][2],
         duration: 1000,
         easing: 'easeInQuad',
         update: () => layout.style.background =
             `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`
     });
 
-    if (players.length === 6 && isHost) {
+    if (players.length === 6 && my.isHost) {
         document.getElementById("start").style.display = "initial";
     }
 
     // color UI
-    document.getElementById("colorButton").style.backgroundColor = `rgb(var(--color-${self.color}))`
-    if (self.color === 'X') {
-        document.getElementById("colorButton").style.display = "none";
+    updateColorUI();
+}
+
+function colorHandler(c, e) {
+    return () => {
+        drawPreview(c);
+        reqColor(c);
+    }
+}
+
+function updateColorUI() {
+    const colorBtn = document.getElementById("colorButton");
+    colorBtn.style.backgroundColor = `rgb(var(--color-${my.color}))`
+    if (my.color === 'X') {
+        colorBtn.style.display = "none";
     }
     else {
-        document.getElementById("colorButton").style.display = "initial";
+        colorBtn.style.display = "initial";
     }
-    let colorListElements = document.getElementById("colorList").children;
-    for (let i = 0; i < colorListElements.length; i++) {
-        const element = colorListElements[i];
-        const c = element.getAttribute("set-col");
 
-        function colorHandler() {
-            drawPreview(c);
-            reqColor(c);
-        }
-        console.log(available_colors.includes(c));
-        if (c === color) {
-            element.style.backgroundColor = `rgba(var(--color-${c}), 0.3)`;
+    const list = document.getElementById("colorList");
+    list.innerHTML = "";
+    for (let i = 0; i < COLORS.length; i++) {
+        const c = COLORS[i];
+
+        const a = document.createElement("a");
+        a.className = "list-group-item list-group-item-action";
+        a.style.color = `rgb(var(--color-${c}))`
+        a.innerText = c;
+
+        if (c === my.color) {
+            a.style.backgroundColor = `rgba(var(--color-${c}), 0.3)`;
         } else if (!available_colors.includes(c)) {
-            element.style.backgroundColor = "#8b8b8b";
-            element.removeEventListener("click", colorHandler);
+            a.style.backgroundColor = "#8b8b8b";
         } else {
-            element.style.backgroundColor = "";
-            element.addEventListener("click", colorHandler);
+            a.style.backgroundColor = "";
+            let handler = colorHandler(c);
+            a.addEventListener("click", handler, { capture: true });
+            a.classList.add("clickable")
         }
+        list.appendChild(a);
     }
 }
 
@@ -181,16 +219,7 @@ function drawPreview(c) {
     });
 }
 
-function copyInvite() {
-    copyToClipboard(document.getElementById('link'));
-    console.log("copied");
-}
-
-window.s = socket;
-
-document.getElementById("copy-link").addEventListener("click", copyInvite);
+document.getElementById("copy-link").addEventListener("click", () => copyToClipboard(document.getElementById('link')));
 document.getElementById("leave").addEventListener("click", leave);
 document.getElementById("start").addEventListener("click", start);
-document.getElementById("colorButton").addEventListener("click", () => drawPreview(color));
-window.sc = reqColor
-window.sm = reqMrX
+document.getElementById("colorButton").addEventListener("click", () => drawPreview(my.color));

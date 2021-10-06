@@ -7,6 +7,10 @@
     }
 }
 
+body {
+    transition: opacity 0.2s;
+}
+
 #players {
     /* text-align: center; */
     width: 42vw;
@@ -31,6 +35,15 @@
     top: 0.5vh;
 }
 
+#buttons {
+    display: flex;
+    justify-content: center;
+    padding: 3vh;
+    font-size: 16px;
+    width: 35vw;
+    margin: auto;
+}
+
 .button {
     border-radius: 5px;
     flex-grow: 1;
@@ -43,17 +56,8 @@
     margin: auto;
 }
 
-#buttons {
-    display: flex;
-    justify-content: center;
-    padding: 3vh;
-    font-size: 16px;
-    width: 35vw;
-    margin: auto;
-}
-
-.list-group-item {
-    text-align: center;
+#colorButton {
+    display: none;
 }
 
 #copy-link {
@@ -63,10 +67,6 @@
 #start {
     background-color: #1ED760;
     display: none;
-}
-
-body {
-    transition: opacity 0.2s;
 }
 
 .los {
@@ -81,6 +81,10 @@ body {
 #playerheadpath {
     transform-origin: 25% 30%;
     transform: rotate(-90deg);
+}
+
+.list-group-item {
+    text-align: center;
 }
 
 .modal-backdrop {background: none;}

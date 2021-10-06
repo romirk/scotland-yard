@@ -1,3 +1,5 @@
+from re import compile, search
+
 from django.http import HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -7,6 +9,7 @@ from scotlandyardgame.engine.constants import AVAILABLE_COLORS
 
 from . import multiplayer
 
+name_re = compile(r"^\w+$")
 
 def redirectWithError(location, errmsg):
     return redirect(reverse(location, kwargs={"error": errmsg}))
@@ -33,8 +36,8 @@ def index(request: HttpRequest, game_id='', error=None):
 
     if request.method == "POST":  # (create and) join game
         player_name = request.POST.get("player_name")
-        if not player_name:
-            return redirectWithError("indexerror", "empty name")
+        if not search(name_re, player_name):
+            return redirectWithError("indexerror", "invalid name")
 
         try:
             if not isJoining:

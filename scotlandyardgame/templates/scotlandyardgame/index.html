@@ -43,7 +43,7 @@
                         <div class="row g-2">
                             <div class="col-9">
                                 <input class="form-control" type="text" name="player_name" id="player_name"
-                                    placeholder="Name" />
+                                    placeholder="Name" pattern="^\w+$" title="letters, numbers and underscores"/>
                                 <input type="hidden" id="game_id" name="game_id" value="{{ game_id }}">
                             </div>
                             <div class="col-3">

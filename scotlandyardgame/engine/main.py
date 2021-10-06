@@ -79,6 +79,7 @@ class ScotlandYard:
     # public methods
 
     def getHostID(self) -> str:
+        """returns the ID of the game host"""
         return self.__host.ID
 
     def getPlayerIDs(self) -> list[str]:

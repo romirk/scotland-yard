@@ -40,9 +40,7 @@ class SYConsumer(AsyncWebsocketConsumer):
                 await self.channel_layer.group_send(self.game_id, LobbyProtocol.LOS(self.player_id))
                 await self.delayedRelease()
             else:
-                await self.channel_layer.group_send(self.game_id, LobbyProtocol.remove(self.player_id))
-                await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(getMrX(self.game_id)))
-
+                await self.removeMessage()
         await self.channel_layer.group_discard(self.game_id, self.channel_name)
 
     async def ws_send(self, event):
@@ -52,9 +50,24 @@ class SYConsumer(AsyncWebsocketConsumer):
         if timeout > 0:
             await sleep(timeout)
         if self.player_id in trackdisconnected:
+            game = getGameByID(self.game_id)
+            prevHost, prevX = game.getHostID(), game.getMrX()
             leaveRoom(self.game_id, self.player_id)
-            await self.channel_layer.group_send(self.game_id, LobbyProtocol.remove(self.player_id))
-            await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(getMrX(self.game_id)))
+            if game.state == GameState.STOPPED:
+                await self.channel_layer.group_send(self.game_id, LobbyProtocol.abort())
+                return
+            newHost, newX = game.getHostID(), game.getMrX()
+            await self.removeMessage(
+                newHost if newHost != prevHost else None,
+                newX if newX != prevX else None
+            )
+
+    async def removeMessage(self, newHost=None, newX=None):
+        await self.channel_layer.group_send(self.game_id, LobbyProtocol.remove(self.player_id))
+        if newHost is not None:
+            await self.channel_layer.group_send(self.game_id, LobbyProtocol.setHost(newHost))
+        if newX is not None:
+            await self.channel_layer.group_send(self.game_id, LobbyProtocol.setMrX(newX))
 
 
 class LobbyRTConsumer(SYConsumer):

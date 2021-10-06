@@ -74,16 +74,13 @@
                         </div>
                         <div id="colorOptions" class="col-6">
                             <div id="colorList" class="list-group">
-                                {% for c in colors %}
-                                <a id="list-{{c}}" set-col="{{c}}"
-                                    class="list-group-item list-group-item-action"><span style="color: rgb(var(--color-{{c}}));">{{c}}</span></a>
-                                {% endfor %}
+                                
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    <button id="saveColor" type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -99,11 +96,12 @@
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
     <script>
-        const player_id = '{{ player_id }}';
-        const game_id = '{{ game_id }}';
-        const name = '{{ name }}';
+        const PLAYER_ID = '{{ player_id }}';
+        const GAME_ID = '{{ game_id }}';
+        const NAME = '{{ name }}';
         let color = '{{ color }}';
-        const isHost = {% if is_host %}true{% else %} false{% endif %};
+        const COLORS = {{colors|safe}};
+        const IS_HOST = {% if is_host %}true{% else %} false{% endif %};
         function circlePath(cx, cy, r) {
             return 'M ' + cx + ' ' + cy + ' m -' + r + ', 0 a ' + r + ',' + r + ' 0 1,0 ' + (r * 2) + ',0 a ' + r + ',' + r + ' 0 1,0 -' + (r * 2) + ',0';
         }

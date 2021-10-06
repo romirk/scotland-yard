@@ -36,7 +36,7 @@ class LobbyProtocol:
         """acknowledge ws connection"""
         players = [getPlayerInfo(p) for p in getPlayerIDs(game_id) if p not in LobbyProtocol.trackdisconnected]
         return f"ACKNOWLEDGE {len(players)}\n" + "\n".join(
-            f"{p_info['player_id']} {p_info['name']} {p_info['color']}" for p_info in players
+            f"{p_info['player_id']} {p_info['name']} {p_info['color']} {p_info['is_host']}" for p_info in players
         )
 
     @staticmethod
@@ -45,7 +45,7 @@ class LobbyProtocol:
         playerInfo = getPlayerInfo(player_id)
         return {
             "type": "ws.send",
-            "text": f"NEW_PLAYER {player_id} {playerInfo['name']} {playerInfo['color']}"
+            "text": f"NEW_PLAYER {player_id} {playerInfo['name']} {playerInfo['color']} {playerInfo['is_host']}"
         }
 
     @staticmethod
@@ -54,6 +54,14 @@ class LobbyProtocol:
         return {
             "type": "ws.send",
             "text": f"SET_COLOR {player_id} {newColor}"
+        }
+
+    @staticmethod
+    def setHost(player_id: str) -> dict:
+        """set player to lobby host"""
+        return {
+            "type": "ws.send",
+            "text": f"SET_HOST {player_id}"
         }
 
     @staticmethod
@@ -86,4 +94,12 @@ class LobbyProtocol:
         return {
             "type": "ws.send",
             "text": f"DISCONNECT {player_id}"
+        }
+
+    @staticmethod
+    def abort():
+        """abort game"""
+        return {
+            "type": "ws.send",
+            "text": f"ABORT"
         }

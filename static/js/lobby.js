@@ -44,14 +44,13 @@ socket.onmessage = msg => {
                     my.isHost = info[3] === "True";
                 }
             });
-        return;
     } else if (key === "NEW_PLAYER") {
         if (!players.map(e => e.player_id).includes(tokens[1]))
             players.push({ player_id: tokens[1], name: tokens[2], color: tokens[3] });
-            if (my.player_id === tokens[1]) {
-                my.color = tokens[3];
-                my.isHost = tokens[4] === "True";
-            }
+        if (my.player_id === tokens[1]) {
+            my.color = tokens[3];
+            my.isHost = tokens[4] === "True";
+        }
         if (los.includes(tokens[1]))
             los.splice(los.findIndex(p => p === tokens[1]), 1);
     } else if (key === "SET_HOST") {
@@ -182,7 +181,7 @@ function updateColorUI() {
         colorBtn.style.display = "none";
     }
     else {
-        colorBtn.style.display = "initial";
+        colorBtn.style.display = "block";
     }
 
     const list = document.getElementById("colorList");

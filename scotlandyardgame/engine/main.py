@@ -162,7 +162,7 @@ class ScotlandYard:
         if player_id in self.__players:
             raise ValueError("player already connected")
 
-        is_host = not self.__players  # true when self.players is empty
+        is_host = not len(self.__players)  # true when self.players is empty
         print(f"\t\thost: {is_host}")
 
         if is_host:

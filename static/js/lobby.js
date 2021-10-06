@@ -65,6 +65,7 @@ socket.onmessage = msg => {
     } else if (key === "SET_COLOR") {
         let p = players.findIndex(player => player.player_id === tokens[1]);
         players[p].color = tokens[2];
+        my.color = tokens[2];
     } else if (key === "STARTGAME") {
         console.log("starting game"); // TODO do this better
         window.location.assign("/game");
@@ -79,8 +80,8 @@ socket.onmessage = msg => {
     updateUI();
 }
 
-function reqColor(color) {
-    socket.send(`REQCOLOR ${my.player_id} ${color}`);
+function reqColor(c) {
+    socket.send(`REQCOLOR ${my.player_id} ${c}`);
 }
 
 function reqMrX(pid) {

@@ -105,7 +105,7 @@ function leave() {
 
 
 function updateUI() {
-    players.sort((a, b) => a.player_id === player_id ? -1 : b.player_id === player_id ? 1 : 0);
+    players.sort((a, b) => a.player_id === my.player_id ? -1 : b.player_id === my.player_id ? 1 : 0);
 
     let avail_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
 

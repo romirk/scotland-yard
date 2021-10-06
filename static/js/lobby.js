@@ -65,7 +65,8 @@ socket.onmessage = msg => {
     } else if (key === "SET_COLOR") {
         let p = players.findIndex(player => player.player_id === tokens[1]);
         players[p].color = tokens[2];
-        my.color = tokens[2];
+        if (tokens[[1]] === my.player_id)
+            my.color = tokens[2];
     } else if (key === "STARTGAME") {
         console.log("starting game"); // TODO do this better
         window.location.assign("/game");

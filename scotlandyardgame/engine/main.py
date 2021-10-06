@@ -215,14 +215,15 @@ class ScotlandYard:
         if self.state == GameState.PENDING:
             self.__available_locations.append(player.location)
         del self.__players[player_id]
-        self.__order.remove(player_id)
+
+        if not isX:
+            self.__order.remove(player_id)
 
         if not len(self.__players):
             self.end(EndState.ABORTED)
             return
 
         if isX:
-            print(self.__players)
             newXID = choice(self.__order)
             self.__mrX = self.__getPlayerByID(newXID)
             self.setMrX(self.__mrX.ID)

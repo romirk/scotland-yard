@@ -12,7 +12,7 @@ try {
         isHost: IS_HOST
     };
 } catch (error) {
-    window.location.assign("/")
+    window.location.assign("/");
 }
 
 const my = info;
@@ -22,7 +22,7 @@ const los = [];
 let available_colors = ['red', 'blue', 'purple', 'green', 'yellow', 'orange', 'X'];
 
 
-document.getElementById("link").innerHTML = window.location.host + '/' + my.game_id;
+document.getElementById("link").innerHTML = location.protocol + "//"+ window.location.host + '/' + my.game_id;
 
 const socket = new WebSocket(`ws${location.protocol === 'https:' ? 's' : ''}://${window.location.host}/ws/lobby/${my.game_id}`);
 
@@ -38,36 +38,26 @@ socket.onmessage = msg => {
         if (parseInt(tokens[1]) !== 0)
             playerdata.forEach(playerstr => {
                 let info = playerstr.split(' ');
-                players.push({ player_id: info[0], name: info[1], color: info[2] });
-                if (my.player_id === info[0]) {
-                    my.color = info[2];
-                    my.isHost = info[3] === "True";
-                }
+                players.push({ player_id: info[0], name: info[1], color: info[2], isHost: info[3] });
             });
     } else if (key === "NEW_PLAYER") {
         if (!players.map(e => e.player_id).includes(tokens[1]))
-            players.push({ player_id: tokens[1], name: tokens[2], color: tokens[3] });
-        if (my.player_id === tokens[1]) {
-            my.color = tokens[3];
-            my.isHost = tokens[4] === "True";
-        }
+            players.push({ player_id: tokens[1], name: tokens[2], color: tokens[3], isHost: tokens[4] });
+
         if (los.includes(tokens[1]))
             los.splice(los.findIndex(p => p === tokens[1]), 1);
     } else if (key === "SET_HOST") {
         my.isHost = my.player_id === tokens[1];
+        players.find(p => p.player_id === my.player_id).isHost = my.isHost;
     } else if (key === "SET_MRX") {
         let oldX = players.findIndex(player => player.color === 'X');
         let newX = players.findIndex(player => player.player_id === tokens[1]);
         if (oldX !== -1)
             players[oldX].color = players[newX].color;
         players[newX].color = 'X';
-        if (tokens[[1]] === my.player_id)
-            my.color = tokens[2];
     } else if (key === "SET_COLOR") {
         let p = players.findIndex(player => player.player_id === tokens[1]);
         players[p].color = tokens[2];
-        if (tokens[[1]] === my.player_id)
-            my.color = tokens[2];
     } else if (key === "STARTGAME") {
         console.log("starting game"); // TODO do this better
         window.location.assign("/game");
@@ -76,9 +66,12 @@ socket.onmessage = msg => {
             los.push(tokens[1]);
     } else if (key === "DISCONNECT") {
         players.splice(players.findIndex(p => p.player_id === tokens[1]), 1);
-        if (tokens[[1]] === my.player_id)
+        if (tokens[1] === my.player_id)
             window.location.assign("/");
     }
+
+    const self = players.find(p => p.player_id === my.player_id)
+    my.color = self.color;
     updateUI();
 }
 

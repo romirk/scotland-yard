@@ -98,6 +98,5 @@ def leaveRoom(game_id: str, player_id: str):
     game = getGameByID(game_id)
     if game.state != GameState.CONNECTING:
         del player_games[player_id]
-        print(player_games)
         game.removePlayer(player_id)
         print(f"removed {player_id} from {game_id}")

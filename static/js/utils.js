@@ -47,8 +47,13 @@ function copyToClipboard(elem) {
         // clear temporary content
         target.textContent = "";
     }
-    if(temp) target.remove();
+    if (temp) target.remove();
     return succeed;
 }
 
-export { copyToClipboard };
+
+const overlay = {
+    on: () => document.getElementById("overlay").style.display = "block",
+    off: () => document.getElementById("overlay").style.display = "none"
+}
+export { copyToClipboard, overlay };

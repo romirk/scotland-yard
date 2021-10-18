@@ -1,5 +1,5 @@
 import { colorGrads, grad } from "./constants.js";
-import { copyToClipboard } from "./utils.js";
+import { copyToClipboard, overlay } from "./utils.js";
 import anime from "./anime.es.js"
 
 let info;
@@ -59,8 +59,8 @@ socket.onmessage = msg => {
         let p = players.findIndex(player => player.player_id === tokens[1]);
         players[p].color = tokens[2];
     } else if (key === "STARTGAME") {
-        console.log("starting game"); // TODO do this better
-        window.location.assign("/game");
+        overlay.on(); 
+        setTimeout(() => window.location.assign("/game"), 1000);
     } else if (key === "LOS") {
         if (!los.includes(tokens[1]))
             los.push(tokens[1]);

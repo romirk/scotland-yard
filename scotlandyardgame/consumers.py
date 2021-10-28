@@ -3,8 +3,7 @@ from asyncio import sleep
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from .engine.constants import MAX_PLAYERS, GameState
-from .multiplayer import (getGameByID, getGameIDWithPlayer, getMrX, getPlayerIDs, joinRoom, leaveRoom,
-                          setColor, setMrX, startGame)
+from .multiplayer import *
 from .protocols import GameProtocol, LobbyProtocol
 
 trackdisconnected = set()
@@ -125,7 +124,7 @@ class LobbyRTConsumer(SYConsumer):
             if c < MAX_PLAYERS:
                 return
             try:
-                startGame(self.game_id)
+                startRollCall(self.game_id)
             except RuntimeError as e:
                 print(e)
             else:
@@ -142,5 +141,22 @@ class GameRTConsumer(SYConsumer):
         )
 
         data = GameProtocol.parse(text_data)
-        self.player_id = data.player_id if not hasattr(
-            self, 'player_id') else self.player_id
+        self.player_id = data.player_id if not hasattr(self, 'player_id') else self.player_id
+
+
+        if data.type == "JOIN":
+            if getGameIDWithPlayer(self.player_id) != self.game_id:
+                raise RuntimeError
+            if getGameState(self.game_id) != GameState.CONNECTING:
+                raise RuntimeError("Can't connect to this game")
+
+            answerRollCall(self.game_id, self.player_id)
+            
+            await self.channel_layer.group_send(self.game_id, GameProtocol.playerJoined(self.player_id))
+            await self.send(GameProtocol.acknowledge(self.game_id))
+            if self.player_id in trackdisconnected:
+                trackdisconnected.remove(self.player_id)
+
+            if getGameState(self.game_id) == GameState.RUNNING:
+                await self.channel_layer.group_send(self.game_id, GameProtocol.gameStarting())
+

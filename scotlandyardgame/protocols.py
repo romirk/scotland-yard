@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .multiplayer import getPlayerIDs, getPlayerInfo
+from .multiplayer import getGameByID, getPlayerIDs, getPlayerInfo
 
 
 class LobbyProtocol:
@@ -106,23 +106,56 @@ class LobbyProtocol:
 
 class GameProtocol:
     # TODO GameProtocol
-    ACCEPTED_KEYWORDS = ["JOIN", "READY"]
+    ACCEPTED_KEYWORDS = ["JOIN", "REQMOVE"]
 
     def __init__(self, type: str, player_id: str) -> None:
         # purely for returning from parser
         self.type = type
         self.player_id = player_id
-        self.color = None
+        self.destination = None
 
     @staticmethod
-    def parse(msg: str) -> LobbyProtocol:
-        """parse incoming ws client message"""
+    def parse(msg: str) -> GameProtocol:
+        """
+        parse incoming ws client message
+
+        For Double Moves:
+        ret.double = ((Ticket 1, Destination 1),(Ticket 2, Destination  2))
+        """
         tokens = msg.split()
         keyword = tokens[0]
 
-        if len(tokens) < 2 or keyword not in LobbyProtocol.ACCEPTED_KEYWORDS:
+        if len(tokens) < 2 or keyword not in GameProtocol.ACCEPTED_KEYWORDS:
             raise ValueError("invalid message")
 
-        ret = LobbyProtocol(keyword, tokens[1])
+        ret = GameProtocol(keyword, tokens[1])
+
+        if keyword == "JOIN":
+            pass
+        elif keyword == "REQMOVE":
+            ret.ticket = tokens[2]          
+            if ret.ticket == "double":
+                ret.double = ((tokens[3],int(tokens[4])),(tokens[5],int(tokens[6]))) 
+            else:
+                ret.destination = int(tokens[3])
 
         return ret
+
+    @staticmethod
+    def playerJoined(player_id: str) -> dict:
+        return {
+            "type": "ws.send",
+            "text": f"PLAYER_JOINED {player_id}"
+        }
+
+    @staticmethod
+    def acknowledge(game_id: str) -> str:
+        roll = getGameByID(game_id).rollCall
+        return "ACKNOWLEDGE " + " ".join(roll)
+
+    @staticmethod
+    def gameStarting() -> dict:
+        return {
+            "type": "ws.send",
+            "text": f"GAME_STARTING"
+        }

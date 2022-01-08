@@ -19,7 +19,7 @@ class ScotlandYard:
         self.__players: dict[str, Player] = {}
         self.__order: list[str] = []
 
-        self.__available_locations: list[int] = AVAILABLE_MOVES.copy()
+        self.__available_start_locations: list[int] = AVAILABLE_START_LOCATIONS.copy()
         self.__available_colors: list[str] = AVAILABLE_COLORS.copy()
 
         # cycle = everyone gets 1 move
@@ -174,9 +174,9 @@ class ScotlandYard:
 
         print(f"\t\tcolor: {col}")
 
-        loc_index = randrange(len(self.__available_locations))
-        loc = self.__available_locations[loc_index]
-        del self.__available_locations[loc_index]
+        loc_index = randrange(len(self.__available_start_locations))
+        loc = self.__available_start_locations[loc_index]
+        del self.__available_start_locations[loc_index]
 
         print(f"\t\tlocation: {loc}")
 
@@ -213,7 +213,7 @@ class ScotlandYard:
         self.__available_colors.append(player.color)
 
         if self.state == GameState.PENDING:
-            self.__available_locations.append(player.location)
+            self.__available_start_locations.append(player.location)
         del self.__players[player_id]
 
         if not isX:

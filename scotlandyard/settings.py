@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-0gh!qz1g6c22l!%f5l#)qawg+$-tn#to$b9r#aosxq5ibhwr$0
 DEBUG = True
 
 ALLOWED_HOSTS = ["ancient-headland-46868.herokuapp.com", "scotlandyard.imagifight.in", "localhost"]
-CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS.copy()
+CSRF_TRUSTED_ORIGINS = ["https://ancient-headland-46868.herokuapp.com", "http://scotlandyard.imagifight.in", "http://localhost"]
 
 
 # Application definition

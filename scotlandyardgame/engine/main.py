@@ -1,4 +1,4 @@
-from random import choice, randrange
+from random import choice, randrange, shuffle
 from typing import Final
 
 from .constants import *
@@ -22,8 +22,8 @@ class ScotlandYard:
         self.__available_start_locations: list[int] = AVAILABLE_START_LOCATIONS.copy()
         self.__available_colors: list[str] = AVAILABLE_COLORS.copy()
 
-        # cycle = everyone gets 1 move
-        self.__moves: int = 0
+        # cycle = everyone gets 1 turn
+        self.__turn: int = 0
         self.__cycle: int = 0
         self.__mrX: Player = None
         self.__host: Player = None
@@ -70,8 +70,8 @@ class ScotlandYard:
 
     def __advanceTurn(self):
         """called at the end of move to advance turn"""
-        self.__moves = (self.__moves + 1) % 6
-        if not self.__moves:
+        self.__turn = (self.__turn + 1) % 6
+        if not self.__turn:
             self.__cycle += 1
         if self.__cycle >= CYCLE_LIMIT:
             self.end(EndState.MR_X_WINS)
@@ -121,16 +121,18 @@ class ScotlandYard:
 
     def getWhoseTurn(self) -> str:
         """return player ID of the player whose turn it currently is"""
-        if not self.__moves:
+        if not self.__turn:
             return self.__mrX.ID
         else:
-            self.__order[self.__moves - 1]
+            self.__order[self.__turn - 1]
 
     def setColor(self, player_id: str, color: str):
         """set player color"""
+        player = self.__getPlayerByID(player_id)
+        if color == player.color:
+            return
         if color not in self.__available_colors:
             raise ValueError("Color not available.")
-        player = self.__getPlayerByID(player_id)
         if player.is_mr_x:
             raise RuntimeError("Cannot assign color to Mr. X.")
         oldColor = player.color
@@ -140,19 +142,17 @@ class ScotlandYard:
 
     def setMrX(self, player_id: str):
         """set a player to Mr. X, unsetting the previous Mr. X, if they exist"""
+        if self.state == GameState.RUNNING:
+            raise RuntimeError("Game already started")
+
         player = self.__getPlayerByID(player_id)
         oldX = self.__mrX
 
         if oldX is not None:
             oldX.color = player.color
-            if self.__order:
-                self.__order.insert(randrange(len(self.__order)), oldX.ID)
-            else:
-                self.__order.append(oldX.ID)
 
         self.__mrX = player
         player.color = 'X'
-        self.__order.remove(player.ID)
 
     def addPlayer(self, player_id: str, player_name: str):
         """add a player to the game"""
@@ -183,10 +183,6 @@ class ScotlandYard:
         newPlayer = Player(player_id, player_name, loc, col)
 
         self.__players[player_id] = newPlayer
-        if self.__order:
-            self.__order.insert(randrange(len(self.__order)), newPlayer.ID)
-        else:
-            self.__order.append(newPlayer.ID)
 
         print("\tdone.\ntotal players connected: " + str(len(self.__players)))
 
@@ -205,6 +201,7 @@ class ScotlandYard:
         isX = player.is_mr_x
         isHost = player.ID == self.getHostID()
 
+        # if player is removed during gameplay, end the game
         if self.state == GameState.RUNNING:
             self.end(EndState.ABORTED)
 
@@ -216,21 +213,17 @@ class ScotlandYard:
             self.__available_start_locations.append(player.location)
         del self.__players[player_id]
 
-        if not isX:
-            self.__order.remove(player_id)
-
         if not len(self.__players):
             self.end(EndState.ABORTED)
             return
 
         if isX:
-            newXID = choice(self.__order)
+            newXID = choice(tuple(self.__players.keys()))
             self.__mrX = self.__getPlayerByID(newXID)
             self.setMrX(self.__mrX.ID)
 
         if isHost:
-            p = self.__order + [self.__mrX.ID]
-            newHostID = choice(p)
+            newHostID = choice(tuple(self.__players.keys()))
             self.__host = self.__getPlayerByID(newHostID)
 
     def start(self):
@@ -243,9 +236,13 @@ class ScotlandYard:
         if self.rollCall != set(self.getPlayerIDs()):
             raise RuntimeError("Roll call doesn't match players")
 
+        detectives = self.getPlayerIDs().remove(self.__mrX.ID)
+        shuffle(detectives)
+        self.__order = [self.__mrX.ID] + detectives
+
         self.state = GameState.RUNNING
 
-    def end(self, reason: EndState):
+    def end(self, reason: EndState = EndState.ABORTED):
         """end the game, optionally specify reason"""
         self.state = GameState.STOPPED
         self.stop_reason = reason

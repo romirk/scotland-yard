@@ -61,6 +61,11 @@ def lobby(request: HttpRequest):
     if game_id is None:
         return redirectWithError("indexerror", "not in game")
 
+    if multiplayer.getGameByID(game_id).state == multiplayer.GameState.STOPPED:
+        return redirectWithError("indexerror", "game stopped")
+    if multiplayer.getGameByID(game_id).state == multiplayer.GameState.RUNNING:
+        return redirect("game")
+        
     context = multiplayer.games[game_id].getPlayerInfo(player_id)
     context["colors"] = AVAILABLE_COLORS
     print(f"{context['name']} in lobby")

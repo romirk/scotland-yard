@@ -91,7 +91,7 @@ def answerRollCall(game_id: str, player_id: str):
 
 def move(game_id: str, player_id: str, location: int, ticket: str):
     game = getGameByID(game_id)
-    game.move(player_id, location, ticket)
+    game.requestMove(player_id, location, ticket)
 
 
 def leaveRoom(game_id: str, player_id: str):

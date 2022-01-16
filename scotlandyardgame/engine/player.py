@@ -52,6 +52,10 @@ class Player:
         """returns number of tickets of type ```type``` available to this player."""
         return self.__tickets[type]
 
+    def setTickets(self, tickets: dict[Ticket, int]):
+        """set the tickets for this player"""
+        self.__tickets = tickets
+
     def getAllTickets(self) -> dict[Ticket, int]:
         """returns all tickets available to this player."""
         return self.__tickets.copy()

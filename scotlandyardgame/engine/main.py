@@ -87,7 +87,6 @@ class ScotlandYard:
             player.location = old_location
             player.setTickets(old_tickets)
             raise e
-        
 
     def __checkEndState(self) -> EndState:
         """checks if game is over"""

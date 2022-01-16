@@ -141,6 +141,9 @@ class GameRTConsumer(SYConsumer):
         )
 
         data = GameProtocol.parse(text_data)
+        if data is None:
+            print("invalid ws command (probably)")
+            return
         self.player_id = data.player_id if not hasattr(self, 'player_id') else self.player_id
 
 

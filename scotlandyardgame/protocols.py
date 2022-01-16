@@ -125,8 +125,8 @@ class GameProtocol:
         tokens = msg.split()
         keyword = tokens[0]
 
-        # if len(tokens) < 2 or keyword not in GameProtocol.ACCEPTED_KEYWORDS:
-        #     raise ValueError("invalid message")
+        if len(tokens) < 2 or keyword not in GameProtocol.ACCEPTED_KEYWORDS:
+            return
 
         ret = GameProtocol(keyword, tokens[1])
 

@@ -78,6 +78,14 @@ def lobby(request: HttpRequest):
 def game(request: HttpRequest):
     player_id = request.session["player_id"]
     game_id = multiplayer.getGameIDWithPlayer(player_id)
+    if game_id is None:
+        return redirectWithError("indexerror", "not in game")
+    if multiplayer.getGameByID(game_id).state == multiplayer.GameState.STOPPED:
+        return redirectWithError("indexerror", "game stopped")
+    if multiplayer.getGameByID(game_id).state == multiplayer.GameState.RUNNING:
+        return redirect("game")
+        
+
     context = multiplayer.games[game_id].getPlayerInfo(player_id)
     print(f"{context['name']} in game")
     return render(request, 'scotlandyardgame/game.html', context=context)

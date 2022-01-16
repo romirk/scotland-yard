@@ -21,4 +21,3 @@ class EngineTestCase(TestCase):
 
         self.game.start()
 
-    

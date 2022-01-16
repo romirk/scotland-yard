@@ -91,6 +91,8 @@ def answerRollCall(game_id: str, player_id: str):
 
 def move(game_id: str, player_id: str, location: int, ticket: str):
     game = getGameByID(game_id)
+    if game.state != GameState.RUNNING:
+        raise ValueError("Game is not running")
     game.requestMove(player_id, location, ticket)
 
 

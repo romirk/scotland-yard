@@ -74,6 +74,14 @@
         }/ws/game/${GAME_ID}`
       );
 
+      socket.onclose = function (event) {
+        console.log("Socket closed");
+      };
+
+      socket.onopen = function (event) {
+        console.log("Socket opened");
+      };
+
       function wsSend() {
         const command = document.getElementById("ws-command").value;
         socket.send(command);

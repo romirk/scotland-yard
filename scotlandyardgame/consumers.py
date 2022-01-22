@@ -164,10 +164,10 @@ class GameRTConsumer(SYConsumer):
                 await self.channel_layer.group_send(self.game_id, GameProtocol.gameStarting())
 
         elif data.type == "REQMOVE":
-            ticket = data.ticket
-            destination = data.destination
-            if ticket == "double":
-                # TODO handle double
-                pass
-            else:
-                move(self.game_id, self.player_id, ticket, destination)
+            try:
+                moveMade = move(self.game_id, self.player_id, data.ticket, data.movedata)
+                await self.channel_layer.group_send(self.game_id, GameProtocol.playerMoved(moveMade))
+                if moveMade["is_mr_x"]:
+                    await self.send(GameProtocol.updateMrX(moveMade["destination"]))
+            except:
+                raise NotImplementedError

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .multiplayer import getGameByID, getPlayerIDs, getPlayerInfo
+from .engine.constants import Ticket
 
 
 class LobbyProtocol:
@@ -134,10 +135,15 @@ class GameProtocol:
             pass
         elif keyword == "REQMOVE":
             ret.ticket = tokens[2]          
-            if ret.ticket == "double":
-                ret.double = ((tokens[3],int(tokens[4])),(tokens[5],int(tokens[6]))) 
+            if ret.ticket == Ticket.DOUBLE:
+                ret.movedata = {
+                    "ticket1":tokens[3],
+                    "location1":tokens[4],
+                    "ticket2":tokens[5],
+                    "location2":tokens[6]
+                }
             else:
-                ret.destination = int(tokens[3])
+                ret.movedata = {"location": int(tokens[3])}
 
         return ret
 
@@ -159,3 +165,24 @@ class GameProtocol:
             "type": "ws.send",
             "text": f"GAME_STARTING"
         }
+
+    @staticmethod
+    def playerMoved(moveMade: dict) -> dict:
+        return_msg = f'PLAYER_MOVED {moveMade["player_id"]} {moveMade["cycle_number"]} {moveMade["is_mr_x"]} {moveMade["ticket"]} '
+        if moveMade["is_mr_x"]:
+            if moveMade["ticket"] == Ticket.DOUBLE:
+                return_msg += f'{moveMade["double_tickets"][0]} {moveMade["double_tickets"][1]} '
+            if moveMade["is_surface_move"]:
+                return_msg += f'{moveMade["destination"]}'
+            
+        else:
+            return_msg += moveMade["destination"]
+
+        return {
+            "type":"ws.send",
+            "text": return_msg
+        }
+    
+    @staticmethod
+    def updateMrX(destination: int) -> str:
+        return f'UPDATE_X {destination}'

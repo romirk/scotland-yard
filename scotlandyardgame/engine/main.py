@@ -32,6 +32,7 @@ class ScotlandYard:
         # public
         self.state: GameState = GameState.PENDING
         self.rollCall: set[str] = set()
+        self.moveLog: list[dict] = []
 
     # getters
 
@@ -296,3 +297,17 @@ class ScotlandYard:
         end_state = self.__checkEndState()
         if end_state is not EndState.NOT_ENDED:
             self.end(end_state)
+
+        move = {
+            "player_id": player_id,
+            "destinaiton": player.location,
+            "ticket": ticket,
+            "is_mr_x": player.is_mr_x,
+            "is_surface_move": self.__cycle in SURFACE_MOVES,
+            "double_tickets": (data["ticket1"],data["ticket2"]) if ticket == Ticket.DOUBLE else None,
+            "double_locations":  (data["location1"],data["location2"]) if ticket == Ticket.DOUBLE else None,
+            "cycle_number": self.__cycle
+        }
+
+        self.moveLog.append(move)
+        return move

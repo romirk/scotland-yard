@@ -1,7 +1,5 @@
 from uuid import uuid4
 
-from matplotlib.pyplot import get
-
 from .engine.constants import MAX_PLAYERS, GameState,Ticket
 from .engine.main import ScotlandYard
 

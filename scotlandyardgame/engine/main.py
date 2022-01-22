@@ -148,6 +148,18 @@ class ScotlandYard:
             "is_host": p.ID == self.getHostID()
         }
 
+    def getGameInfo(self) -> dict:
+        info = {
+            "game_id": self.ID,
+            "state": self.state,
+            "host_id": self.__host,
+            "player_info": [self.getPlayerInfo(p) for p in self.__players.keys()],
+            "move_order": self.__order,
+            "cycle": self.__cycle,
+            "turn": self.__turn,
+            "mr_x_ticket_log": (move['ticket'] for move in self.moveLog if move["is_mr_x"])
+        }
+
     def getMrX(self) -> str:
         """returns the ID of Mr. X"""
         return self.__mrX.ID if self.__mrX is not None else None

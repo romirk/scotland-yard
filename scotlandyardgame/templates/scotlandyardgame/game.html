@@ -26,12 +26,11 @@
         />
       </g>
     </svg> {% endcomment %}
-
+  
     <code id = "gameLog">
-
     </code>
 
-
+    <br>
     <input type="text" id="ws-command" />
     <button id="send" onclick="wsSend()">send</button>
 
@@ -87,8 +86,15 @@
         console.log("Socket opened");
       };
 
+
+      const prompt = document.getElementById("ws-command");
+      prompt.addEventListener("keyup", (event) => {
+        if(event.keyCode === 13){
+          wsSend();
+        }
+      })
       function wsSend() {
-        const command = document.getElementById("ws-command").value;
+        const command = prompt.value;
         socket.send(command);
       }
 

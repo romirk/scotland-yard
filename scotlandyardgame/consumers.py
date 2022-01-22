@@ -171,3 +171,6 @@ class GameRTConsumer(SYConsumer):
                     await self.send(GameProtocol.updateMrX(moveMade["destination"]))
             except:
                 raise NotImplementedError
+        
+        elif data.type == "GET_GAME_INFO":
+            await self.send(GameProtocol.gameInfo(getGameInfo(self.game_id)))

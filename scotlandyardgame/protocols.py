@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .multiplayer import getGameByID, getPlayerIDs, getPlayerInfo
 from .engine.constants import Ticket
+import json
 
 
 class LobbyProtocol:
@@ -107,7 +108,7 @@ class LobbyProtocol:
 
 class GameProtocol:
     # TODO GameProtocol
-    ACCEPTED_KEYWORDS = ["JOIN", "REQMOVE"]
+    ACCEPTED_KEYWORDS = ["JOIN", "REQMOVE","GET_GAME_INFO"]
 
     def __init__(self, type: str, player_id: str) -> None:
         # purely for returning from parser
@@ -144,14 +145,16 @@ class GameProtocol:
                 }
             else:
                 ret.movedata = {"location": int(tokens[3])}
-
+        elif keyword == "GET_GAME_INFO":
+            pass
         return ret
 
     @staticmethod
     def playerJoined(player_id: str) -> dict:
+        player_info = getPlayerInfo(player_id)
         return {
             "type": "ws.send",
-            "text": f"PLAYER_JOINED {player_id}"
+            "text": f"PLAYER_JOINED {player_id}" + (f' {player_info["location"]}' if player_info["color"] != "X" else '')
         }
 
     @staticmethod
@@ -186,3 +189,7 @@ class GameProtocol:
     @staticmethod
     def updateMrX(destination: int) -> str:
         return f'UPDATE_X {destination}'
+    
+    @staticmethod
+    def gameInfo(info: dict) -> str:
+        return json.dumps(info)

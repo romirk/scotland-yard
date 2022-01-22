@@ -1,5 +1,7 @@
 from uuid import uuid4
 
+from matplotlib.pyplot import get
+
 from .engine.constants import MAX_PLAYERS, GameState,Ticket
 from .engine.main import ScotlandYard
 
@@ -44,6 +46,8 @@ def getPlayerIDs(game_id: str) -> list[str]:
 def getGameHost(game_id: str) -> str:
     return getGameByID(game_id).getHostID()
 
+def getGameInfo(game_id: str) -> dict:
+    return getGameByID(game_id).getGameInfo()
 
 def getMrX(game_id: str) -> str:
     return getGameByID(game_id).getMrX()

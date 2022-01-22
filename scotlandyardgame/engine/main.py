@@ -157,7 +157,8 @@ class ScotlandYard:
             "move_order": self.__order,
             "cycle": self.__cycle,
             "turn": self.__turn,
-            "mr_x_ticket_log": [move['ticket'] for move in self.moveLog if move["is_mr_x"]]
+            "mr_x_ticket_log": [move['ticket'] for move in self.moveLog if move["is_mr_x"]],
+            "roll_call": self.rollCall
         }
 
     def getMrX(self) -> str:

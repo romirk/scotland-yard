@@ -149,7 +149,7 @@ class ScotlandYard:
         }
 
     def getGameInfo(self) -> dict:
-        info = {
+        return {
             "game_id": self.ID,
             "state": self.state,
             "host_id": self.__host,

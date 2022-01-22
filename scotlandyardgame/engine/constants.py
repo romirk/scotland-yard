@@ -17,10 +17,10 @@ AVAILABLE_COLORS = [
 
 
 class GameState(Enum):
-    PENDING = auto()
-    CONNECTING = auto()
-    RUNNING = auto()
-    STOPPED = auto()
+    PENDING = "pending"
+    CONNECTING = "connecting"
+    RUNNING = "running"
+    STOPPED = "stopped"
 
 class EndState(Enum):
     NOT_ENDED = auto()

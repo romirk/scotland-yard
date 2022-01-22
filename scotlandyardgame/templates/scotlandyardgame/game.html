@@ -6,10 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scotland Yard</title>
     <link rel="stylesheet" href="/styles/game.css" />
+
+    <script>
+      const PLAYER_ID = '{{ player_id }}';
+      const GAME_ID = '{{ game_id }}';
+      const NAME = '{{ name }}';
+      const COLOR = '{{ color }}';
+      const IS_HOST = {% if is_host %}true{% else %} false{% endif %};
+    </script>
   </head>
 
   <body>
-    {% comment %} <svg id="textsvg">
+    {% comment %}
+    <svg id="textsvg">
       <g id="playerbody">
         <path
           id="playerheadpath"
@@ -25,14 +34,16 @@
           d="M 100 100 L 125 50 L 150 100 L 112 100"
         />
       </g>
-    </svg> {% endcomment %}
-  
-    <code id = "gameLog">
-    </code>
+    </svg>
+    {% endcomment %} {{ player_id }}
 
-    <br>
+    <code id="gameLog"> </code>
+
+    <br />
     <input type="text" id="ws-command" />
-    <button id="send" onclick="wsSend()">send</button>
+    <button id="send">send</button>
+
+    {% comment %}
 
     <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
     <script src="/js/anime.min.js"></script>
@@ -61,54 +72,8 @@
         duration: 1000,
       });
     </script>
+    {% endcomment %}
 
-    <script>
-      const PLAYER_ID = '{{ player_id }}';
-      const GAME_ID = '{{ game_id }}';
-      const NAME = '{{ name }}';
-      let color = '{{ color }}';
-      const IS_HOST = {% if is_host %}true{% else %} false{% endif %};
-    </script>
-
-    <script>
-      // TODO DEBUG ONLY remove this
-      const socket = new WebSocket(
-        `ws${location.protocol === "https:" ? "s" : ""}://${
-          window.location.host
-        }/ws/game/${GAME_ID}`
-      );
-
-      socket.onclose = function (event) {
-        console.log("Socket closed");
-      };
-
-      socket.onopen = function (event) {
-        console.log("Socket opened");
-      };
-
-
-      const prompt = document.getElementById("ws-command");
-      prompt.addEventListener("keyup", (event) => {
-        if(event.keyCode === 13){
-          wsSend();
-        }
-      })
-      let log = "";
-      const logElement = document.getElementById("gameLog");
-
-      function wsSend() {
-        const command = prompt.value;
-        socket.send(command);
-        log += `<br><span style="color:blue">${command}</span>`;
-        logElement.innerHTML = log;
-      }
-
-      socket.onmessage = (msg) => {
-        console.log(msg);
-        log += "<br>" + msg.data;
-        logElement.innerHTML = log;
-      }
-        
-    </script>
+    <script src="/js/game.js"></script>
   </body>
 </html>

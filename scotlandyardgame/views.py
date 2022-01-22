@@ -5,11 +5,12 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.cache import patch_response_headers
 
-from scotlandyardgame.engine.constants import AVAILABLE_COLORS
+from scotlandyardgame.engine.constants import AVAILABLE_COLORS, GameState
 
 from . import multiplayer
 
 name_re = compile(r"^\w+$")
+
 
 def redirectWithError(location, errmsg):
     return redirect(reverse(location, kwargs={"error": errmsg}))
@@ -29,7 +30,7 @@ def index(request: HttpRequest, game_id='', error=None):
         game_id = multiplayer.getPlayerConnectedGame(player_id)
         if game_id is not None:
             print("player already connected, redirecting")
-            return redirect("lobby")
+            return redirect("lobby" if multiplayer.getGameByID(game_id).state == GameState.PENDING else "game")
     else:
         if game_id not in multiplayer.games:
             return redirectWithError("indexerror", f"no such game with ID {game_id}")
@@ -65,7 +66,7 @@ def lobby(request: HttpRequest):
         return redirectWithError("indexerror", "game stopped")
     if multiplayer.getGameByID(game_id).state == multiplayer.GameState.RUNNING:
         return redirect("game")
-        
+
     context = multiplayer.games[game_id].getPlayerInfo(player_id)
     context["colors"] = AVAILABLE_COLORS
     print(f"{context['name']} in lobby")
@@ -84,7 +85,6 @@ def game(request: HttpRequest):
         return redirectWithError("indexerror", "game stopped")
     if multiplayer.getGameByID(game_id).state == multiplayer.GameState.RUNNING:
         return redirect("game")
-        
 
     context = multiplayer.games[game_id].getPlayerInfo(player_id)
     print(f"{context['name']} in game")

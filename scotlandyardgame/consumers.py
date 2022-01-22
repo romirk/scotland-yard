@@ -144,8 +144,8 @@ class GameRTConsumer(SYConsumer):
         if data is None:
             print("invalid ws command (probably)")
             return
-        self.player_id = data.player_id if not hasattr(self, 'player_id') else self.player_id
-
+        self.player_id = data.player_id if not hasattr(
+            self, 'player_id') else self.player_id
 
         if data.type == "JOIN":
             if getGameIDWithPlayer(self.player_id) != self.game_id:
@@ -154,7 +154,7 @@ class GameRTConsumer(SYConsumer):
                 raise RuntimeError("Can't connect to this game")
 
             answerRollCall(self.game_id, self.player_id)
-            
+
             await self.channel_layer.group_send(self.game_id, GameProtocol.playerJoined(self.player_id))
             await self.send(GameProtocol.acknowledge(self.game_id))
             if self.player_id in trackdisconnected:
@@ -165,12 +165,13 @@ class GameRTConsumer(SYConsumer):
 
         elif data.type == "REQMOVE":
             try:
-                moveMade = move(self.game_id, self.player_id, data.ticket, data.movedata)
+                moveMade = move(self.game_id, self.player_id,
+                                data.ticket, data.movedata)
                 await self.channel_layer.group_send(self.game_id, GameProtocol.playerMoved(moveMade))
                 if moveMade["is_mr_x"]:
                     await self.send(GameProtocol.updateMrX(moveMade["destination"]))
             except:
                 raise NotImplementedError
-        
+
         elif data.type == "GET_GAME_INFO":
             await self.send(GameProtocol.gameInfo(getGameInfo(self.game_id)))

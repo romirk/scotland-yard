@@ -319,8 +319,8 @@ class ScotlandYard:
             "ticket": ticket,
             "is_mr_x": player.is_mr_x,
             "is_surface_move": self.__cycle in SURFACE_MOVES,
-            "double_tickets": (data["ticket1"],data["ticket2"]) if ticket == Ticket.DOUBLE else None,
-            "double_locations":  (data["location1"],data["location2"]) if ticket == Ticket.DOUBLE else None,
+            "double_tickets": (data["ticket1"], data["ticket2"]) if ticket == Ticket.DOUBLE else None,
+            "double_locations":  (data["location1"], data["location2"]) if ticket == Ticket.DOUBLE else None,
             "cycle_number": self.__cycle
         }
 

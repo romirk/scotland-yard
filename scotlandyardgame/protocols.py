@@ -36,7 +36,8 @@ class LobbyProtocol:
     @staticmethod
     def acknowledge(game_id: str) -> str:
         """acknowledge ws connection"""
-        players = [getPlayerInfo(p) for p in getPlayerIDs(game_id) if p not in LobbyProtocol.trackdisconnected]
+        players = [getPlayerInfo(p) for p in getPlayerIDs(
+            game_id) if p not in LobbyProtocol.trackdisconnected]
         return f"ACKNOWLEDGE {len(players)}\n" + "\n".join(
             f"{p_info['player_id']} {p_info['name']} {p_info['color']} {p_info['is_host']}" for p_info in players
         )
@@ -106,9 +107,10 @@ class LobbyProtocol:
             "text": f"ABORT"
         }
 
+
 class GameProtocol:
     # TODO GameProtocol
-    ACCEPTED_KEYWORDS = ["JOIN", "REQMOVE","GET_GAME_INFO"]
+    ACCEPTED_KEYWORDS = ["JOIN", "REQMOVE", "GET_GAME_INFO"]
 
     def __init__(self, type: str, player_id: str) -> None:
         # purely for returning from parser
@@ -135,13 +137,13 @@ class GameProtocol:
         if keyword == "JOIN":
             pass
         elif keyword == "REQMOVE":
-            ret.ticket = tokens[2]          
+            ret.ticket = tokens[2]
             if ret.ticket == Ticket.DOUBLE:
                 ret.movedata = {
-                    "ticket1":tokens[3],
-                    "location1":tokens[4],
-                    "ticket2":tokens[5],
-                    "location2":tokens[6]
+                    "ticket1": tokens[3],
+                    "location1": tokens[4],
+                    "ticket2": tokens[5],
+                    "location2": tokens[6]
                 }
             else:
                 ret.movedata = {"location": int(tokens[3])}
@@ -177,19 +179,19 @@ class GameProtocol:
                 return_msg += f'{moveMade["double_tickets"][0]} {moveMade["double_tickets"][1]} '
             if moveMade["is_surface_move"]:
                 return_msg += f'{moveMade["destination"]}'
-            
+
         else:
             return_msg += moveMade["destination"]
 
         return {
-            "type":"ws.send",
+            "type": "ws.send",
             "text": return_msg
         }
-    
+
     @staticmethod
     def updateMrX(destination: int) -> str:
         return f'UPDATE_X {destination}'
-    
+
     @staticmethod
     def gameInfo(info: dict) -> str:
-        return json.dumps(info)
+        return "INFO " + json.dumps(info)

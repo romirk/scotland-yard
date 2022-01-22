@@ -87,6 +87,7 @@ def answerRollCall(game_id: str, player_id: str):
         raise ValueError("This player id does not exist in this game")
     game = getGameByID(game_id)
     game.rollCall.add(player_id)
+    print(f"{player_id} answered roll call ({len(game.rollCall)} of 6)")
     if len(game.rollCall) == MAX_PLAYERS:
         startGame(game_id)
 

@@ -158,7 +158,6 @@ class ScotlandYard:
             "cycle": self.__cycle,
             "turn": self.__turn,
             "mr_x_ticket_log": [move['ticket'] for move in self.moveLog if move["is_mr_x"]],
-            "roll_call": self.rollCall
         }
 
     def getMrX(self) -> str:
@@ -278,7 +277,7 @@ class ScotlandYard:
             raise RuntimeError(
                 f"Invalid number of players: {len(self.__players)}")
         if self.state != GameState.PENDING:
-            raise RuntimeError("Game alreaady started")
+            return
         if self.rollCall != set(self.getPlayerIDs()):
             raise RuntimeError("Roll call doesn't match players")
 

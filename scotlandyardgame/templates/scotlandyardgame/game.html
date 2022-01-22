@@ -93,17 +93,19 @@
           wsSend();
         }
       })
-      function wsSend() {
-        const command = prompt.value;
-        socket.send(command);
-      }
-
       let log = "";
       const logElement = document.getElementById("gameLog");
 
+      function wsSend() {
+        const command = prompt.value;
+        socket.send(command);
+        log += `<br><span style="color:blue">${command}</span>`;
+        logElement.innerHTML = log;
+      }
+
       socket.onmessage = (msg) => {
         console.log(msg);
-        log += "<br>" + msg;
+        log += "<br>" + msg.data;
         logElement.innerHTML = log;
       }
         

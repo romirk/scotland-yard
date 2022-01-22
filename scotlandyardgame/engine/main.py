@@ -77,7 +77,7 @@ class ScotlandYard:
         player.discard(ticket)
         if not player.is_mr_x:
             self.__mrX.gain(ticket)
-       
+
     def __doubleMove(self, player: Player, ticket1: Ticket, location1: int, ticket2: Ticket, location2: int):
         old_location = player.location
         old_tickets = player.getAllTickets()
@@ -301,10 +301,11 @@ class ScotlandYard:
         if ticket == Ticket.DOUBLE:
             if not player.is_mr_x:
                 raise ValueError("Only Mr. X can use DOUBLE")
-            self.__doubleMove(player, data["ticket1"], data["location1"], data["ticket2"], data["location2"])
+            self.__doubleMove(
+                player, data["ticket1"], data["location1"], data["ticket2"], data["location2"])
         else:
             self.__move(player, ticket, data["location"])
-        
+
         self.__advanceTurn()
         end_state = self.__checkEndState()
         if end_state is not EndState.NOT_ENDED:

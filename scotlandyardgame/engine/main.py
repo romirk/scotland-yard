@@ -151,7 +151,7 @@ class ScotlandYard:
     def getGameInfo(self) -> dict:
         return {
             "game_id": self.ID,
-            "state": self.state,
+            "state": str(self.state),
             "host_id": self.__host,
             "player_info": [self.getPlayerInfo(p) for p in self.__players.keys()],
             "move_order": self.__order,

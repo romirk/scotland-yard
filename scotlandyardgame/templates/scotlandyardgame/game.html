@@ -27,6 +27,11 @@
       </g>
     </svg>
 
+    <code id = "gameLog">
+
+    </code>
+
+
     <input type="text" id="ws-command" />
     <button id="send" onclick="wsSend()">send</button>
 
@@ -85,6 +90,15 @@
       function wsSend() {
         const command = document.getElementById("ws-command").value;
         socket.send(command);
+      }
+
+      let log = "";
+      const logElement = document.getElementById("gameLog");
+      
+      socket.onmessage = (msg) => {
+        console.log(msg);
+        log += "<br>" + msg;
+        logElement.innerHTML = log;
       }
         
     </script>

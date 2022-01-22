@@ -152,12 +152,12 @@ class ScotlandYard:
         return {
             "game_id": self.ID,
             "state": str(self.state),
-            "host_id": self.__host,
+            "host_id": self.__host.ID,
             "player_info": [self.getPlayerInfo(p) for p in self.__players.keys()],
             "move_order": self.__order,
             "cycle": self.__cycle,
             "turn": self.__turn,
-            "mr_x_ticket_log": (move['ticket'] for move in self.moveLog if move["is_mr_x"])
+            "mr_x_ticket_log": [move['ticket'] for move in self.moveLog if move["is_mr_x"]]
         }
 
     def getMrX(self) -> str:

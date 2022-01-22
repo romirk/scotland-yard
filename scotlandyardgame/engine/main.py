@@ -202,6 +202,8 @@ class ScotlandYard:
     def addPlayer(self, player_id: str, player_name: str):
         """add a player to the game"""
         print(f"\tregistering {player_name}...")
+        if self.state != GameState.PENDING:
+            raise RuntimeError("Game already started")
         if len(self.__players) >= MAX_PLAYERS:
             raise RuntimeError("Game is full!")
         if player_id in self.__players:

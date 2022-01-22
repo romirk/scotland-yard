@@ -87,13 +87,15 @@
         console.log("Socket opened");
       };
 
+      let log = "";
+      const logElement = document.getElementById("gameLog");
+
       function wsSend() {
         const command = document.getElementById("ws-command").value;
         socket.send(command);
+        log += `<br><span style="color:blue">${command}</span>`;
+        logElement.innerHTML = log;
       }
-
-      let log = "";
-      const logElement = document.getElementById("gameLog");
 
       socket.onmessage = (msg) => {
         console.log(msg);

@@ -52,6 +52,7 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
             prevHost, prevX = game.getHostID(), game.getMrX()
             leaveRoom(self.game_id, self.player_id)
             if game.state == GameState.STOPPED:
+
                 await self.channel_layer.group_send(self.game_id, LobbyMessages.abort())
                 return
             newHost, newX = game.getHostID(), game.getMrX()

@@ -1,7 +1,8 @@
 from asyncio import sleep
 
 from channels.generic.websocket import AsyncWebsocketConsumer
-from scotlandyardgame.ws.LobbyMessages import LobbyMessages
+from scotlandyardgame.ws.messages import Messages
+
 
 from ..engine.constants import GameState
 from ..multiplayer import *
@@ -35,7 +36,7 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
             game = getGameByID(self.game_id)
             if game is not None and game.state != GameState.CONNECTING:
                 TRACK_DISCONNECTED.add(self.player_id)
-                await self.channel_layer.group_send(self.game_id, WebSocketConsumer.LOS(self.player_id))
+                await self.channel_layer.group_send(self.game_id, Messages.LOS(self.player_id))
                 await self.delayedRelease()
             else:
                 await self.removeMessage()
@@ -53,7 +54,7 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
             leaveRoom(self.game_id, self.player_id)
             if game.state == GameState.STOPPED:
 
-                await self.channel_layer.group_send(self.game_id, LobbyMessages.abort())
+                await self.channel_layer.group_send(self.game_id, Messages.abort())
                 return
             newHost, newX = game.getHostID(), game.getMrX()
             await self.removeMessage(
@@ -62,8 +63,8 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
             )
 
     async def removeMessage(self, newHost=None, newX=None):
-        await self.channel_layer.group_send(self.game_id, LobbyMessages.remove(self.player_id))
+        await self.channel_layer.group_send(self.game_id, Messages.remove(self.player_id))
         if newHost is not None:
-            await self.channel_layer.group_send(self.game_id, LobbyMessages.setHost(newHost))
+            await self.channel_layer.group_send(self.game_id, Messages.setHost(newHost))
         if newX is not None:
-            await self.channel_layer.group_send(self.game_id, LobbyMessages.setMrX(newX))
+            await self.channel_layer.group_send(self.game_id, Messages.setMrX(newX))

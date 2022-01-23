@@ -1,5 +1,5 @@
 from ..engine.constants import MAX_PLAYERS
-from ..multiplayer import (getGameHost, getPlayerIDs, leaveRoom, setColor,
+from ..multiplayer import (getGameHost, getGameIDWithPlayer, getPlayerIDs, leaveRoom, setColor,
                            setMrX, startRollCall)
 from .LobbyMessages import LobbyMessages
 from .protocol import Protocol
@@ -18,16 +18,14 @@ class LobbyProtocol(Protocol):
 
     async def join(self, player_id: str):
         # JOIN player_id
-        if player_id != self.__consumer.player_id:
-            raise RuntimeError("player_id mismatch")
         await self.group_send(LobbyMessages.newPlayer(player_id))
-        await self.send(LobbyMessages.acknowledge(self.game_id))
+        await self.send(LobbyMessages.acknowledge(getGameIDWithPlayer(player_id)))
         if player_id in TRACK_DISCONNECTED:
             TRACK_DISCONNECTED.remove(player_id)
 
     async def reqcolor(self, player_id: str, color: str):
         try:
-            setColor(self.game_id, player_id, color)
+            setColor(getGameIDWithPlayer(player_id), player_id, color)
         except Exception as e:
             print(e)
         else:
@@ -35,7 +33,7 @@ class LobbyProtocol(Protocol):
 
     async def reqmrx(self, player_id: str):
         try:
-            setMrX(self.game_id, player_id)
+            setMrX(getGameIDWithPlayer(player_id), player_id)
         except Exception as e:
             print(e)
         else:
@@ -47,12 +45,12 @@ class LobbyProtocol(Protocol):
         await self.__consumer.channel_layer.group_discard(self.game_id, self.channel_name)
         await self.__consumer.close()
 
-    async def ready(self):
-        if getGameHost(self.game_id) != self.player_id:
+    async def ready(self, player_id: str):
+        if getGameHost(game_id := getGameIDWithPlayer(player_id)) != player_id:
             print("Only host can start game")
             return
         c = 0
-        for player in getPlayerIDs(self.game_id):
+        for player in getPlayerIDs(game_id):
             if player in TRACK_DISCONNECTED:
                 leaveRoom(self.game_id, player)
                 TRACK_DISCONNECTED.remove(player)
@@ -62,7 +60,7 @@ class LobbyProtocol(Protocol):
         if c < MAX_PLAYERS:
             return
         try:
-            startRollCall(self.game_id)
+            startRollCall(game_id)
         except RuntimeError as e:
             print(e)
         else:

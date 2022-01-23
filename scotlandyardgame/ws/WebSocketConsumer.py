@@ -37,7 +37,7 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
             if game is not None and game.state != GameState.CONNECTING:
                 TRACK_DISCONNECTED.add(self.player_id)
                 await self.group_send(Messages.LOS(self.player_id))
-                await self.delayedRelease()
+                await self.delayedRelease(self.player_id)
             else:
                 await self.removeMessage()
         await self.channel_layer.group_discard(self.game_id, self.channel_name)
@@ -73,7 +73,7 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
         print(
             f"\033[36m[ws/client\033[33m{' ' + self.player_id[:8] if hasattr(self, 'player_id') else ''}\033[36m]\033[0m {text_data}"
         )
-
+        self.player_id = text_data.split()[1] if len(text_data.split()) > 1 else None
         await self.handler.process(text_data)
 
     def group_send(self, msg: str):

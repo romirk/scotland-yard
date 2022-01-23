@@ -1,7 +1,7 @@
 class Messages:
     @staticmethod
     def LOS(player_id: str):
-        """report LOs"""
+        """report LOS"""
         return f"LOS {player_id}"
 
     @staticmethod

@@ -13,6 +13,7 @@ class LobbyProtocol(Protocol):
             "REQCOLOR": self.reqcolor,
             "REQMRX": self.reqmrx,
             "DISCONNECT": self.disconnect,
+            "LEAVE": self.leave,
             "READY": self.ready
         })
 
@@ -41,9 +42,13 @@ class LobbyProtocol(Protocol):
 
     async def disconnect(self, player_id: str):
         TRACK_DISCONNECTED.add(player_id)
-        await self.__consumer.delayedRelease(0)
-        await self.__consumer.channel_layer.group_discard(self.game_id, self.channel_name)
-        await self.__consumer.close()
+        await self.consumer.delayedRelease(player_id, 0)
+        await self.consumer.channel_layer.group_discard(self.consumer.game_id, self.consumer.channel_name)
+        await self.consumer.close()
+
+    async def leave(self, player_id: str):
+        leaveRoom(getGameIDWithPlayer(player_id), player_id)
+        await self.group_send(LobbyMessages.remove(player_id))
 
     async def ready(self, player_id: str):
         if getGameHost(game_id := getGameIDWithPlayer(player_id)) != player_id:

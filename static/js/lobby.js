@@ -112,7 +112,7 @@ function start() {
 }
 
 function leave() {
-  socket.send(`DISCONNECT ${my.player_id}`);
+  socket.send(`LEAVE ${my.player_id}`);
   document.body.classList.add("los");
   document.getElementById("players").innerHTML = "";
   setTimeout(() => window.location.assign("/"), 500);

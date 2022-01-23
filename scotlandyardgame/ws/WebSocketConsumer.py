@@ -36,7 +36,7 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
             game = getGameByID(self.game_id)
             if game is not None and game.state != GameState.CONNECTING:
                 TRACK_DISCONNECTED.add(self.player_id)
-                await self.channel_layer.group_send(self.game_id, Messages.LOS(self.player_id))
+                await self.group_send(Messages.LOS(self.player_id))
                 await self.delayedRelease()
             else:
                 await self.removeMessage()
@@ -45,16 +45,16 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
     async def ws_send(self, event):
         await self.send(event["text"])
 
-    async def delayedRelease(self, timeout: float = 2.0):
+    async def delayedRelease(self, player_id: str, timeout: float = 2.0):
         if timeout > 0:
             await sleep(timeout)
-        if self.player_id in TRACK_DISCONNECTED:
+        if player_id in TRACK_DISCONNECTED:
             game = getGameByID(self.game_id)
             prevHost, prevX = game.getHostID(), game.getMrX()
-            leaveRoom(self.game_id, self.player_id)
+            leaveRoom(self.game_id, player_id)
             if game.state == GameState.STOPPED:
 
-                await self.channel_layer.group_send(self.game_id, Messages.abort())
+                await self.group_send(Messages.abort())
                 return
             newHost, newX = game.getHostID(), game.getMrX()
             await self.removeMessage(
@@ -63,8 +63,19 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
             )
 
     async def removeMessage(self, newHost=None, newX=None):
-        await self.channel_layer.group_send(self.game_id, Messages.remove(self.player_id))
+        await self.group_send(Messages.remove(self.player_id))
         if newHost is not None:
-            await self.channel_layer.group_send(self.game_id, Messages.setHost(newHost))
+            await self.group_send(Messages.setHost(newHost))
         if newX is not None:
-            await self.channel_layer.group_send(self.game_id, Messages.setMrX(newX))
+            await self.group_send(Messages.setMrX(newX))
+
+    async def receive(self, text_data):
+        print(
+            f"\033[36m[ws/client\033[33m{' ' + self.player_id[:8] if hasattr(self, 'player_id') else ''}\033[36m]\033[0m {text_data}"
+        )
+
+        await self.handler.process(text_data)
+
+    def group_send(self, msg: str):
+        return self.channel_layer.group_send(
+            self.game_id, {"type": "ws.send", "text": msg})

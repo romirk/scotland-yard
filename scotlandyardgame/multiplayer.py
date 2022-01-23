@@ -1,25 +1,25 @@
 from uuid import uuid4
 
-from .engine.constants import MAX_PLAYERS, GameState,Ticket
+from .engine.constants import MAX_PLAYERS, GameState, Ticket
 from .engine.main import ScotlandYard
 
-games: dict[str, ScotlandYard] = {}
-player_games: dict[str, str] = {}
+GAMES: dict[str, ScotlandYard] = {}
+PLAYER_TO_GAME: dict[str, str] = {}
 
 
 def getGameByID(game_id: str) -> ScotlandYard:
-    if game_id not in games:
+    if game_id not in GAMES:
         raise ValueError(f"invalid game ID {game_id}")
-    game = games[game_id]
+    game = GAMES[game_id]
     if game.state == GameState.STOPPED:
-        del games[game_id]
+        del GAMES[game_id]
     return game
 
 
 def getGameIDWithPlayer(player_id: str) -> str:
-    id = player_games[player_id] if player_id in player_games else None
-    if id is not None and id not in games:
-        del player_games[player_id]
+    id = PLAYER_TO_GAME[player_id] if player_id in PLAYER_TO_GAME else None
+    if id is not None and id not in GAMES:
+        del PLAYER_TO_GAME[player_id]
         return None
     return id
 
@@ -30,7 +30,7 @@ def getGameState(game_id: str) -> GameState:
 
 def getPlayerConnectedGame(player_id: str) -> str:
     game_id = getGameIDWithPlayer(player_id)
-    return game_id if game_id is not None and games[game_id].state != GameState.STOPPED else None
+    return game_id if game_id is not None and GAMES[game_id].state != GameState.STOPPED else None
 
 
 def getPlayerInfo(player_id: str) -> dict:
@@ -44,8 +44,10 @@ def getPlayerIDs(game_id: str) -> list[str]:
 def getGameHost(game_id: str) -> str:
     return getGameByID(game_id).getHostID()
 
+
 def getGameInfo(game_id: str) -> dict:
     return getGameByID(game_id).getGameInfo()
+
 
 def getMrX(game_id: str) -> str:
     return getGameByID(game_id).getMrX()
@@ -54,7 +56,7 @@ def getMrX(game_id: str) -> str:
 def createRoom() -> str:
     game_id = str(uuid4())
     game = ScotlandYard(game_id)
-    games[game_id] = game
+    GAMES[game_id] = game
     print(f"created room {game_id}")
     return game_id
 
@@ -63,7 +65,7 @@ def joinRoom(game_id: str, player_id: str, player_name: str):
     print(f"{player_name} is joining {game_id}... ")
     game = getGameByID(game_id)
     game.addPlayer(player_id, player_name)
-    player_games[player_id] = game_id
+    PLAYER_TO_GAME[player_id] = game_id
 
 
 def setMrX(game_id: str, player_id: str):
@@ -102,6 +104,6 @@ def move(game_id: str, player_id: str, ticket: Ticket, data: dict):
 def leaveRoom(game_id: str, player_id: str):
     game = getGameByID(game_id)
     if game.state != GameState.CONNECTING:
-        del player_games[player_id]
+        del PLAYER_TO_GAME[player_id]
         game.removePlayer(player_id)
         print(f"removed {player_id} from {game_id}")

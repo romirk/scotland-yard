@@ -32,7 +32,7 @@ def index(request: HttpRequest, game_id='', error=None):
             print("player already connected, redirecting")
             return redirect("lobby" if multiplayer.getGameByID(game_id).state == GameState.PENDING else "game")
     else:
-        if game_id not in multiplayer.games:
+        if game_id not in multiplayer.GAMES:
             return redirectWithError("indexerror", f"no such game with ID {game_id}")
 
     if request.method == "POST":  # (create and) join game
@@ -67,7 +67,7 @@ def lobby(request: HttpRequest):
     if multiplayer.getGameByID(game_id).state == multiplayer.GameState.RUNNING:
         return redirect("game")
 
-    context = multiplayer.games[game_id].getPlayerInfo(player_id)
+    context = multiplayer.GAMES[game_id].getPlayerInfo(player_id)
     context["colors"] = AVAILABLE_COLORS
     print(f"{context['name']} in lobby")
 
@@ -86,6 +86,6 @@ def game(request: HttpRequest):
     if multiplayer.getGameByID(game_id).state == multiplayer.GameState.RUNNING:
         return redirect("game")
 
-    context = multiplayer.games[game_id].getPlayerInfo(player_id)
+    context = multiplayer.GAMES[game_id].getPlayerInfo(player_id)
     print(f"{context['name']} in game")
     return render(request, 'scotlandyardgame/game.html', context=context)

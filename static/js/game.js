@@ -6,6 +6,7 @@ const socket = new WebSocket(
 
 socket.onclose = function (event) {
   console.log("Socket closed");
+  window.location.assign("/");
 };
 
 socket.onopen = function (event) {
@@ -16,7 +17,7 @@ socket.onopen = function (event) {
 const commandbox = document.getElementById("ws-command");
 commandbox.addEventListener("keyup", (event) => {
   if (event.key === "Enter") {
-    wsSend(commandbox.value);
+    wsSend(commandbox.innerText);
   }
 });
 
@@ -30,7 +31,7 @@ function wsSend(msg) {
 }
 
 document.getElementById("send").addEventListener("click", () => {
-  wsSend(commandbox.value);
+  wsSend(commandbox.innerText);
 });
 
 socket.onmessage = (msg) => {

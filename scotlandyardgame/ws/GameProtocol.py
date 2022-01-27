@@ -24,6 +24,7 @@ class GameProtocol(Protocol):
             raise RuntimeError("Can't connect to this game")
 
         answerRollCall(game_id, player_id)
+        print("rc connected")
 
         await self.group_send(GameMessages.playerJoined(player_id))
         await self.send(GameMessages.acknowledge(game_id))

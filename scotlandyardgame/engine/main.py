@@ -278,16 +278,19 @@ class ScotlandYard:
         if len(self.__players) != MAX_PLAYERS:
             raise RuntimeError(
                 f"Invalid number of players: {len(self.__players)}")
-        if self.state != GameState.PENDING:
+        if self.state != GameState.CONNECTING:
             return
         if self.rollCall != set(self.getPlayerIDs()):
             raise RuntimeError("Roll call doesn't match players")
+
+        print("starting game...")
 
         detectives = self.getPlayerIDs().remove(self.__mrX.ID)
         shuffle(detectives)
         self.__order = [self.__mrX.ID] + detectives
 
         self.state = GameState.RUNNING
+        print("running.")
 
     def end(self, reason: EndState = EndState.ABORTED):
         """end the game, optionally specify reason"""

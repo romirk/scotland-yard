@@ -8,10 +8,7 @@ class GameMessages:
     @staticmethod
     def playerJoined(player_id: str) -> dict:
         player_info = getPlayerInfo(player_id)
-        return {
-            "type": "ws.send",
-            "text": f"PLAYER_JOINED {player_id}" + (f' {player_info["location"]}' if player_info["color"] != "X" else '')
-        }
+        return f"PLAYER_JOINED {player_id}" + (f' {player_info["location"]}' if player_info["color"] != "X" else '')
 
     @staticmethod
     def acknowledge(game_id: str) -> str:
@@ -20,10 +17,7 @@ class GameMessages:
 
     @staticmethod
     def gameStarting() -> dict:
-        return {
-            "type": "ws.send",
-            "text": f"GAME_STARTING"
-        }
+        return f"GAME_STARTING"
 
     @staticmethod
     def playerMoved(moveMade: dict) -> dict:
@@ -38,7 +32,7 @@ class GameMessages:
             return_msg += moveMade["destination"]
 
         return return_msg
-        
+
     @staticmethod
     def updateMrX(destination: int) -> str:
         return f'UPDATE_X {destination}'

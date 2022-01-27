@@ -1,5 +1,5 @@
 # constants for main.py
-
+from __future__ import annotations
 from enum import Enum, auto
 
 from .mapdata import MAPDATA
@@ -34,4 +34,8 @@ class Ticket(Enum):
     UNDERGROUND = "underground"
     BLACK = "black"
     DOUBLE = "double"
+
+    @staticmethod
+    def fromStr(string: str) -> Ticket:
+        return Ticket[string.upper()]
     

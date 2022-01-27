@@ -37,11 +37,8 @@ class GameMessages:
         else:
             return_msg += moveMade["destination"]
 
-        return {
-            "type": "ws.send",
-            "text": return_msg
-        }
-
+        return return_msg
+        
     @staticmethod
     def updateMrX(destination: int) -> str:
         return f'UPDATE_X {destination}'

@@ -30,9 +30,9 @@ function wsSend(msg) {
   logElement.innerHTML = log;
 }
 
-document.getElementById("send").addEventListener("click", () => {
-  wsSend(commandbox.innerText);
-});
+// document.getElementById("send").addEventListener("click", () => {
+//   wsSend(commandbox.innerText);
+// });
 
 socket.onmessage = (msg) => {
   console.log(msg);

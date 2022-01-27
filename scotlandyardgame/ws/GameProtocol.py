@@ -1,4 +1,3 @@
-from flask import request
 from scotlandyardgame.ws.protocol import Protocol
 
 from ..engine.constants import GameState, Ticket

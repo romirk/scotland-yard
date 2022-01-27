@@ -20,6 +20,7 @@ commandbox.addEventListener("keyup", (event) => {
     wsSend(commandbox.innerText);
   }
 });
+commandbox.focus(); //autofocus on commandbox
 
 let log = "";
 const logElement = document.getElementById("gameLog");

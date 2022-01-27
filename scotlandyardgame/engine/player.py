@@ -70,12 +70,13 @@ class Player:
             "underground": self.__tickets[Ticket.UNDERGROUND],
         }
 
-    def discard(self, type: Ticket):
+    def discard(self, ticket_type: Ticket):
         """player uses a ticket."""
-        self.__tickets[type] -= 1 if self.__tickets[type] else 0
+        self.__tickets[Ticket.fromStr(ticket_type)] -= 1 if self.__tickets[Ticket.fromStr(ticket_type)] else 0
 
     def gain(self, type: Ticket):
         """Mr. X gains a ticket"""
+        type = Ticket.fromStr(type)
         if not self.is_mr_x:
             raise TypeError("non-Mr. X Player cannot gain a ticket.")
         if type not in [Ticket.TAXI, Ticket.BUS, Ticket.UNDERGROUND]:

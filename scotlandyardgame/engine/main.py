@@ -63,6 +63,12 @@ class ScotlandYard:
     def __isValidMove(self, player_id: str, location: int, ticket: Ticket) -> bool:
         """checks if player with ```player_id``` can move to ```location``` using ```ticket```"""
         player = self.__getPlayerByID(player_id)
+
+        print(f"checking validity of move...\n{location} {MAP.stations[player.location].getNeighbours(ticket)}\n\tplayer is not None: {player is not None}\n\t(ticket != Ticket.BLACK or player.is_mr_x): {ticket != Ticket.BLACK or player.is_mr_x}"
+              f"\n\tplayer.getTickets(ticket) > 0: {player.getTickets(ticket) > 0}\n\tlocation in MAP.stations[player.location].getNeighbours(ticket): {location in MAP.stations[player.location].getNeighbours(ticket)}"
+              "\n\t(self.__getPlayerAt(location) is None or (not player.is_mr_x and self.__getPlayerAt(location) == self.__mrX)): "
+              f"{self.__getPlayerAt(location) is None or (not player.is_mr_x and self.__getPlayerAt(location) == self.__mrX)}\n")
+
         return (player is not None
                 and (ticket != Ticket.BLACK or player.is_mr_x)
                 and player.getTickets(ticket) > 0
@@ -157,7 +163,7 @@ class ScotlandYard:
             "move_order": self.__order,
             "cycle": self.__cycle,
             "turn": self.__turn,
-            "mr_x_ticket_log": [move['ticket'] for move in self.moveLog if move["is_mr_x"]],
+            "mr_x_ticket_log": [str(move['ticket']) for move in self.moveLog if move["is_mr_x"]],
         }
 
     def getMrX(self) -> str:
@@ -304,13 +310,19 @@ class ScotlandYard:
 
         player = self.__getPlayerByID(player_id)
 
-        if ticket == Ticket.DOUBLE:
-            if not player.is_mr_x:
-                raise ValueError("Only Mr. X can use DOUBLE")
-            self.__doubleMove(
-                player, data["ticket1"], data["location1"], data["ticket2"], data["location2"])
-        else:
-            self.__move(player, ticket, data["location"])
+        try:
+            if ticket == Ticket.DOUBLE:
+                if not player.is_mr_x:
+                    raise ValueError("Only Mr. X can use DOUBLE")
+                self.__doubleMove(
+                    player, data["ticket1"], data["location1"], data["ticket2"], data["location2"])
+            else:
+                self.__move(player, ticket, data["location"])
+        except ValueError as e:
+            print(e)
+            return {
+                "accepted": False
+            }
 
         self.__advanceTurn()
         end_state = self.__checkEndState()
@@ -318,8 +330,9 @@ class ScotlandYard:
             self.end(end_state)
 
         move = {
+            "accepted": True,
             "player_id": player_id,
-            "destinaiton": player.location,
+            "destination": player.location,
             "ticket": ticket,
             "is_mr_x": player.is_mr_x,
             "is_surface_move": self.__cycle in SURFACE_MOVES,

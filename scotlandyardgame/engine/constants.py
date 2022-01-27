@@ -9,7 +9,7 @@ CYCLE_LIMIT = 24
 MAX_PLAYERS = 6
 
 AVAILABLE_START_LOCATIONS = [
-    13, 26, 29, 34, 50, 53 #, 91, 94, 103, 112, 117, 132, 138, 141, 155, 174, 197, 198
+    13, 26, 29, 34, 50, 53  # , 91, 94, 103, 112, 117, 132, 138, 141, 155, 174, 197, 198
 ]
 AVAILABLE_COLORS = [
     'red', 'blue', 'purple', 'green', 'yellow', 'orange'
@@ -22,11 +22,13 @@ class GameState(Enum):
     RUNNING = "running"
     STOPPED = "stopped"
 
+
 class EndState(Enum):
     NOT_ENDED = auto()
     DETECTIVES_WIN = auto()
     MR_X_WINS = auto()
     ABORTED = auto()
+
 
 class Ticket(Enum):
     TAXI = "taxi"
@@ -36,6 +38,8 @@ class Ticket(Enum):
     DOUBLE = "double"
 
     @staticmethod
-    def fromStr(string: str) -> Ticket:
-        return Ticket[string.upper()]
-    
+    def fromStr(ticket: str | Ticket) -> Ticket:
+        return Ticket[ticket.upper()] if type(ticket) is not Ticket else ticket
+
+    def __str__(self) -> str:
+        return self.value

@@ -16,7 +16,7 @@ class Station:
         }
 
     def getNeighbours(self, ticket_type: Ticket) -> set[int]:
-        return self.neighbours[str(ticket_type)[7:].lower()]
+        return self.neighbours[ticket_type]
 
     def addNeighbour(self, ticket_type: Ticket, station: int):
-        self.neighbours[str(ticket_type)[7:].lower()].add(station)
+        self.neighbours[ticket_type].add(station)

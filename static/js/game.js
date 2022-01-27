@@ -11,7 +11,7 @@ socket.onclose = function (event) {
 
 socket.onopen = function (event) {
   console.log("Socket opened");
-    wsSend("JOIN " + PLAYER_ID);
+  wsSend("JOIN " + PLAYER_ID);
 };
 
 const commandbox = document.getElementById("ws-command");

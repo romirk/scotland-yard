@@ -285,7 +285,8 @@ class ScotlandYard:
 
         print("starting game...")
 
-        detectives = self.getPlayerIDs().remove(self.__mrX.ID)
+        detectives = self.getPlayerIDs()
+        detectives.remove(self.__mrX.ID)
         shuffle(detectives)
         self.__order = [self.__mrX.ID] + detectives
 

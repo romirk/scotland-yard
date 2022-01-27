@@ -73,7 +73,8 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
         print(
             f"\033[36m[ws/client\033[33m{' ' + self.player_id[:8] if hasattr(self, 'player_id') else ''}\033[36m]\033[0m {text_data}"
         )
-        self.player_id = text_data.split()[1] if len(text_data.split()) > 1 else None
+        self.player_id = text_data.split()[1] if len(
+            text_data.split()) > 1 else None
         await self.handler.process(text_data)
 
     def group_send(self, msg: str):

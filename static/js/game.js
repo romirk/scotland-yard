@@ -6,12 +6,13 @@ const socket = new WebSocket(
 
 socket.onclose = function (event) {
   console.log("Socket closed");
-  window.location.assign("/");
+  // window.location.assign("/");
 };
 
 socket.onopen = function (event) {
   console.log("Socket opened");
   wsSend("JOIN " + PLAYER_ID);
+  wsSend("GET_GAME_INFO " + PLAYER_ID);
 };
 
 const commandbox = document.getElementById("ws-command");

@@ -26,10 +26,10 @@ class GameMessages:
             if moveMade["ticket"] == Ticket.DOUBLE:
                 return_msg += f'{moveMade["double_tickets"][0]} {moveMade["double_tickets"][1]} '
             if moveMade["is_surface_move"]:
-                return_msg += f'{moveMade["destination"]}'
+                return_msg += str(moveMade["destination"])
 
         else:
-            return_msg += moveMade["destination"]
+            return_msg += str(moveMade["destination"])
 
         return return_msg
 

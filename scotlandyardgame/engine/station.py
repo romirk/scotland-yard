@@ -9,14 +9,16 @@ class Station:
     def __init__(self, loc: int) -> None:
         self.location = loc
         self.neighbours: dict[str, set[int]] = {
-            "taxi": set(),
-            "bus": set(),
-            "underground": set(),
-            "black": set()
+            Ticket.TAXI: set(),
+            Ticket.BUS: set(),
+            Ticket.UNDERGROUND: set(),
+            Ticket.BLACK: set()
         }
 
     def getNeighbours(self, ticket_type: Ticket) -> set[int]:
-        return self.neighbours[ticket_type]
+        n = self.neighbours[Ticket.fromStr(ticket_type)]
+        print(type(ticket_type), type(Ticket.fromStr(ticket_type)), n)
+        return n
 
     def addNeighbour(self, ticket_type: Ticket, station: int):
-        self.neighbours[ticket_type].add(station)
+        self.neighbours[Ticket.fromStr(ticket_type)].add(station)

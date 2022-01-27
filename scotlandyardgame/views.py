@@ -83,8 +83,8 @@ def game(request: HttpRequest):
         return redirectWithError("indexerror", "not in game")
     if multiplayer.getGameByID(game_id).state == multiplayer.GameState.STOPPED:
         return redirectWithError("indexerror", "game stopped")
-    if multiplayer.getGameByID(game_id).state == multiplayer.GameState.RUNNING:
-        return redirect("game")
+    if multiplayer.getGameByID(game_id).state == multiplayer.GameState.PENDING:
+        return redirect("lobby")
 
     context = multiplayer.GAMES[game_id].getPlayerInfo(player_id)
     print(f"{context['name']} in game")

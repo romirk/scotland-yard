@@ -18,6 +18,7 @@ const commandbox = document.getElementById("ws-command");
 commandbox.addEventListener("keyup", (event) => {
   if (event.key === "Enter") {
     wsSend(commandbox.innerText);
+    commandbox.innerText = "";
   }
 });
 commandbox.focus(); //autofocus on commandbox

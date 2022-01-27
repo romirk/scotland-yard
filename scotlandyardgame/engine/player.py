@@ -48,13 +48,27 @@ class Player:
         self.__player_location = newLocation if 1 <= newLocation <= 200 else self.__player_location
 
     # methods
-    def getTickets(self, type: Ticket) -> int:
+    def getTickets(self, ticket_type: Ticket|str) -> int:
         """returns number of tickets of type ```type``` available to this player."""
-        return self.__tickets[type]
+        return self.__tickets[Ticket.fromStr(ticket_type)]
 
-    def getAllTickets(self) -> dict[Ticket, int]:
+    def setTickets(self, tickets: dict[Ticket, int]):
+        """set the tickets for this player"""
+        self.__tickets = tickets
+
+    def getAllTickets(self) -> dict[str, int]:
         """returns all tickets available to this player."""
-        return self.__tickets.copy()
+        return {
+            "taxi": self.__tickets[Ticket.TAXI],
+            "bus": self.__tickets[Ticket.BUS],
+            "underground": self.__tickets[Ticket.UNDERGROUND],
+            "black": self.__tickets[Ticket.BLACK],
+            "double": self.__tickets[Ticket.DOUBLE]
+        } if self.color == 'X' else {
+            "taxi": self.__tickets[Ticket.TAXI],
+            "bus": self.__tickets[Ticket.BUS],
+            "underground": self.__tickets[Ticket.UNDERGROUND],
+        }
 
     def discard(self, type: Ticket):
         """player uses a ticket."""

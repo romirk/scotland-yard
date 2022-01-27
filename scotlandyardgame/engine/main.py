@@ -19,7 +19,8 @@ class ScotlandYard:
         self.__players: dict[str, Player] = {}
         self.__order: list[str] = []
 
-        self.__available_start_locations: list[int] = AVAILABLE_START_LOCATIONS.copy()
+        self.__available_start_locations: list[int] = AVAILABLE_START_LOCATIONS.copy(
+        )
         self.__available_colors: list[str] = AVAILABLE_COLORS.copy()
 
         # cycle = everyone gets 1 turn
@@ -31,6 +32,7 @@ class ScotlandYard:
         # public
         self.state: GameState = GameState.PENDING
         self.rollCall: set[str] = set()
+        self.moveLog: list[dict] = []
 
     # getters
 
@@ -62,11 +64,42 @@ class ScotlandYard:
         """checks if player with ```player_id``` can move to ```location``` using ```ticket```"""
         player = self.__getPlayerByID(player_id)
         return (player is not None
-                and (ticket not in [Ticket.BLACK, Ticket.DOUBLE] or player.is_mr_x)
+                and (ticket != Ticket.BLACK or player.is_mr_x)
                 and player.getTickets(ticket) > 0
                 and location in MAP.stations[player.location].getNeighbours(ticket)
                 and (self.__getPlayerAt(location) is None
                      or (not player.is_mr_x and self.__getPlayerAt(location) == self.__mrX)))
+
+    def __move(self, player: Player, ticket: Ticket, location: int):
+        if not self.__isValidMove(player.ID, location, ticket):
+            raise ValueError("Invalid move")
+        player.location = location
+        player.discard(ticket)
+        if not player.is_mr_x:
+            self.__mrX.gain(ticket)
+
+    def __doubleMove(self, player: Player, ticket1: Ticket, location1: int, ticket2: Ticket, location2: int):
+        old_location = player.location
+        old_tickets = player.getAllTickets()
+        try:
+            self.__move(player, ticket1, location1)
+            self.__move(player, ticket2, location2)
+        except ValueError as e:
+            player.location = old_location
+            player.setTickets(old_tickets)
+            raise e
+
+    def __checkEndState(self) -> EndState:
+        """checks if game is over"""
+
+        if self.__cycle >= CYCLE_LIMIT:
+            return EndState.MR_X_WINS
+
+        for player in self.__players.values():
+            if player.location == self.__mrX.location and not player.is_mr_x:
+                return EndState.DETECTIVES_WIN
+
+        return EndState.NOT_ENDED
 
     def __advanceTurn(self):
         """called at the end of move to advance turn"""
@@ -115,6 +148,18 @@ class ScotlandYard:
             "is_host": p.ID == self.getHostID()
         }
 
+    def getGameInfo(self) -> dict:
+        return {
+            "game_id": self.ID,
+            "state": str(self.state),
+            "host_id": self.__host.ID,
+            "player_info": [self.getPlayerInfo(p) for p in self.__players.keys()],
+            "move_order": self.__order,
+            "cycle": self.__cycle,
+            "turn": self.__turn,
+            "mr_x_ticket_log": [move['ticket'] for move in self.moveLog if move["is_mr_x"]],
+        }
+
     def getMrX(self) -> str:
         """returns the ID of Mr. X"""
         return self.__mrX.ID if self.__mrX is not None else None
@@ -157,6 +202,8 @@ class ScotlandYard:
     def addPlayer(self, player_id: str, player_name: str):
         """add a player to the game"""
         print(f"\tregistering {player_name}...")
+        if self.state != GameState.PENDING:
+            raise RuntimeError("Game already started")
         if len(self.__players) >= MAX_PLAYERS:
             raise RuntimeError("Game is full!")
         if player_id in self.__players:
@@ -231,16 +278,20 @@ class ScotlandYard:
         if len(self.__players) != MAX_PLAYERS:
             raise RuntimeError(
                 f"Invalid number of players: {len(self.__players)}")
-        if self.state != GameState.PENDING:
-            raise RuntimeError("Game alreaady started")
+        if self.state != GameState.CONNECTING:
+            return
         if self.rollCall != set(self.getPlayerIDs()):
             raise RuntimeError("Roll call doesn't match players")
 
-        detectives = self.getPlayerIDs().remove(self.__mrX.ID)
+        print("starting game...")
+
+        detectives = self.getPlayerIDs()
+        detectives.remove(self.__mrX.ID)
         shuffle(detectives)
         self.__order = [self.__mrX.ID] + detectives
 
         self.state = GameState.RUNNING
+        print("running.")
 
     def end(self, reason: EndState = EndState.ABORTED):
         """end the game, optionally specify reason"""
@@ -248,29 +299,34 @@ class ScotlandYard:
         self.stop_reason = reason
         print(f"game ended: {reason}")
 
-    def move(self, player_id: str, location: int, ticket: Ticket):
+    def requestMove(self, player_id: str, ticket: Ticket, data: dict):
         """perform a move"""
-        if self.__cycle >= CYCLE_LIMIT:
-            self.end(EndState.MR_X_WINS)
-            raise RuntimeError(f"Game has finished {CYCLE_LIMIT} cycles")
 
         player = self.__getPlayerByID(player_id)
 
-        if player_id != self.getWhoseTurn():
-            raise RuntimeError("Not this player's turn")
-
-        if not self.__isValidMove(player_id, location, ticket):
-            raise ValueError("Invalid move.")
-
-        player.discard(ticket)
-
-        if not player.is_mr_x and self.__getPlayerAt(location) == self.__mrX:
-            # game over
-            self.end(EndState.DETECTIVES_WIN)
-            return
-
-        player.location = location
-        if not player.is_mr_x:
-            self.__mrX.gain(ticket)
+        if ticket == Ticket.DOUBLE:
+            if not player.is_mr_x:
+                raise ValueError("Only Mr. X can use DOUBLE")
+            self.__doubleMove(
+                player, data["ticket1"], data["location1"], data["ticket2"], data["location2"])
+        else:
+            self.__move(player, ticket, data["location"])
 
         self.__advanceTurn()
+        end_state = self.__checkEndState()
+        if end_state is not EndState.NOT_ENDED:
+            self.end(end_state)
+
+        move = {
+            "player_id": player_id,
+            "destinaiton": player.location,
+            "ticket": ticket,
+            "is_mr_x": player.is_mr_x,
+            "is_surface_move": self.__cycle in SURFACE_MOVES,
+            "double_tickets": (data["ticket1"], data["ticket2"]) if ticket == Ticket.DOUBLE else None,
+            "double_locations":  (data["location1"], data["location2"]) if ticket == Ticket.DOUBLE else None,
+            "cycle_number": self.__cycle
+        }
+
+        self.moveLog.append(move)
+        return move

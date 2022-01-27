@@ -1,10 +1,11 @@
 from django.urls import re_path
 
-from .consumers import GameRTConsumer, LobbyRTConsumer
+from .ws.LobbyConsumer import LobbyConsumer
+from .ws.GameConsumer import GameConsumer
 
 websocket_urlpatterns = [
     re_path(r'^ws/lobby/(?P<game_id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$',
-            LobbyRTConsumer.as_asgi()),
+            LobbyConsumer.as_asgi()),
     re_path(r'^ws/game/(?P<game_id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$',
-            GameRTConsumer.as_asgi())
+            GameConsumer.as_asgi())
 ]

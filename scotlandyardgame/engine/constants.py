@@ -1,5 +1,5 @@
 # constants for main.py
-
+from __future__ import annotations
 from enum import Enum, auto
 
 from .mapdata import MAPDATA
@@ -9,7 +9,7 @@ CYCLE_LIMIT = 24
 MAX_PLAYERS = 6
 
 AVAILABLE_START_LOCATIONS = [
-    13, 26, 29, 34, 50, 53, 91, 94, 103, 112, 117, 132, 138, 141, 155, 174, 197, 198
+    13, 26, 29, 34, 50, 53 #, 91, 94, 103, 112, 117, 132, 138, 141, 155, 174, 197, 198
 ]
 AVAILABLE_COLORS = [
     'red', 'blue', 'purple', 'green', 'yellow', 'orange'
@@ -17,10 +17,10 @@ AVAILABLE_COLORS = [
 
 
 class GameState(Enum):
-    PENDING = auto()
-    CONNECTING = auto()
-    RUNNING = auto()
-    STOPPED = auto()
+    PENDING = "pending"
+    CONNECTING = "connecting"
+    RUNNING = "running"
+    STOPPED = "stopped"
 
 class EndState(Enum):
     NOT_ENDED = auto()
@@ -34,4 +34,8 @@ class Ticket(Enum):
     UNDERGROUND = "underground"
     BLACK = "black"
     DOUBLE = "double"
+
+    @staticmethod
+    def fromStr(string: str) -> Ticket:
+        return Ticket[string.upper()]
     

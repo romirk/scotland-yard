@@ -1,6 +1,10 @@
 let move_order = [];
 let turn = 0;
 
+
+let log = "";
+const logElement = document.getElementById("gameLog");
+
 const socket = new WebSocket(
   `ws${location.protocol === "https:" ? "s" : ""}://${
     window.location.host
@@ -9,6 +13,8 @@ const socket = new WebSocket(
 
 socket.onclose = function (event) {
   console.log("Socket closed");
+  log += "<br><span style=color:red>Socket closed</span>";
+  logElement.innerHTML = log;
   // window.location.assign("/");
 };
 
@@ -27,8 +33,6 @@ commandbox.addEventListener("keyup", (event) => {
 });
 commandbox.focus(); //autofocus on commandbox
 
-let log = "";
-const logElement = document.getElementById("gameLog");
 
 function wsSend(msg) {
   socket.send(msg);

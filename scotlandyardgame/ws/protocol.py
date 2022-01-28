@@ -19,7 +19,10 @@ class Protocol:
             await self.send(f"invalid message: {keyword}")
             return
 
-        await self.__handlers[keyword](*(tokens[1:] if len(tokens) > 1 else []))
+        try:
+            await self.__handlers[keyword](*(tokens[1:] if len(tokens) > 1 else []))
+        except Exception as e:
+            await self.send(f"ERROR {e}")
 
     def send(self, msg: str):
         return self.consumer.send(msg)

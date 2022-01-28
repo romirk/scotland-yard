@@ -27,6 +27,15 @@
     <link rel="stylesheet" href="/styles/main.css" />
     <link rel="stylesheet" href="/styles/lobby.css" />
     <title>Lobby | Scotland Yard</title>
+
+    <script>
+      const PLAYER_ID = '{{ player_id }}';
+      const GAME_ID = '{{ game_id }}';
+      const NAME = '{{ name }}';
+      let color = '{{ color }}';
+      const COLORS = {{colors|safe}};
+      const IS_HOST = {% if is_host %}true{% else %} false{% endif %};
+    </script>
   </head>
 
   <body>
@@ -149,14 +158,6 @@
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
       crossorigin="anonymous"
     ></script>
-    <script>
-      const PLAYER_ID = '{{ player_id }}';
-      const GAME_ID = '{{ game_id }}';
-      const NAME = '{{ name }}';
-      let color = '{{ color }}';
-      const COLORS = {{colors|safe}};
-      const IS_HOST = {% if is_host %}true{% else %} false{% endif %};
-    </script>
     <script src="/js/lobby.js" type="module"></script>
   </body>
 </html>

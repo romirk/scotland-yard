@@ -1,15 +1,13 @@
 # constants for main.py
-
+from __future__ import annotations
 from enum import Enum, auto
 
-from .mapdata import MAPDATA
-
-SURFACE_MOVES = [3, 8, 13, 18, 24]
+SURFACE_MOVES = [2, 7, 12, 17, 23]
 CYCLE_LIMIT = 24
 MAX_PLAYERS = 6
 
 AVAILABLE_START_LOCATIONS = [
-    13, 26, 29, 34, 50, 53, 91, 94, 103, 112, 117, 132, 138, 141, 155, 174, 197, 198
+    12, 25, 28, 33, 49, 52, # 90, 93, 102, 111, 116, 131, 137, 140, 154, 173, 196, 197
 ]
 AVAILABLE_COLORS = [
     'red', 'blue', 'purple', 'green', 'yellow', 'orange'
@@ -17,10 +15,11 @@ AVAILABLE_COLORS = [
 
 
 class GameState(Enum):
-    PENDING = auto()
-    CONNECTING = auto()
-    RUNNING = auto()
-    STOPPED = auto()
+    PENDING = "pending"
+    CONNECTING = "connecting"
+    RUNNING = "running"
+    STOPPED = "stopped"
+
 
 class EndState(Enum):
     NOT_ENDED = auto()
@@ -28,10 +27,5 @@ class EndState(Enum):
     MR_X_WINS = auto()
     ABORTED = auto()
 
-class Ticket(Enum):
-    TAXI = "taxi"
-    BUS = "bus"
-    UNDERGROUND = "underground"
-    BLACK = "black"
-    DOUBLE = "double"
-    
+BLACK_TICKET, BUS_TICKET, TAXI_TICKET, UNDERGROUND_TICKET, DOUBLE_TICKET = 'black', 'bus', 'taxi', 'underground', 'double'
+TICKET_TYPES = [TAXI_TICKET, BUS_TICKET, UNDERGROUND_TICKET, BLACK_TICKET]

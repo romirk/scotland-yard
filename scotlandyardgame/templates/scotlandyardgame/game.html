@@ -6,9 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scotland Yard</title>
     <link rel="stylesheet" href="/styles/game.css" />
+
+    <script>
+      const PLAYER_ID = '{{ player_id }}';
+      const GAME_ID = '{{ game_id }}';
+      const NAME = '{{ name }}';
+      const COLOR = '{{ color }}';
+      const IS_HOST = {% if is_host %}true{% else %} false{% endif %};
+    </script>
   </head>
 
   <body>
+    {% comment %}
     <svg id="textsvg">
       <g id="playerbody">
         <path
@@ -26,6 +35,16 @@
         />
       </g>
     </svg>
+    {% endcomment %} {{ player_id }}
+
+    <code id="gameLog"> </code>
+
+    <br />
+    <code>>>>&nbsp;<span contenteditable="true" id="ws-command"></span></code>
+    <!-- <button id="send">send</button> -->
+
+    {% comment %}
+
     <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
     <script src="/js/anime.min.js"></script>
     <script>
@@ -53,5 +72,8 @@
         duration: 1000,
       });
     </script>
+    {% endcomment %}
+
+    <script src="/js/game.js"></script>
   </body>
 </html>

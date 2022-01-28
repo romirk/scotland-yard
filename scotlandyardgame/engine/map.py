@@ -1,5 +1,6 @@
 from .station import Station
-TYPES = "taxi bus underground black".split()
+from .constants import TICKET_TYPES
+
 
 
 class Map:
@@ -16,5 +17,6 @@ class Map:
             station = Station(index)
             for type in range(len(mapdata[index])):
                 for neighbour in range(len(mapdata[index][type])):
-                    station.addNeighbour(TYPES[type], mapdata[index][type][neighbour] - 1)
+                    station.addNeighbour(
+                        TICKET_TYPES[type], mapdata[index][type][neighbour] - 1)
             self.stations.append(station)

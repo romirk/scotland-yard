@@ -98,21 +98,21 @@ socket.onmessage = (msg) => {
 };
 
 function reqColor(c) {
-  socket.send(`REQCOLOR ${my.player_id} ${c}`);
+  socket.send(`REQCOLOR ${c}`);
 }
 
 function reqMrX(pid) {
   if (!my.isHost) return;
-  socket.send(`REQMRX ${my.player_id} ${pid}`);
+  socket.send(`REQMRX ${pid}`);
 }
 
 function start() {
   if (!my.isHost || players.length !== 6) return;
-  socket.send(`READY ${my.player_id}`);
+  socket.send(`READY`);
 }
 
 function leave() {
-  socket.send(`DISCONNECT ${my.player_id}`);
+  socket.send(`LEAVE`);
   document.body.classList.add("los");
   document.getElementById("players").innerHTML = "";
   setTimeout(() => window.location.assign("/"), 500);

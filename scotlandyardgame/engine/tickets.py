@@ -48,11 +48,11 @@ class Tickets:
 
     def all(self) -> dict[str, int]:
         return {
-            TAXI_TICKET: self.taxi,
-            BUS_TICKET: self.bus,
-            UNDERGROUND_TICKET: self.underground,
-            BLACK_TICKET: self.black,
-            DOUBLE_TICKET: self.double
+            TAXI_TICKET: self.__taxi,
+            BUS_TICKET: self.__bus,
+            UNDERGROUND_TICKET: self.__underground,
+            BLACK_TICKET: self.__black,
+            DOUBLE_TICKET: self.__double
         }
 
     def get(self, ticket: str):

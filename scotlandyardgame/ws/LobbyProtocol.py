@@ -25,34 +25,37 @@ class LobbyProtocol(Protocol):
             TRACK_DISCONNECTED.remove(player_id)
         self.consumer.player_id = player_id
 
-    async def reqcolor(self, player_id: str, color: str):
+    async def reqcolor(self, color: str):
         try:
-            setColor(getGameIDWithPlayer(player_id), player_id, color)
+            setColor(getGameIDWithPlayer(self.consumer.player_id),
+                     self.consumer.player_id, color)
         except Exception as e:
             print(e)
         else:
-            await self.group_send(LobbyMessages.setColor(player_id, color))
+            await self.group_send(LobbyMessages.setColor(self.consumer.player_id, color))
 
-    async def reqmrx(self, player_id: str):
+    async def reqmrx(self):
         try:
-            setMrX(getGameIDWithPlayer(player_id), player_id)
+            setMrX(getGameIDWithPlayer(self.consumer.player_id),
+                   self.consumer.player_id)
         except Exception as e:
             print(e)
         else:
-            await self.group_send(LobbyMessages.setMrX(player_id))
+            await self.group_send(LobbyMessages.setMrX(self.consumer.player_id))
 
-    async def disconnect(self, player_id: str):
-        TRACK_DISCONNECTED.add(player_id)
-        await self.consumer.delayedRelease(player_id, 0)
+    async def disconnect(self):
+        TRACK_DISCONNECTED.add(self.consumer.player_id)
+        await self.consumer.delayedRelease(self.consumer.player_id, 0)
         await self.consumer.channel_layer.group_discard(self.consumer.game_id, self.consumer.channel_name)
         await self.consumer.close()
 
-    async def leave(self, player_id: str):
-        leaveRoom(getGameIDWithPlayer(player_id), player_id)
-        await self.group_send(LobbyMessages.remove(player_id))
+    async def leave(self):
+        leaveRoom(getGameIDWithPlayer(self.consumer.player_id),
+                  self.consumer.player_id)
+        await self.group_send(LobbyMessages.remove(self.consumer.player_id))
 
-    async def ready(self, player_id: str):
-        if getGameHost(game_id := getGameIDWithPlayer(player_id)) != player_id:
+    async def ready(self):
+        if getGameHost(game_id := getGameIDWithPlayer(self.consumer.player_id)) != self.consumer.player_id:
             print("Only host can start game")
             return
         c = 0

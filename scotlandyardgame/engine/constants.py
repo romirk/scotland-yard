@@ -29,17 +29,5 @@ class EndState(Enum):
     MR_X_WINS = auto()
     ABORTED = auto()
 
-
-class Ticket(Enum):
-    TAXI = "taxi"
-    BUS = "bus"
-    UNDERGROUND = "underground"
-    BLACK = "black"
-    DOUBLE = "double"
-
-    @staticmethod
-    def fromStr(ticket: str | Ticket) -> Ticket:
-        return Ticket[ticket.upper()] if type(ticket) is not Ticket else ticket
-
-    def __str__(self) -> str:
-        return self.value
+BLACK_TICKET, BUS_TICKET, TAXI_TICKET, UNDERGROUND_TICKET, DOUBLE_TICKET = 'black', 'bus', 'taxi', 'underground', 'double'
+TICKET_TYPES = [TAXI_TICKET, BUS_TICKET, UNDERGROUND_TICKET, BLACK_TICKET]

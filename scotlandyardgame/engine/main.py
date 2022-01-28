@@ -4,6 +4,7 @@ from typing import Final
 from .constants import *
 from .map import Map
 from .player import Player
+from .tickets import BLACK_TICKET, DOUBLE_TICKET
 
 MAP = Map(MAPDATA)
 
@@ -60,39 +61,35 @@ class ScotlandYard:
             if player.location == loc:
                 return player
 
-    def __isValidMove(self, player_id: str, location: int, ticket: Ticket) -> bool:
+    def __isValidMove(self, player_id: str, location: int, ticket: str) -> bool:
         """checks if player with ```player_id``` can move to ```location``` using ```ticket```"""
         player = self.__getPlayerByID(player_id)
 
-        print(f"checking validity of move...\n{location} {MAP.stations[player.location].getNeighbours(ticket)}\n\tplayer is not None: {player is not None}\n\t(ticket != Ticket.BLACK or player.is_mr_x): {ticket != Ticket.BLACK or player.is_mr_x}"
-              f"\n\tplayer.getTickets(ticket) > 0: {player.getTickets(ticket) > 0}\n\tlocation in MAP.stations[player.location].getNeighbours(ticket): {location in MAP.stations[player.location].getNeighbours(ticket)}"
-              "\n\t(self.__getPlayerAt(location) is None or (not player.is_mr_x and self.__getPlayerAt(location) == self.__mrX)): "
-              f"{self.__getPlayerAt(location) is None or (not player.is_mr_x and self.__getPlayerAt(location) == self.__mrX)}\n")
-
         return (player is not None
-                and (ticket != Ticket.BLACK or player.is_mr_x)
-                and player.getTickets(ticket) > 0
+                and (ticket != BLACK_TICKET or player.is_mr_x)
+                and player.tickets.get(ticket) > 0
                 and location in MAP.stations[player.location].getNeighbours(ticket)
                 and (self.__getPlayerAt(location) is None
                      or (not player.is_mr_x and self.__getPlayerAt(location) == self.__mrX)))
 
-    def __move(self, player: Player, ticket: Ticket, location: int):
+    def __move(self, player: Player, ticket: str, location: int):
         if not self.__isValidMove(player.ID, location, ticket):
             raise ValueError("Invalid move")
         player.location = location
-        player.discard(ticket)
+        player.tickets.discard(ticket)
         if not player.is_mr_x:
-            self.__mrX.gain(ticket)
+            self.__mrX.tickets.gain(ticket)
 
-    def __doubleMove(self, player: Player, ticket1: Ticket, location1: int, ticket2: Ticket, location2: int):
+    def __doubleMove(self, player: Player, ticket1: str, location1: int, ticket2: str, location2: int):
         old_location = player.location
-        old_tickets = player.getAllTickets()
+        old_tickets = player.tickets.all()
         try:
             self.__move(player, ticket1, location1)
             self.__move(player, ticket2, location2)
+            player.tickets.discard(DOUBLE_TICKET)
         except ValueError as e:
             player.location = old_location
-            player.setTickets(old_tickets)
+            player.tickets.set(old_tickets)
             raise e
 
     def __checkEndState(self) -> EndState:
@@ -150,7 +147,7 @@ class ScotlandYard:
             "name": p.name,
             "color": p.color,
             "location": p.location,
-            "tickets": p.getAllTickets(),
+            "tickets": p.tickets.all(),
             "is_host": p.ID == self.getHostID()
         }
 
@@ -305,13 +302,13 @@ class ScotlandYard:
         self.stop_reason = reason
         print(f"game ended: {reason}")
 
-    def requestMove(self, player_id: str, ticket: Ticket, data: dict):
+    def requestMove(self, player_id: str, ticket: str, data: dict):
         """perform a move"""
 
         player = self.__getPlayerByID(player_id)
 
         try:
-            if ticket == Ticket.DOUBLE:
+            if ticket == DOUBLE_TICKET:
                 if not player.is_mr_x:
                     raise ValueError("Only Mr. X can use DOUBLE")
                 self.__doubleMove(
@@ -336,8 +333,8 @@ class ScotlandYard:
             "ticket": ticket,
             "is_mr_x": player.is_mr_x,
             "is_surface_move": self.__cycle in SURFACE_MOVES,
-            "double_tickets": (data["ticket1"], data["ticket2"]) if ticket == Ticket.DOUBLE else None,
-            "double_locations":  (data["location1"], data["location2"]) if ticket == Ticket.DOUBLE else None,
+            "double_tickets": (data["ticket1"], data["ticket2"]) if ticket == DOUBLE_TICKET else None,
+            "double_locations":  (data["location1"], data["location2"]) if ticket == DOUBLE_TICKET else None,
             "cycle_number": self.__cycle
         }
 

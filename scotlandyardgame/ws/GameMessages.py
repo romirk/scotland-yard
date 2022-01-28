@@ -1,6 +1,6 @@
 import json
 
-from ..engine.constants import Ticket
+from ..engine.constants import DOUBLE_TICKET
 from ..multiplayer import getGameByID, getPlayerInfo
 
 
@@ -23,7 +23,7 @@ class GameMessages:
     def playerMoved(moveMade: dict) -> dict:
         return_msg = f'PLAYER_MOVED {moveMade["player_id"]} {moveMade["cycle_number"]} {moveMade["is_mr_x"]} {moveMade["ticket"]} '
         if moveMade["is_mr_x"]:
-            if moveMade["ticket"] == Ticket.DOUBLE:
+            if moveMade["ticket"] == DOUBLE_TICKET:
                 return_msg += f'{moveMade["double_tickets"][0]} {moveMade["double_tickets"][1]} '
             if moveMade["is_surface_move"]:
                 return_msg += str(moveMade["destination"])

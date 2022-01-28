@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from .engine.constants import MAX_PLAYERS, GameState, Ticket
+from .engine.constants import MAX_PLAYERS, GameState
 from .engine.main import ScotlandYard
 
 GAMES: dict[str, ScotlandYard] = {}
@@ -94,7 +94,7 @@ def answerRollCall(game_id: str, player_id: str):
         startGame(game_id)
 
 
-def move(game_id: str, player_id: str, ticket: Ticket, data: dict):
+def move(game_id: str, player_id: str, ticket: str, data: dict):
     game = getGameByID(game_id)
     if game.state != GameState.RUNNING:
         raise ValueError("Game is not running")

@@ -1,8 +1,8 @@
 from scotlandyardgame.ws.protocol import Protocol
 
-from ..engine.constants import GameState, Ticket
-from ..multiplayer import (answerRollCall, getGameByID, getGameIDWithPlayer, getGameInfo,
-                           getGameState, move)
+from ..engine.constants import DOUBLE_TICKET, GameState
+from ..multiplayer import (answerRollCall, getGameByID, getGameIDWithPlayer,
+                           getGameInfo, getGameState, move)
 from .GameMessages import GameMessages
 from .protocol import Protocol
 from .WebSocketConsumer import TRACK_DISCONNECTED, WebSocketConsumer
@@ -41,8 +41,8 @@ class GameProtocol(Protocol):
         if getGameState(game_id) != GameState.RUNNING:
             raise RuntimeError("Game is not running")
 
-        moveData = (move(game_id, player_id, Ticket.DOUBLE, {"ticket1": args[0], "location1": int(args[1]), "ticket2": args[2], "location2": int(args[3])})
-                    if Ticket.fromStr(ticket) == Ticket.DOUBLE else
+        moveData = (move(game_id, player_id, DOUBLE_TICKET, {"ticket1": args[0], "location1": int(args[1]), "ticket2": args[2], "location2": int(args[3])})
+                    if ticket == DOUBLE_TICKET else
                     move(game_id, player_id,
                          ticket, {"location": int(args[0])})
                     )

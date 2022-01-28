@@ -115,7 +115,6 @@ class ScotlandYard:
         self.__turn = (self.__turn + 1) % 6
         if not self.__turn:
             self.__cycle += 1
-            self.__isStagnantCycle = True
         
 
     # public methods
@@ -333,6 +332,9 @@ class ScotlandYard:
                 "accepted":False,
                 "message": "Not your turn"
             }
+
+        if not self.__turn:
+            self.__isStagnantCycle = True
 
         try:
             if ticket == DOUBLE_TICKET:

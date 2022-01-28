@@ -14,6 +14,12 @@
       const COLOR = '{{ color }}';
       const IS_HOST = {% if is_host %}true{% else %} false{% endif %};
     </script>
+
+    <style>
+      body {
+        background-color: {{ color }};
+      }
+    </style>
   </head>
 
   <body>

@@ -12,7 +12,7 @@ socket.onclose = function (event) {
 socket.onopen = function (event) {
   console.log("Socket opened");
   wsSend("JOIN " + PLAYER_ID);
-  wsSend("GET_GAME_INFO " + PLAYER_ID);
+  wsSend("GET_GAME_INFO");
   wsSend("GET_PLAYER_INFO ALL");
 };
 

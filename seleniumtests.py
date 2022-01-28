@@ -26,7 +26,9 @@ def run_mr_x():
     elem.send_keys("x")
     elem.send_keys(Keys.RETURN)
     GAME_ID = driver.execute_script("return GAME_ID;")
-    sleep(15)
+    while s:= driver.execute_script("return document.getElementById('start').style.display !== 'initial';"):
+        sleep(0.5)
+    sleep(1)
     elem = driver.find_element_by_id("start")
     elem.click()
     sleep(5)

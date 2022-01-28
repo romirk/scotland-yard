@@ -16,46 +16,49 @@ class LobbyProtocol(Protocol):
             "LEAVE": self.leave,
             "READY": self.ready
         })
+        self.player_id = None
 
     async def join(self, player_id: str):
         # JOIN player_id
+        self.player_id = player_id
         await self.group_send(LobbyMessages.newPlayer(player_id))
         await self.send(LobbyMessages.acknowledge(getGameIDWithPlayer(player_id)))
         if player_id in TRACK_DISCONNECTED:
             TRACK_DISCONNECTED.remove(player_id)
-        self.consumer.player_id = player_id
+        
 
     async def reqcolor(self, color: str):
         try:
-            setColor(getGameIDWithPlayer(self.consumer.player_id),
-                     self.consumer.player_id, color)
+            setColor(getGameIDWithPlayer(self.player_id),
+                     self.player_id, color)
         except Exception as e:
             print(e)
         else:
-            await self.group_send(LobbyMessages.setColor(self.consumer.player_id, color))
+            await self.group_send(LobbyMessages.setColor(self.player_id, color))
 
     async def reqmrx(self):
         try:
-            setMrX(getGameIDWithPlayer(self.consumer.player_id),
-                   self.consumer.player_id)
+            setMrX(getGameIDWithPlayer(self.player_id),
+                   self.player_id)
         except Exception as e:
             print(e)
         else:
-            await self.group_send(LobbyMessages.setMrX(self.consumer.player_id))
+            await self.group_send(LobbyMessages.setMrX(self.player_id))
 
     async def disconnect(self):
-        TRACK_DISCONNECTED.add(self.consumer.player_id)
-        await self.consumer.delayedRelease(self.consumer.player_id, 0)
+        TRACK_DISCONNECTED.add(self.player_id)
+        await self.consumer.delayedRelease(self.player_id, 0)
         await self.consumer.channel_layer.group_discard(self.consumer.game_id, self.consumer.channel_name)
         await self.consumer.close()
 
     async def leave(self):
-        leaveRoom(getGameIDWithPlayer(self.consumer.player_id),
-                  self.consumer.player_id)
-        await self.group_send(LobbyMessages.remove(self.consumer.player_id))
+        leaveRoom(getGameIDWithPlayer(self.player_id),
+                  self.player_id)
+        await self.group_send(LobbyMessages.remove(self.player_id))
 
     async def ready(self):
-        if getGameHost(game_id := getGameIDWithPlayer(self.consumer.player_id)) != self.consumer.player_id:
+        print(f"{self.player_id} is ready")
+        if getGameHost(game_id := getGameIDWithPlayer(self.player_id)) != self.player_id:
             print("Only host can start game")
             return
         c = 0

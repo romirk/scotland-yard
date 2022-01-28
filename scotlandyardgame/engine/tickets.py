@@ -1,4 +1,4 @@
-from .constants import TAXI_TICKET, BUS_TICKET, UNDERGROUND_TICKET, BLACK_TICKET, DOUBLE_TICKET
+from .constants import TAXI_TICKET, BUS_TICKET, TICKET_TYPES, UNDERGROUND_TICKET, BLACK_TICKET, DOUBLE_TICKET
 
 
 class Tickets:
@@ -56,6 +56,8 @@ class Tickets:
         }
 
     def get(self, ticket: str):
+        if ticket not in TICKET_TYPES:
+            raise ValueError('Invalid ticket type: {}'.format(ticket))
         return self.all()[ticket]
 
     def set(self, tickets: dict[str, int]):

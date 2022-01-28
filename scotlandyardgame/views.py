@@ -89,3 +89,6 @@ def game(request: HttpRequest):
     context = multiplayer.GAMES[game_id].getPlayerInfo(player_id)
     print(f"{context['name']} in game")
     return render(request, 'scotlandyardgame/game.html', context=context)
+
+def map(request: HttpRequest):
+    return render(request, 'scotlandyardgame/map.html')

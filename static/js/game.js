@@ -13,6 +13,7 @@ socket.onopen = function (event) {
   console.log("Socket opened");
   wsSend("JOIN " + PLAYER_ID);
   wsSend("GET_GAME_INFO " + PLAYER_ID);
+  wsSend("GET_PLAYER_INFO ALL");
 };
 
 const commandbox = document.getElementById("ws-command");
@@ -41,4 +42,6 @@ socket.onmessage = (msg) => {
   console.log(msg);
   log += "<br>" + msg.data;
   logElement.innerHTML = log;
+
+  //TODO Handle messages
 };

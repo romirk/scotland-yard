@@ -1,4 +1,3 @@
-import imp
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from threading import Thread
@@ -14,8 +13,8 @@ def run_detectives(game_id: str, number: int):
     elem = driver.find_element_by_id("player_name")
     elem.send_keys(f"d{number}")
     elem.send_keys(Keys.RETURN)
-    # driver.close()
     sleep(10000)
+    driver.close()
 
 
 def run_mr_x():
@@ -34,8 +33,8 @@ def run_mr_x():
     player_id = driver.execute_script("return PLAYER_ID;")
     elem = driver.find_element_by_id("ws-command")
     elem.send_keys(f"REQMOVE {player_id} taxi ")
-    # driver.close()
     sleep(10000)
+    driver.close()
 
 
 mr_x_thread = Thread(target=run_mr_x)

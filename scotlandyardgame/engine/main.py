@@ -140,6 +140,12 @@ class ScotlandYard:
             "is_host"
         }
         """
+        if player_id == "ALL":
+            info = {p: self.getPlayerInfo(p) for p in self.__players.keys()},
+            if player_id is None or not self.__getPlayerByID(player_id).is_mr_x:
+                del info[self.__mrX.ID]["location"]
+            return info
+        
         p = self.__getPlayerByID(player_id)
         return {
             "game_id": self.__ID,
@@ -156,12 +162,11 @@ class ScotlandYard:
             "game_id": self.ID,
             "state": str(self.state),
             "host_id": self.__host.ID,
-            "player_info": [self.getPlayerInfo(p) for p in self.__players.keys()],
             "move_order": self.__order,
             "cycle": self.__cycle,
             "turn": self.__turn,
             "mr_x_ticket_log": [str(move['ticket']) for move in self.moveLog if move["is_mr_x"]],
-        }
+        }        
 
     def getMrX(self) -> str:
         """returns the ID of Mr. X"""

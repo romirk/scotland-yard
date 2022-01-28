@@ -1,13 +1,12 @@
 import json
 
 from ..engine.constants import DOUBLE_TICKET
-from ..multiplayer import getGameByID, getPlayerInfo
-
+from ..multiplayer import getGameByID, getPlayerInfo, getGameIDWithPlayer
 
 class GameMessages:
     @staticmethod
     def playerJoined(player_id: str) -> dict:
-        player_info = getPlayerInfo(player_id)
+        player_info = getPlayerInfo(getGameIDWithPlayer(player_id), player_id)
         return f"PLAYER_JOINED {player_id}" + (f' {player_info["location"]}' if player_info["color"] != "X" else '')
 
     @staticmethod
@@ -39,4 +38,8 @@ class GameMessages:
 
     @staticmethod
     def gameInfo(info: dict) -> str:
-        return "INFO " + json.dumps(info)
+        return "GAME_INFO " + json.dumps(info)
+
+    @staticmethod
+    def playerInfo(info: dict) -> str:
+        return "PLAYER_INFO " + json.dumps(info)

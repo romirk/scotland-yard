@@ -1,5 +1,5 @@
 from scotlandyardgame.ws.messages import Messages
-from ..multiplayer import getPlayerIDs, getPlayerInfo
+from ..multiplayer import getGameByID, getGameIDWithPlayer, getPlayerIDs, getPlayerInfo
 from .WebSocketConsumer import TRACK_DISCONNECTED
 
 
@@ -7,7 +7,7 @@ class LobbyMessages(Messages):
     @staticmethod
     def acknowledge(game_id: str) -> str:
         """acknowledge ws connection"""
-        players = [getPlayerInfo(p) for p in getPlayerIDs(
+        players = [getPlayerInfo(getGameIDWithPlayer(p), p) for p in getPlayerIDs(
             game_id) if p not in TRACK_DISCONNECTED]
         return f"ACKNOWLEDGE {len(players)}\n" + "\n".join(
             f"{p_info['player_id']} {p_info['name']} {p_info['color']} {p_info['is_host']}" for p_info in players
@@ -16,7 +16,7 @@ class LobbyMessages(Messages):
     @staticmethod
     def newPlayer(player_id: str) -> str:
         """notify lobby of new player"""
-        playerInfo = getPlayerInfo(player_id)
+        playerInfo = getPlayerInfo(getGameIDWithPlayer(player_id), player_id)
         return f"NEW_PLAYER {player_id} {playerInfo['name']} {playerInfo['color']} {playerInfo['is_host']}"
 
     @staticmethod

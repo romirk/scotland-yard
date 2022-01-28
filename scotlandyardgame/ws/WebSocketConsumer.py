@@ -71,7 +71,7 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         print(
-            f"\033[36m[ws/client\033[33m{' ' + self.player_id[:8] if hasattr(self, 'player_id') else ''}\033[36m]\033[0m {text_data}"
+            f"\033[36m[ws/client\033[33m{' ' + self.player_id[:8] if hasattr(self, 'player_id') and self.player_id is not None else ''}\033[36m]\033[0m {text_data}"
         )
         self.player_id = text_data.split()[1] if len(
             text_data.split()) > 1 else None

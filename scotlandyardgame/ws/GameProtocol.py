@@ -2,7 +2,7 @@ from scotlandyardgame.ws.protocol import Protocol
 
 from ..engine.constants import DOUBLE_TICKET, GameState
 from ..multiplayer import (answerRollCall, getGameByID, getGameIDWithPlayer,
-                           getGameInfo, getGameState, move)
+                           getGameInfo, getGameState, getPlayerInfo, move)
 from .GameMessages import GameMessages
 from .protocol import Protocol
 from .WebSocketConsumer import TRACK_DISCONNECTED, WebSocketConsumer
@@ -10,10 +10,12 @@ from .WebSocketConsumer import TRACK_DISCONNECTED, WebSocketConsumer
 
 class GameProtocol(Protocol):
     def __init__(self, consumer: WebSocketConsumer) -> None:
+        # TODO auto-detect handlers
         super().__init__(consumer, {
             "JOIN": self.join,
             "REQMOVE": self.reqmove,
-            "GET_GAME_INFO": self.get_game_info
+            "GET_GAME_INFO": self.get_game_info,
+            "GET_PLAYER_INFO": self.get_player_info,
         })
 
     async def join(self, player_id: str):
@@ -34,6 +36,7 @@ class GameProtocol(Protocol):
 
         if getGameState(game_id) == GameState.RUNNING:
             await self.group_send(GameMessages.gameStarting())
+        self.consumer.player_id = player_id
 
     async def reqmove(self, player_id: str, ticket: str, *args):
         if (game_id := getGameIDWithPlayer(player_id)) is None:
@@ -51,3 +54,6 @@ class GameProtocol(Protocol):
 
     async def get_game_info(self, player_id: str):
         await self.send(GameMessages.gameInfo(getGameInfo(getGameIDWithPlayer(player_id))))
+
+    async def get_player_info(self, player_id: str):
+        await self.send(GameMessages.playerInfo(getPlayerInfo(getGameIDWithPlayer(player_id), player_id)))

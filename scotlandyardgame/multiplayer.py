@@ -33,8 +33,8 @@ def getPlayerConnectedGame(player_id: str) -> str:
     return game_id if game_id is not None and GAMES[game_id].state != GameState.STOPPED else None
 
 
-def getPlayerInfo(player_id: str) -> dict:
-    return getGameByID(getGameIDWithPlayer(player_id)).getPlayerInfo(player_id)
+def getPlayerInfo(game_id: str, player_id: str) -> dict:
+    return getGameByID(game_id).getPlayerInfo(player_id)
 
 
 def getPlayerIDs(game_id: str) -> list[str]:

@@ -1,14 +1,8 @@
 from scotlandyardgame.ws.protocol import Protocol
 
-<<<<<<< Updated upstream
-from ..engine.constants import GameState, Ticket
-from ..multiplayer import (answerRollCall, getGameByID, getGameIDWithPlayer, getGameInfo,
-                           getGameState, move)
-=======
 from ..engine.constants import DOUBLE_TICKET, GameState
 from ..multiplayer import (answerRollCall, getGameByID, getGameIDWithPlayer,
                            getGameInfo, getGameState, getPlayerInfo, move)
->>>>>>> Stashed changes
 from .GameMessages import GameMessages
 from .protocol import Protocol
 from .WebSocketConsumer import TRACK_DISCONNECTED, WebSocketConsumer
@@ -38,28 +32,28 @@ class GameProtocol(Protocol):
         await self.send(GameMessages.acknowledge(game_id))
 
         if player_id in TRACK_DISCONNECTED:
-            TRACK_DISCONNECTED.remove(self.player_id)
+            TRACK_DISCONNECTED.remove(player_id)
 
         if getGameState(game_id) == GameState.RUNNING:
             await self.group_send(GameMessages.gameStarting())
         self.consumer.player_id = player_id
 
-    async def reqmove(self, player_id: str, ticket: str, *args):
-        if (game_id := getGameIDWithPlayer(player_id)) is None:
+    async def reqmove(self, ticket: str, *args):
+        if (game_id := getGameIDWithPlayer(self.consumer.player_id)) is None:
             raise RuntimeError("Player is not in a game")
         if getGameState(game_id) != GameState.RUNNING:
             raise RuntimeError("Game is not running")
 
-        moveData = (move(game_id, player_id, Ticket.DOUBLE, {"ticket1": args[0], "location1": int(args[1]), "ticket2": args[2], "location2": int(args[3])})
-                    if Ticket.fromStr(ticket) == Ticket.DOUBLE else
-                    move(game_id, player_id,
+        moveData = (move(game_id, self.consumer.player_id, DOUBLE_TICKET, {"ticket1": args[0], "location1": int(args[1]), "ticket2": args[2], "location2": int(args[3])})
+                    if ticket == DOUBLE_TICKET else
+                    move(game_id, self.consumer.player_id,
                          ticket, {"location": int(args[0])})
                     )
         if moveData["accepted"]:
             await self.group_send(GameMessages.playerMoved(moveData))
 
-    async def get_game_info(self, player_id: str):
-        await self.send(GameMessages.gameInfo(getGameInfo(getGameIDWithPlayer(player_id))))
+    async def get_game_info(self):
+        await self.send(GameMessages.gameInfo(getGameInfo(getGameIDWithPlayer(self.consumer.player_id))))
 
     async def get_player_info(self, player_id: str):
         await self.send(GameMessages.playerInfo(getPlayerInfo(getGameIDWithPlayer(player_id), player_id)))

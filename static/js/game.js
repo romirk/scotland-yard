@@ -1,3 +1,6 @@
+let move_order = [];
+let turn = 0;
+
 const socket = new WebSocket(
   `ws${location.protocol === "https:" ? "s" : ""}://${
     window.location.host
@@ -12,7 +15,6 @@ socket.onclose = function (event) {
 socket.onopen = function (event) {
   console.log("Socket opened");
   wsSend("JOIN " + PLAYER_ID);
-  wsSend("GET_GAME_INFO");
   wsSend("GET_PLAYER_INFO");
 };
 
@@ -41,7 +43,31 @@ function wsSend(msg) {
 socket.onmessage = (msg) => {
   console.log(msg);
   log += "<br>" + msg.data;
-  logElement.innerHTML = log;
 
   //TODO Handle messages
+
+  let tokens = msg.data.split(" ");
+  let command = tokens[0];
+  console.log(command);
+  switch (command) {
+    case "PLAYER_MOVED":
+      turn = (turn + 1) % 6;
+      if (move_order[turn] == PLAYER_ID) {
+        log += "<br><span class=turn>It's your turn!</span>";
+      }
+      break;
+
+    case "GAME_INFO":
+      let gameInfo = JSON.parse(msg.data.split("GAME_INFO ")[1]);
+      console.log(gameInfo);
+      move_order = gameInfo.move_order;
+      break;
+
+    case "GAME_STARTING":
+      wsSend("GET_GAME_INFO");
+      break;
+    default:
+      break;
+  }
+  logElement.innerHTML = log;
 };

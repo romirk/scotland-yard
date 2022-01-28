@@ -4,7 +4,7 @@ from enum import Enum, auto
 
 from .mapdata import MAPDATA
 
-SURFACE_MOVES = [3, 8, 13, 18, 24]
+SURFACE_MOVES = [1, 3, 8, 13, 18, 24]
 CYCLE_LIMIT = 24
 MAX_PLAYERS = 6
 

@@ -23,6 +23,7 @@ class LobbyProtocol(Protocol):
         await self.send(LobbyMessages.acknowledge(getGameIDWithPlayer(player_id)))
         if player_id in TRACK_DISCONNECTED:
             TRACK_DISCONNECTED.remove(player_id)
+        self.consumer.player_id = player_id
 
     async def reqcolor(self, player_id: str, color: str):
         try:

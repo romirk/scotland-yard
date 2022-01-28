@@ -21,7 +21,7 @@ class GameMessages:
 
     @staticmethod
     def playerMoved(moveMade: dict) -> dict:
-        return_msg = f'PLAYER_MOVED {moveMade["player_id"]} {moveMade["cycle_number"]} {moveMade["is_mr_x"]} {moveMade["ticket"]} '
+        return_msg = f'PLAYER_MOVED {moveMade["player_id"]} {moveMade["cycle_number"]} {moveMade["ticket"]} '
         if moveMade["is_mr_x"]:
             if moveMade["ticket"] == DOUBLE_TICKET:
                 return_msg += f'{moveMade["double_tickets"][0]} {moveMade["double_tickets"][1]} '

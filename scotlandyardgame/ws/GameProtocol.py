@@ -52,6 +52,8 @@ class GameProtocol(Protocol):
                     )
         if moveData["accepted"]:
             await self.group_send(GameMessages.playerMoved(moveData))
+        else:
+            await self.send("DENIED")
 
     async def get_game_info(self):
         await self.send(GameMessages.gameInfo(getGameInfo(getGameIDWithPlayer(self.player_id))))

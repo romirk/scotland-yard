@@ -32,10 +32,6 @@ def run_mr_x():
     sleep(1)
     elem = driver.find_element_by_id("start")
     elem.click()
-    sleep(5)
-    player_id = driver.execute_script("return PLAYER_ID;")
-    elem = driver.find_element_by_id("ws-command")
-    elem.send_keys(f"REQMOVE {player_id} taxi ")
     sleep(10000)
     driver.close()
 

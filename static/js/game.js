@@ -13,7 +13,7 @@ socket.onopen = function (event) {
   console.log("Socket opened");
   wsSend("JOIN " + PLAYER_ID);
   wsSend("GET_GAME_INFO");
-  wsSend("GET_PLAYER_INFO ALL");
+  wsSend("GET_PLAYER_INFO");
 };
 
 const commandbox = document.getElementById("ws-command");

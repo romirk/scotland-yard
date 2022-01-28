@@ -3,6 +3,7 @@ import json
 from ..engine.constants import DOUBLE_TICKET
 from ..multiplayer import getGameByID, getPlayerInfo, getGameIDWithPlayer
 
+
 class GameMessages:
     @staticmethod
     def playerJoined(player_id: str) -> dict:

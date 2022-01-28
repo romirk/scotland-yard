@@ -6,5 +6,5 @@ class LobbyConsumer(WebSocketConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.handler = LobbyProtocol(self)
         self.player_id = None
+        self.handler = LobbyProtocol(self)

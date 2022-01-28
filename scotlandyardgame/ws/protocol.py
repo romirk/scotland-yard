@@ -16,7 +16,8 @@ class Protocol:
         keyword = tokens[0]
 
         if keyword not in self.__handlers:
-            raise ValueError(f"invalid message: {msg}")
+            await self.send(f"invalid message: {keyword}")
+            return
 
         await self.__handlers[keyword](*(tokens[1:] if len(tokens) > 1 else []))
 

@@ -39,9 +39,9 @@ class Tickets:
             self.__bus += 1
         elif ticket_type == UNDERGROUND_TICKET:
             self.__underground += 1
-        elif ticket_type == BLACK_TICKET:
+        elif ticket_type == BLACK_TICKET and self.__is_mr_x:
             self.__black += 1
-        elif ticket_type == DOUBLE_TICKET:
+        elif ticket_type == DOUBLE_TICKET and self.__is_mr_x:
             self.__double += 1
         else:
             raise ValueError('Invalid ticket type: {}'.format(ticket_type))
@@ -51,8 +51,8 @@ class Tickets:
             TAXI_TICKET: self.__taxi,
             BUS_TICKET: self.__bus,
             UNDERGROUND_TICKET: self.__underground,
-            BLACK_TICKET: self.__black,
-            DOUBLE_TICKET: self.__double
+            BLACK_TICKET: self.__black if self.__is_mr_x else 0,
+            DOUBLE_TICKET: self.__double if self.__is_mr_x else 0
         }
 
     def get(self, ticket: str):

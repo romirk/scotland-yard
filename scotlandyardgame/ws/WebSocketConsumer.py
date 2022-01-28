@@ -14,6 +14,9 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         self.game_id: str = self.scope['url_route']['kwargs']['game_id']
+        self.scope['game_data'] = {
+            "game_id": self.game_id
+        }
         try:
             game = getGameByID(self.game_id)
         except ValueError as e:
@@ -76,6 +79,7 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
         self.player_id = text_data.split()[1] if len(
             text_data.split()) > 1 else None
         await self.handler.process(text_data)
+        self.player_id = self.handler.player_id
 
     def group_send(self, msg: str):
         return self.channel_layer.group_send(

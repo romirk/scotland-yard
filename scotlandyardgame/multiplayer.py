@@ -11,8 +11,6 @@ def getGameByID(game_id: str) -> ScotlandYard:
     if game_id not in GAMES:
         raise ValueError(f"invalid game ID {game_id}")
     game = GAMES[game_id]
-    if game.state == GameState.STOPPED:
-        del GAMES[game_id]
     return game
 
 
@@ -100,10 +98,14 @@ def move(game_id: str, player_id: str, ticket: str, data: dict):
         raise ValueError("Game is not running")
     return game.requestMove(player_id, ticket, data)
 
-
 def leaveRoom(game_id: str, player_id: str):
     game = getGameByID(game_id)
     if game.state != GameState.CONNECTING:
         del PLAYER_TO_GAME[player_id]
         game.removePlayer(player_id)
         print(f"removed {player_id} from {game_id}")
+
+def deleteGame(game_id: str):
+    for p in getPlayerIDs(game_id):
+        del PLAYER_TO_GAME[p]
+    del GAMES[game_id]

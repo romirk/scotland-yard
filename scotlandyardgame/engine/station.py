@@ -1,5 +1,4 @@
-from .constants import (BLACK_TICKET, BUS_TICKET, TAXI_TICKET,
-                        UNDERGROUND_TICKET)
+from .constants import (BLACK_TICKET, BUS_TICKET, TAXI_TICKET, UNDERGROUND_TICKET)
 
 
 class Station:

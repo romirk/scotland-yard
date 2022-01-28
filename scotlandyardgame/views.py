@@ -1,3 +1,4 @@
+from multiprocessing import context
 from re import compile, search
 
 from django.http import HttpRequest
@@ -6,6 +7,7 @@ from django.urls import reverse
 from django.utils.cache import patch_response_headers
 
 from scotlandyardgame.engine.constants import AVAILABLE_COLORS, GameState
+from .engine.maprenderer import generate_board, generate_coords
 
 from . import multiplayer
 
@@ -91,4 +93,7 @@ def game(request: HttpRequest):
     return render(request, 'scotlandyardgame/game.html', context=context)
 
 def map(request: HttpRequest):
-    return render(request, 'scotlandyardgame/map.html')
+    context = {
+        'board': generate_board((20, 15), 200).tolist()
+    }
+    return render(request, 'scotlandyardgame/map.html', context=context)

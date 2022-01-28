@@ -1,48 +1,16 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <meta charset="utf-8" />
-    <title>KML Click Capture Sample</title>
-    <style>
-      html,
-      body {
-        height: 100%;
-        padding: 0;
-        margin: 0;
-      }
-      #map {
-        height: 70%;
-        width: 70%;
-        overflow: hidden;
-        float: left;
-        border: thin solid #333;
-      }
-      #capture {
-        overflow: hidden;
-        float: left;
-        background-color: #ececfb;
-        border: thin solid #333;
-        border-left: none;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="map"></div>
-    <div id="capture"></div>
-    <script>
-      let map;
-
-      function initMap() {
-        map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: -34.397, lng: 150.644 },
-          zoom: 8,
-        });
-      }
-    </script>
-    <script
-      async
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTdo4udf9YN0rGH-YfPLGDCRN3WHH6r40&callback=initMap"
-    ></script>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script>
+    const BOARD = {{board|safe}};
+  </script>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script src="/js/map.js"></script>
+</body>
 </html>

@@ -2,12 +2,13 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from threading import Thread
 from time import sleep
+import sys
 
 GAME_ID = None
 
 
 def run_detectives(game_id: str, number: int):
-    driver = webdriver.Chrome("C:\\dev\\Util\\chromedriver\\chromedriver.exe")
+    driver = webdriver.Chrome(sys.argv[1])
     driver.get(f"http://localhost:8000/{game_id}")
     assert "Scotland Yard" in driver.title
     elem = driver.find_element_by_id("player_name")
@@ -19,7 +20,7 @@ def run_detectives(game_id: str, number: int):
 
 def run_mr_x():
     global GAME_ID
-    driver = webdriver.Chrome("C:\\dev\\Util\\chromedriver\\chromedriver.exe")
+    driver = webdriver.Chrome(sys.argv[1])
     driver.get(f"http://localhost:8000/")
     assert "Scotland Yard" in driver.title
     elem = driver.find_element_by_id("player_name")

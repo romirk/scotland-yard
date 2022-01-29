@@ -1,4 +1,4 @@
-MAPDATA = [
+MAP_DATA = [
     # TODO: add map data
     # index: [taxi, bus, underground, special]
     [

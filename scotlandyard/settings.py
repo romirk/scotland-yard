@@ -26,8 +26,10 @@ SECRET_KEY = 'django-insecure-0gh!qz1g6c22l!%f5l#)qawg+$-tn#to$b9r#aosxq5ibhwr$0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["ancient-headland-46868.herokuapp.com", "scotlandyard.imagifight.in", "localhost"]
-CSRF_TRUSTED_ORIGINS = ["https://ancient-headland-46868.herokuapp.com", "http://scotlandyard.imagifight.in", "http://localhost"]
+ALLOWED_HOSTS = ["ancient-headland-46868.herokuapp.com",
+                 "scotlandyard.imagifight.in", "localhost"]
+CSRF_TRUSTED_ORIGINS = ["https://ancient-headland-46868.herokuapp.com",
+                        "http://scotlandyard.imagifight.in", "http://localhost"]
 
 
 # Application definition
@@ -54,7 +56,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'scotlandyardgame.middleware.Middleware'
+    'scotlandyardgame.middleware.PlayerIdMiddleware'
 ]
 
 ROOT_URLCONF = 'scotlandyard.urls'

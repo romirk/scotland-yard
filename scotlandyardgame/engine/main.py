@@ -2,11 +2,8 @@ from random import choice, randrange, shuffle
 from typing import Final
 
 from .constants import *
-from .map import Map
-from .mapdata import MAPDATA
+from .map import MAP
 from .player import Player
-
-MAP = Map(MAPDATA)
 
 class ScotlandYard:
     """
@@ -19,8 +16,7 @@ class ScotlandYard:
         self.__players: dict[str, Player] = {}
         self.__order: list[str] = []
 
-        self.__available_start_locations: list[int] = AVAILABLE_START_LOCATIONS.copy(
-        )
+        self.__available_start_locations: list[int] = AVAILABLE_START_LOCATIONS.copy()
         self.__available_colors: list[str] = AVAILABLE_COLORS.copy()
 
         # cycle = everyone gets 1 turn
@@ -48,16 +44,21 @@ class ScotlandYard:
         raise AttributeError("ID assignment not allowed.")
 
     # private methods
+
     def __isValidMove(self, player_id: str, location: int, ticket: str) -> bool:
         """checks if player with ```player_id``` can move to ```location``` using ```ticket```"""
         player = self.__getPlayerByID(player_id)
 
-        return (player is not None
-                and (ticket != BLACK_TICKET or player.is_mr_x)
-                and player.tickets.get(ticket) > 0
-                and location in MAP.stations[player.location].getNeighbours(ticket)
-                and (self.__getPlayerAt(location) is None
-                     or (not player.is_mr_x and self.__getPlayerAt(location) == self.__mrX)))   
+        return (
+            player is not None
+            and (ticket != BLACK_TICKET or player.is_mr_x)
+            and player.tickets.get(ticket) > 0
+            and location in MAP.stations[player.location].getNeighbours(ticket)
+            and (
+                self.__getPlayerAt(location) is None
+                or (not player.is_mr_x and self.__getPlayerAt(location) == self.__mrX)
+            )
+        )
 
     def __isMrXCaught(self) -> bool:
         """checks if game is over"""
@@ -73,7 +74,7 @@ class ScotlandYard:
         if not self.__turn and self.__isStagnantCycle:
             return EndState.MR_X_WINS
         if self.__cycle >= CYCLE_LIMIT:
-            return EndState.MR_X_WINS            
+            return EndState.MR_X_WINS
         if self.__isMrXCaught():
             return EndState.DETECTIVES_WIN
         return EndState.NOT_ENDED
@@ -98,7 +99,9 @@ class ScotlandYard:
         if not player.is_mr_x:
             self.__mrX.tickets.gain(ticket)
 
-    def __doubleMove(self, player: Player, ticket1: str, location1: int, ticket2: str, location2: int):
+    def __doubleMove(
+        self, player: Player, ticket1: str, location1: int, ticket2: str, location2: int
+    ):
         old_location = player.location
         old_tickets = player.tickets.all()
         try:
@@ -115,10 +118,9 @@ class ScotlandYard:
         self.__turn = (self.__turn + 1) % 6
         if not self.__turn:
             self.__cycle += 1
-        
 
     # public methods
-    
+
     def isBoxedIn(self, player_id: str):
         player = self.__getPlayerByID(player_id)
         for ticket in TICKET_TYPES:
@@ -126,7 +128,7 @@ class ScotlandYard:
                 continue
             neighbours = MAP.stations[player.location].getNeighbours(ticket)
             for neighbour in neighbours:
-                if self.__isValidMove(player_id,neighbour,ticket):
+                if self.__isValidMove(player_id, neighbour, ticket):
                     return False
         return True
 
@@ -169,7 +171,7 @@ class ScotlandYard:
             "color": p.color,
             "location": p.location,
             "tickets": p.tickets.all(),
-            "is_host": p.ID == self.getHostID()
+            "is_host": p.ID == self.getHostID(),
         }
 
     def getGameInfo(self) -> dict:
@@ -180,8 +182,15 @@ class ScotlandYard:
             "move_order": self.__order,
             "cycle": self.__cycle,
             "turn": self.__turn,
-            "mr_x_ticket_log": [(move['ticket'] if move['ticket'] != DOUBLE_TICKET else f'double {move["double_tickets"][0]} {move["double_tickets"][1]}')
-                                for move in self.moveLog if move["is_mr_x"]]
+            "mr_x_ticket_log": [
+                (
+                    move["ticket"]
+                    if move["ticket"] != DOUBLE_TICKET
+                    else f'double {move["double_tickets"][0]} {move["double_tickets"][1]}'
+                )
+                for move in self.moveLog
+                if move["is_mr_x"]
+            ],
         }
 
     def getMrX(self) -> str:
@@ -221,7 +230,7 @@ class ScotlandYard:
             oldX.color = player.color
 
         self.__mrX = player
-        player.color = 'X'
+        player.color = "X"
 
     def addPlayer(self, player_id: str, player_name: str):
         """add a player to the game"""
@@ -237,7 +246,7 @@ class ScotlandYard:
         print(f"\t\thost: {is_host}")
 
         if is_host:
-            col = 'X'
+            col = "X"
         else:
             col_index = randrange(len(self.__available_colors))
             col = self.__available_colors[col_index]
@@ -265,8 +274,7 @@ class ScotlandYard:
     def removePlayer(self, player_id: str):
         """remove a player from the game"""
         if self.state == GameState.CONNECTING:
-            raise RuntimeError(
-                "Players will not be removed during CONNECTING state")
+            raise RuntimeError("Players will not be removed during CONNECTING state")
 
         player = self.__getPlayerByID(player_id)
         isX = player.is_mr_x
@@ -300,8 +308,7 @@ class ScotlandYard:
     def start(self):
         """do precondition checks and set gamestate"""
         if len(self.__players) != MAX_PLAYERS:
-            raise RuntimeError(
-                f"Invalid number of players: {len(self.__players)}")
+            raise RuntimeError(f"Invalid number of players: {len(self.__players)}")
         if self.state != GameState.CONNECTING:
             return
         if self.rollCall != set(self.getPlayerIDs()):
@@ -328,10 +335,7 @@ class ScotlandYard:
         player = self.__getPlayerByID(player_id)
 
         if self.__order[self.__turn] != player_id:
-            return {
-                "accepted":False,
-                "message": "Not your turn"
-            }
+            return {"accepted": False, "message": "Not your turn"}
 
         if not self.__turn:
             self.__isStagnantCycle = True
@@ -341,9 +345,14 @@ class ScotlandYard:
                 if not player.is_mr_x:
                     raise ValueError("Only Mr. X can use DOUBLE")
                 self.__doubleMove(
-                    player, data["ticket1"], data["location1"], data["ticket2"], data["location2"])
+                    player,
+                    data["ticket1"],
+                    data["location1"],
+                    data["ticket2"],
+                    data["location2"],
+                )
             elif ticket == "pass":
-                print("stagnant: ",self.__isStagnantCycle)
+                print("stagnant: ", self.__isStagnantCycle)
                 print("isBoxedIn: ", self.isBoxedIn(player_id))
                 if not self.isBoxedIn(player_id):
                     raise ValueError("Making a move is possible")
@@ -355,10 +364,7 @@ class ScotlandYard:
                     self.__isStagnantCycle = False
         except ValueError as e:
             print(e)
-            return {
-                "accepted": False,
-                "message": str(e)
-            }
+            return {"accepted": False, "message": str(e)}
 
         move = {
             "accepted": True,
@@ -367,10 +373,14 @@ class ScotlandYard:
             "ticket": ticket,
             "is_mr_x": player.is_mr_x,
             "is_surface_move": self.__cycle in SURFACE_MOVES,
-            "double_tickets": (data["ticket1"], data["ticket2"]) if ticket == DOUBLE_TICKET else None,
-            "double_locations":  (data["location1"], data["location2"]) if ticket == DOUBLE_TICKET else None,
+            "double_tickets": (data["ticket1"], data["ticket2"])
+            if ticket == DOUBLE_TICKET
+            else None,
+            "double_locations": (data["location1"], data["location2"])
+            if ticket == DOUBLE_TICKET
+            else None,
             "cycle_number": self.__cycle,
-            "game_state": self.state
+            "game_state": self.state,
         }
 
         self.__advanceTurn()

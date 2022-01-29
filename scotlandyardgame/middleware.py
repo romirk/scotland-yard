@@ -2,7 +2,7 @@ from django.http import HttpRequest
 from uuid import uuid4
 
 
-class Middleware:
+class PlayerIdMiddleware:
     def __init__(self, get_response) -> None:
         self.get_response = get_response
 

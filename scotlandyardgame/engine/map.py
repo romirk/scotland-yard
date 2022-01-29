@@ -21,6 +21,7 @@ class Map:
         self.map_data = map_data
         self.stations: list[Station] = []
         self.coords: dict[int, np.ndarray] = dict()
+        self.limits = {"min": [0, 0], "max": [0, 0]}
 
         for index in range(self.N):
             station = Station(index)
@@ -32,68 +33,73 @@ class Map:
             self.stations.append(station)
         print("initialized map with", self.N, "stations.\ngenerating coordinates...")
         self.generate_coordinates()
-        print("done.")
+        print(f"done. limits: {self.limits}")
 
-    def is_too_close(self, station_index):
+    def is_too_close(self, coords):
         for i in range(self.N):
-            if i != station_index and self.stations[i].coords is not None:
-                if (
-                    np.linalg.norm(
-                        self.stations[station_index].coords - self.stations[i].coords
-                    )
-                    < 0.5
-                ):
+            if self.stations[i].coords is not None:
+                if np.linalg.norm(coords - self.stations[i].coords) < 1:
                     return True
         return False
 
     def generate_coordinates(self):
-        visited = np.zeros(self.N, dtype=bool)
-        q = [self.stations[0]]
-        self.stations[0].coords = self.coords[0] = np.array((0, 0))
-        type_multipliers = {
+
+        multipliers = {
             TAXI_TICKET: 2,
             BUS_TICKET: 3,
             UNDERGROUND_TICKET: 5,
             BLACK_TICKET: 7,
         }
 
+        visited = np.zeros(self.N, dtype=bool)
+        q = [self.stations[0]]
+        self.stations[0].coords = self.coords[0] = np.array((0, 0))
+
         while q:
             station = q.pop(0)
             visited[station.location] = True
             for ticket_type, neighbours in station.neighbours.items():
+
+                phi = np.random.rand() * 2 * np.pi
+
                 for i, neighbour in enumerate(neighbours):
                     if neighbour < self.N and not visited[neighbour]:
 
+                        theta = i * 2 * np.pi / len(neighbours)
                         calculated_coords = np.array(
                             (
                                 station.coords[0]
-                                + type_multipliers[ticket_type]
-                                * np.cos(i * 2 * np.pi / len(neighbours)),
+                                + multipliers[ticket_type] * np.cos(theta + phi),
                                 station.coords[1]
-                                + type_multipliers[ticket_type]
-                                * np.sin(i * 2 * np.pi / len(neighbours)),
+                                + multipliers[ticket_type] * np.sin(theta + phi),
                             )
                         )
 
-                        if self.stations[neighbour].coords is None:
-                            self.stations[neighbour].coords = calculated_coords
-                        else:
-                            self.stations[neighbour].coords = (
+                        if self.stations[neighbour].coords is not None:
+                            calculated_coords = (
                                 calculated_coords + self.stations[neighbour].coords
                             ) / 2
 
-                        self.coords[neighbour] = self.stations[neighbour].coords
-
-                        while self.is_too_close(neighbour):
-                            self.stations[neighbour].coords = np.array(
+                        while self.is_too_close(calculated_coords):
+                            calculated_coords = np.array(
                                 (
-                                    self.stations[neighbour].coords[0]
-                                    + 2 * np.random.rand(),
-                                    self.stations[neighbour].coords[1]
-                                    + 2 * np.random.rand(),
+                                    calculated_coords[0] + (np.random.rand() - 0.5) * 2,
+                                    calculated_coords[1] + (np.random.rand() - 0.5) * 2,
                                 )
                             )
-                            self.coords[neighbour] = self.stations[neighbour].coords
+
+                        self.coords[neighbour] = self.stations[
+                            neighbour
+                        ].coords = calculated_coords
+
+                        if calculated_coords[0] < self.limits["min"][0]:
+                            self.limits["min"][0] = calculated_coords[0]
+                        if calculated_coords[1] < self.limits["min"][1]:
+                            self.limits["min"][1] = calculated_coords[1]
+                        if calculated_coords[0] > self.limits["max"][0]:
+                            self.limits["max"][0] = calculated_coords[0]
+                        if calculated_coords[1] > self.limits["max"][1]:
+                            self.limits["max"][1] = calculated_coords[1]
 
                         q.append(self.stations[neighbour])
 

@@ -93,18 +93,12 @@ def game(request: HttpRequest):
     game_id = multiplayer.getGameIDWithPlayer(player_id)
     if game_id is None:
         return redirectWithError("indexerror", "not in game")
-    if multiplayer.getGameByID(game_id).state == multiplayer.GameState.STOPPED:
+    if (game := multiplayer.getGameByID(game_id)).state == multiplayer.GameState.STOPPED:
         return redirectWithError("indexerror", "game stopped")
-    if multiplayer.getGameByID(game_id).state == multiplayer.GameState.PENDING:
+    if game.state == multiplayer.GameState.PENDING:
         return redirect("lobby")
 
-    context = multiplayer.GAMES[game_id].getPlayerInfo(player_id)
-    print(f"{context['name']} in game")
-    return render(request, "scotlandyardgame/game.html", context=context)
-
-
-def map(request: HttpRequest):
-    context = {
+    context = game.getPlayerInfo(player_id) | {
         "board": MAP.generate_board_rectangular((15, 20)).tolist(),
         "coords": MAP.to_list(),
         "map_data": MAP.map_data,
@@ -113,8 +107,8 @@ def map(request: HttpRequest):
             "min": MAP.limits["min"].tolist(),
         },
     }
-    return render(request, "scotlandyardgame/map.html", context=context)
-
+    print(f"{context['name']} in game")
+    return render(request, "scotlandyardgame/game.html", context=context)
 
 def dot(request: HttpRequest):
     dot = MAP.to_dot()

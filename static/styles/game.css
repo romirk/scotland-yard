@@ -44,4 +44,5 @@ main {
 
 canvas {
   flex-basis: 1;
+  flex-shrink: 0;
 }

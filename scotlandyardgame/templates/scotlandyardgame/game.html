@@ -4,8 +4,14 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Scotland Yard</title>
-    <link rel="stylesheet" href="/styles/game.css" />
+    <title>Document</title>
+    <link rel="stylesheet" href="styles/game.css">
+    
+    <style>
+      .turn {
+        color: {{ color }};
+      }
+    </style>
 
     <script>
       const PLAYER_ID = '{{ player_id }}';
@@ -13,73 +19,26 @@
       const NAME = '{{ name }}';
       const COLOR = '{{ color }}';
       const IS_HOST = {% if is_host %}true{% else %} false{% endif %};
-    </script>
 
-    <style>
-      .turn {
-        color: {{ color }};
-      }
-    </style>
+      const BOARD = {{board|safe}};
+      const STATIONS = {{coords|safe}};
+      const MAP_DATA = {{map_data|safe}};
+      const LIMITS = {{limits|safe}};
+    </script>
   </head>
-
   <body>
-    {% comment %}
-    <svg id="textsvg">
-      <g id="playerbody">
-        <path
-          id="playerheadpath"
-          stroke-width="4"
-          stroke="#7A6AC0"
-          fill="#0000"
-        />
-        <path
-          id="playerbodypath"
-          stroke-width="4"
-          stroke="#7A6AC0"
-          fill="#0000"
-          d="M 100 100 L 125 50 L 150 100 L 112 100"
-        />
-      </g>
-    </svg>
-    {% endcomment %} {{ player_id }}
+    <main>
+      <canvas id="canvas"></canvas>
+      <div id="ui">
+        <code id="gameLog"> </code>
 
-    <code id="gameLog"> </code>
-
-    <br />
-    <code>>>>&nbsp;<span contenteditable="true" id="ws-command"></span></code>
-    <!-- <button id="send">send</button> -->
-
-    {% comment %}
-
-    <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
-    <script src="/js/anime.min.js"></script>
-    <script>
-      document
-        .getElementById("playerheadpath")
-        .setAttribute("d", circlePath(125, 30, 18));
-
-      opentype.load("/styles/fonts/Comfortaa.ttf", function (err, font) {
-        if (err) {
-          console.log("Font could not be loaded: " + err);
-        } else {
-          const path = font.getPath("scotlandyard", 0, 150, 72);
-          // document.getElementById("textpath").setAttribute("d", path.toPathData());
-        }
-      });
-
-      // let t = anime.timeline()
-      anime({
-        targets: "#playerbody path",
-        strokeDashoffset: [anime.setDashoffset, 0],
-        easing: "easeInOutSine",
-        delay: function (el, i, n) {
-          return (n - i - 1) * 200;
-        },
-        duration: 1000,
-      });
-    </script>
-    {% endcomment %}
-
+        <br />
+        <code
+          >>>>&nbsp;<span contenteditable="true" id="ws-command"></span
+        ></code>
+      </div>
+    </main>
+    <script src="/js/map.js"></script>
     <script src="/js/game.js"></script>
   </body>
 </html>

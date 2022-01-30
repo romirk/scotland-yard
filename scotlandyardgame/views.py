@@ -108,7 +108,10 @@ def map(request: HttpRequest):
         "board": MAP.generate_board_rectangular((15, 20)).tolist(),
         "coords": MAP.to_list(),
         "map_data": MAP.map_data,
-        "limits": MAP.limits,
+        "limits": {
+            "max": MAP.limits["max"].tolist(),
+            "min": MAP.limits["min"].tolist(),
+        },
     }
     return render(request, "scotlandyardgame/map.html", context=context)
 

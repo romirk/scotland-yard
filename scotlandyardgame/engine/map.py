@@ -27,7 +27,7 @@ class Map:
         self.map_data = map_data
         self.stations: list[Station] = []
         self.coords: dict[int, np.ndarray] = dict()
-        self.limits = {"min": [0, 0], "max": [0, 0]}
+        self.limits = {"min": np.array((0, 0)), "max": np.array((0, 0))}
 
         self.sub_graphs: dict[str, set[int]] = {
             TAXI_TICKET: set(),
@@ -50,24 +50,22 @@ class Map:
 
         print("initialized map with", self.N, "stations.\ngenerating coordinates...")
         self.generate_coordinates_radial()
+        self.normalize_coordinates()
         self.compute_limits()
         print(
-            f"map generated with {self.limits['max'][0] - self.limits['min'][0]}x{self.limits['max'][1] - self.limits['min'][1]}"
+            f"map generated with dimensions {self.limits['max'][0] - self.limits['min'][0]}x{self.limits['max'][1] - self.limits['min'][1]}"
         )
+        print(f"coordinates normalized to {self.get_scale()}: {self.to_list()}")
 
     def compute_limits(self):
         """
         Find the limits of the map.
         """
+        self.limits["min"] = np.array([np.inf, np.inf])
+        self.limits["max"] = np.array([-np.inf, -np.inf])
         for c in self.coords.values():
-            if c[0] < self.limits["min"][0]:
-                self.limits["min"][0] = c[0]
-            if c[1] < self.limits["min"][1]:
-                self.limits["min"][1] = c[1]
-            if c[0] > self.limits["max"][0]:
-                self.limits["max"][0] = c[0]
-            if c[1] > self.limits["max"][1]:
-                self.limits["max"][1] = c[1]
+            self.limits["min"] = np.minimum(self.limits["min"], c)
+            self.limits["max"] = np.maximum(self.limits["max"], c)
 
     def generate_board_rectangular(self, shape):
         """
@@ -80,15 +78,21 @@ class Map:
         board[i] = np.arange(1, self.N + 1)
         return board.reshape(shape)
 
+    @staticmethod
+    def einsum_sqrt(a: np.ndarray) -> np.ndarray:
+        return np.sqrt(np.einsum("ij,ij->i", a, a))
+
     def get_gradient(self, coords: np.ndarray):
-        m = 3
-        c = np.array(list(self.coords.values()), dtype=np.ndarray)
-        s = c - coords
-        d = np.linalg.norm(s)
+        s = np.array(list(self.coords.values())) - coords
+        d: np.ndarray = np.linalg.norm(s, axis=1).reshape(-1, 1)
         grad = s / (d ** 2)
-        m = np.min(d)
-        # grad = np.linalg.norm(coords) ** 2
-        return grad.sum(), m
+        return grad.sum(axis=0), np.min(d)
+
+    def get_scale(self):
+        """
+        Get the scale of the map.
+        """
+        return np.linalg.norm(self.limits["max"] - self.limits["min"])
 
     def generate_coordinates_radial(self):
         """
@@ -141,23 +145,40 @@ class Map:
                             ) / 2
 
                         grad, d = self.get_gradient(computed_cooordinates)
+                        scale = self.get_scale()
                         # print(
-                        #     f"{station.location} {station.coords} {neighbour} {computed_cooordinates}: {grad}, {d}"
+                        #     f"{station.location} {station.coords} {neighbour} {computed_cooordinates}: {grad}, {d}, {scale}"
                         # )
 
-                        while d < 2:
+                        while d < 1:
                             # print(f"* {neighbour} {computed_cooordinates} {d} {grad}")
-                            computed_cooordinates = computed_cooordinates - alpha * grad
+                            computed_cooordinates = (
+                                computed_cooordinates - alpha * grad
+                            )
                             grad, d = self.get_gradient(computed_cooordinates)
 
                         self.coords[neighbour] = self.stations[
                             neighbour
                         ].coords = computed_cooordinates
 
+                        self.compute_limits()
                         q.append(self.stations[neighbour])
+                # self.normalize_coordinates()
 
         print("\33[2K[BFS] done.")
+
         # return self.coords_as_list()
+
+    def normalize_coordinates(self):
+        """
+        ### Normalize Coordinates
+
+        This function normalizes the coordinates of the stations on the map.
+        """
+        self.coords = {
+            i: (c - self.limits["min"]) / self.get_scale()
+            for i, c in self.coords.items()
+        }
 
     def generate(self, xmax=500, ymax=500):
         """

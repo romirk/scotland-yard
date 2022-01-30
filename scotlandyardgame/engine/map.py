@@ -77,7 +77,7 @@ class Map:
         size = np.product(shape)
         board = np.zeros(size, dtype=int)
         i = np.sort(np.random.choice(np.arange(size), self.N, replace=False))
-        board[i] = np.arange(1, 201)
+        board[i] = np.arange(1, self.N + 1)
         return board.reshape(shape)
 
     def get_gradient(self, coords):
@@ -120,7 +120,7 @@ class Map:
             for ticket_type, neighbours in station.neighbours.items():
 
                 phi = np.random.rand() * 2 * np.pi
-                alpha = 1.1
+                alpha = 5
 
                 for i, neighbour in enumerate(neighbours):
                     if neighbour < self.N and not visited[neighbour]:
@@ -153,15 +153,6 @@ class Map:
                         self.coords[neighbour] = self.stations[
                             neighbour
                         ].coords = computed_cooordinates
-
-                        if computed_cooordinates[0] < self.limits["min"][0]:
-                            self.limits["min"][0] = computed_cooordinates[0]
-                        if computed_cooordinates[1] < self.limits["min"][1]:
-                            self.limits["min"][1] = computed_cooordinates[1]
-                        if computed_cooordinates[0] > self.limits["max"][0]:
-                            self.limits["max"][0] = computed_cooordinates[0]
-                        if computed_cooordinates[1] > self.limits["max"][1]:
-                            self.limits["max"][1] = computed_cooordinates[1]
 
                         q.append(self.stations[neighbour])
 

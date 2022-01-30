@@ -1,6 +1,6 @@
 from re import compile, search
 
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.cache import patch_response_headers
@@ -110,3 +110,7 @@ def map(request: HttpRequest):
         "limits": MAP.limits,
     }
     return render(request, "scotlandyardgame/map.html", context=context)
+
+def dot(request: HttpRequest):
+    dot = MAP.to_dot()
+    return HttpResponse(dot, content_type="text/plain")

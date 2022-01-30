@@ -18,6 +18,9 @@ class Station:
         
     def getNeighbours(self, ticket_type: str) -> set[int]:
         return self.neighbours[ticket_type]
+    
+    def getAllNeighbours(self) -> set[int]:
+        return set.union(*self.neighbours.values())
         
     def addNeighbour(self, ticket_type: str, station: int):
         self.neighbours[ticket_type].add(station)

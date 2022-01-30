@@ -1,3 +1,6 @@
+# Multiplayer logic.
+# Keeps track of all running games, and is the interface between the network and the game engine.
+
 from uuid import uuid4
 
 from .engine.constants import MAX_PLAYERS, GameState

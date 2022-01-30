@@ -11,6 +11,9 @@ TRACK_DISCONNECTED = set()
 
 
 class WebSocketConsumer(AsyncWebsocketConsumer):
+    """
+    Defines the handler for the websocket.
+    """
 
     async def connect(self):
         self.game_id: str = self.scope['url_route']['kwargs']['game_id']

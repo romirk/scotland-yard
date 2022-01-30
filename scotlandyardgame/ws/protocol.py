@@ -6,6 +6,10 @@ from .WebSocketConsumer import WebSocketConsumer
 
 
 class Protocol:
+    """
+    The protocol classes are used to parse incoming messages from the client, and then process them with the appropriate handler.
+    """
+
     def __init__(self, consumer: WebSocketConsumer, fmap: dict[str, Callable]) -> None:
         self.__handlers = fmap
         self.consumer = consumer
@@ -29,4 +33,5 @@ class Protocol:
 
     def group_send(self, msg: str):
         return self.consumer.channel_layer.group_send(
-            self.consumer.game_id, {"type": "ws.send", "text": msg})
+            self.consumer.game_id, {"type": "ws.send", "text": msg}
+        )

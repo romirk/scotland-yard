@@ -1,7 +1,16 @@
-from .constants import TAXI_TICKET, BUS_TICKET, TICKET_TYPES, UNDERGROUND_TICKET, BLACK_TICKET, DOUBLE_TICKET
+from .constants import (
+    TAXI_TICKET,
+    BUS_TICKET,
+    TICKET_TYPES,
+    UNDERGROUND_TICKET,
+    BLACK_TICKET,
+    DOUBLE_TICKET,
+)
 
 
 class Tickets:
+    """Handles player tickets"""
+
     def __init__(self, is_mr_x: bool) -> None:
         self.__is_mr_x = is_mr_x
 
@@ -17,6 +26,7 @@ class Tickets:
             self.__underground = 4
 
     def discard(self, ticket_type: str) -> None:
+        """discards a ticket from the player's stash"""
         if ticket_type == TAXI_TICKET:
             self.__taxi -= 1
         elif ticket_type == BUS_TICKET:
@@ -28,9 +38,10 @@ class Tickets:
         elif ticket_type == DOUBLE_TICKET:
             self.__double -= 1
         else:
-            raise ValueError('Invalid ticket type: {}'.format(ticket_type))
+            raise ValueError("Invalid ticket type: {}".format(ticket_type))
 
     def gain(self, ticket_type: str) -> None:
+        """gives a ticket to Mr. X"""
         if not self.__is_mr_x:
             return
         if ticket_type == TAXI_TICKET:
@@ -44,23 +55,26 @@ class Tickets:
         elif ticket_type == DOUBLE_TICKET and self.__is_mr_x:
             self.__double += 1
         else:
-            raise ValueError('Invalid ticket type: {}'.format(ticket_type))
+            raise ValueError("Invalid ticket type: {}".format(ticket_type))
 
     def all(self) -> dict[str, int]:
+        """Get all tickets in the player's stash"""
         return {
             TAXI_TICKET: self.__taxi,
             BUS_TICKET: self.__bus,
             UNDERGROUND_TICKET: self.__underground,
             BLACK_TICKET: self.__black if self.__is_mr_x else 0,
-            DOUBLE_TICKET: self.__double if self.__is_mr_x else 0
+            DOUBLE_TICKET: self.__double if self.__is_mr_x else 0,
         }
 
     def get(self, ticket: str):
+        """Get the number of tickets of the given type"""
         if ticket not in TICKET_TYPES:
-            raise ValueError('Invalid ticket type: {}'.format(ticket))
+            raise ValueError("Invalid ticket type: {}".format(ticket))
         return self.all()[ticket]
 
     def set(self, tickets: dict[str, int]):
+        """reset player stash to given values"""
         self.__taxi = tickets[TAXI_TICKET]
         self.__bus = tickets[BUS_TICKET]
         self.__underground = tickets[UNDERGROUND_TICKET]

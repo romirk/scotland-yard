@@ -2,7 +2,6 @@ from .station import Station
 from .constants import TICKET_TYPES
 
 
-
 class Map:
     """
     Map of the game board.
@@ -18,5 +17,6 @@ class Map:
             for type in range(len(mapdata[index])):
                 for neighbour in range(len(mapdata[index][type])):
                     station.addNeighbour(
-                        TICKET_TYPES[type], mapdata[index][type][neighbour] - 1)
+                        TICKET_TYPES[type], mapdata[index][type][neighbour] - 1
+                    )
             self.stations.append(station)

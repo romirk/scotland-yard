@@ -1,4 +1,5 @@
 class Messages:
+    """Generic messages"""
     @staticmethod
     def LOS(player_id: str):
         """report LOS"""

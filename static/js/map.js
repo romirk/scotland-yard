@@ -2,15 +2,23 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 ctx.canvas.height = window.innerHeight - 30;
 ctx.canvas.width = window.innerWidth - 30;
-const MARGIN = 100;
+const MARGIN = 50;
 const SPACING = 50;
-const SCALING = 50;
+
+const SCALING =
+  Math.min(
+    ctx.canvas.width / (LIMITS.max[0] - LIMITS.min[0]),
+    ctx.canvas.height / (LIMITS.max[1] - LIMITS.min[1])
+  ) * 0.9;
 
 for (let i = 0; i < STATIONS.length; i++) {
   STATIONS[i][0] *= SCALING;
   STATIONS[i][1] *= SCALING;
 }
-ctx.translate(-LIMITS.min[0] * SCALING, -LIMITS.min[1] * SCALING);
+ctx.translate(
+  MARGIN - LIMITS.min[0] * SCALING + MARGIN,
+  MARGIN - LIMITS.min[1] * SCALING
+);
 
 const LINE_WIDTH = 3;
 const STROKE_COLOR = "blue";
@@ -42,6 +50,15 @@ function draw_transit(p1, p2, color) {
   ctx.stroke();
 }
 
+function draw_line(p1, p2, color) {
+  ctx.beginPath();
+  ctx.moveTo(p1[0], p1[1]);
+  ctx.lineTo(p2[0], p2[1]);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = LINE_WIDTH;
+  ctx.stroke();
+}
+
 function draw_board() {
   let c = 0;
   let data = MAP_DATA;
@@ -51,7 +68,11 @@ function draw_board() {
       station.forEach((neighbour_set) => {
         neighbour_set.forEach((neighbour) => {
           if (neighbour < STATIONS.length)
-            draw_transit(STATIONS[c], STATIONS[neighbour - 1], TRANSIT_COLORS[t]);
+            draw_transit(
+              STATIONS[c],
+              STATIONS[neighbour - 1],
+              TRANSIT_COLORS[t]
+            );
         });
         t++;
       });

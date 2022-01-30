@@ -23,6 +23,13 @@ class Map:
         self.coords: dict[int, np.ndarray] = dict()
         self.limits = {"min": [0, 0], "max": [0, 0]}
 
+        self.sub_graphs = {
+            TAXI_TICKET: set(),
+            BUS_TICKET: set(),
+            UNDERGROUND_TICKET: set(),
+            BLACK_TICKET: set(),
+        }
+
         for index in range(self.N):
             station = Station(index)
             for type in range(len(map_data[index])):
@@ -30,17 +37,29 @@ class Map:
                     station.addNeighbour(
                         TICKET_TYPES[type], map_data[index][type][neighbour] - 1
                     )
+                    self.sub_graphs[TICKET_TYPES[type]].add(
+                        map_data[index][type][neighbour] - 1
+                    )
             self.stations.append(station)
+
+
         print("initialized map with", self.N, "stations.\ngenerating coordinates...")
         self.generate_coordinates()
-        print(f"done. limits: {self.limits}")
+        print(f"limits: {self.limits}")
 
     def is_too_close(self, coords):
         for i in range(self.N):
-            if self.stations[i].coords is not None:
-                if np.linalg.norm(coords - self.stations[i].coords) < 1:
+            if i in self.coords:
+                if np.linalg.norm(coords - self.coords[i]) < 1:
                     return True
         return False
+
+    def generate_board_rectangular(self, shape):
+        size = np.product(shape)
+        board = np.zeros(size, dtype=int)
+        i = np.sort(np.random.choice(np.arange(size), self.N, replace=False))
+        board[i] = np.arange(1, 201)
+        return board.reshape(shape)
 
     def generate_coordinates(self):
 
@@ -56,6 +75,8 @@ class Map:
         self.stations[0].coords = self.coords[0] = np.array((0, 0))
 
         while q:
+            progress = int(np.count_nonzero(visited) / len(visited) * 10)
+            print(f"[BFS] [{progress * '=' + (10 - progress) * ' '}]", end="\r")
             station = q.pop(0)
             visited[station.location] = True
             for ticket_type, neighbours in station.neighbours.items():
@@ -68,16 +89,16 @@ class Map:
                         theta = i * 2 * np.pi / len(neighbours)
                         calculated_coords = np.array(
                             (
-                                station.coords[0]
+                                self.coords[station.location][0]
                                 + multipliers[ticket_type] * np.cos(theta + phi),
-                                station.coords[1]
+                                self.coords[station.location][1]
                                 + multipliers[ticket_type] * np.sin(theta + phi),
                             )
                         )
 
-                        if self.stations[neighbour].coords is not None:
+                        if neighbour in self.coords:
                             calculated_coords = (
-                                calculated_coords + self.stations[neighbour].coords
+                                calculated_coords + self.coords[neighbour]
                             ) / 2
 
                         while self.is_too_close(calculated_coords):
@@ -88,9 +109,7 @@ class Map:
                                 )
                             )
 
-                        self.coords[neighbour] = self.stations[
-                            neighbour
-                        ].coords = calculated_coords
+                        self.coords[neighbour] = station.coords = calculated_coords
 
                         if calculated_coords[0] < self.limits["min"][0]:
                             self.limits["min"][0] = calculated_coords[0]
@@ -102,6 +121,33 @@ class Map:
                             self.limits["max"][1] = calculated_coords[1]
 
                         q.append(self.stations[neighbour])
+        print("[BFS] done.                                  ")
+
+    def generate():
+
+        """
+unentangled graph psuedocode
+
+        if no points are placed:
+	place anywhere
+else:
+	[do not adjust placement if conditions are already satisified; in such cases, continue loop (or average position of all iterations)]
+	for every cycle:
+		
+		if current point is connected to cycle
+			compute centroid of cycle
+			if current point is connected to all points in cycle, place at centroid
+			else:
+				compute theta = theta_max - theta_min of minor sector in which points in cycle connected to current point
+				compute max_radius in sector measured at centroid
+				place point at k * radius * [cos(theta) sin(theta)] for some k
+		else:
+			place outside cycle
+	for every remaining tree:
+		place on concave side
+repeat while entangled
+repeat for every new point
+        """
 
     def coords_as_list(self):
         return [self.coords[i].tolist() for i in range(self.N)]

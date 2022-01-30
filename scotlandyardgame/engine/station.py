@@ -1,4 +1,3 @@
-from numpy import ndarray
 from .constants import (BLACK_TICKET, BUS_TICKET, TAXI_TICKET, UNDERGROUND_TICKET)
 
 
@@ -15,8 +14,8 @@ class Station:
             UNDERGROUND_TICKET: set(),
             BLACK_TICKET: set()
         }
-        self.coords: ndarray = None
-
+        self.coords = None 
+        
     def getNeighbours(self, ticket_type: str) -> set[int]:
         return self.neighbours[ticket_type]
         

@@ -10,14 +10,6 @@ from .map import Map
 from heapq import heappop, heappush
 
 
-def generate_board_rectangular(shape, ones):
-    size = np.product(shape)
-    board = np.zeros(size, dtype=int)
-    i = np.sort(np.random.choice(np.arange(size), ones, replace=False))
-    board[i] = np.arange(1, 201)
-    return board.reshape(shape)
-
-
 def generate_board_bfs(map: Map):
     stations = map.stations.copy()
     q = [(1, stations[0])]

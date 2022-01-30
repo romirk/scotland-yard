@@ -10,7 +10,7 @@ from scotlandyardgame.engine.mapdata import MAP_DATA
 
 from . import multiplayer
 from .engine.constants import AVAILABLE_COLORS, GameState
-from .engine.maprenderer import generate_board_rectangular
+# from .engine.maprenderer import generate_board_rectangular
 
 name_re = compile(r"^\w+$")
 
@@ -104,7 +104,7 @@ def game(request: HttpRequest):
 
 def map(request: HttpRequest):
     context = {
-        "board": generate_board_rectangular((15, 20), 200).tolist(),
+        # "board": generate_board_rectangular((15, 20), 200).tolist(),
         "coords": MAP.coords_as_list(),
         "map_data": MAP.map_data,
         "limits": MAP.limits,

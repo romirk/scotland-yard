@@ -105,7 +105,7 @@ def game(request: HttpRequest):
 def map(request: HttpRequest):
     context = {
         # "board": generate_board_rectangular((15, 20), 200).tolist(),
-        "coords": MAP.coords_as_list(),
+        "coords": MAP.to_list(),
         "map_data": MAP.map_data,
         "limits": MAP.limits,
     }

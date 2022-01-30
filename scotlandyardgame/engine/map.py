@@ -18,6 +18,10 @@ class Map:
     """
 
     def __init__(self, map_data: list[list[list[int]]] = []) -> None:
+        """
+        Initialize the map.
+        Currently using radial generation.
+        """
         print("building map...")
         self.N = len(map_data)
         self.map_data = map_data
@@ -45,10 +49,16 @@ class Map:
             self.stations.append(station)
 
         print("initialized map with", self.N, "stations.\ngenerating coordinates...")
-        self.generate()
-        print(f"limits: {self.limits}\ncoordinates: {self.coords}")
+        self.generate_coordinates_radial()
+        self.compute_limits()
+        print(
+            f"map generated with {self.limits['max'][0] - self.limits['min'][0]}x{self.limits['max'][1] - self.limits['min'][1]}"
+        )
 
-    def generate_limits(self):
+    def compute_limits(self):
+        """
+        Find the limits of the map.
+        """
         for c in self.coords.values():
             if c[0] < self.limits["min"][0]:
                 self.limits["min"][0] = c[0]
@@ -60,6 +70,10 @@ class Map:
                 self.limits["max"][1] = c[1]
 
     def generate_board_rectangular(self, shape):
+        """
+        Grid of coordinates, with the origin at the top left corner.
+        """
+
         size = np.product(shape)
         board = np.zeros(size, dtype=int)
         i = np.sort(np.random.choice(np.arange(size), self.N, replace=False))
@@ -79,7 +93,6 @@ class Map:
     def generate_coordinates_radial(self):
         """
         ### Radial Coordinate Generation
-        Romir K.
 
         This algorithm generates a set of coordinates for the stations on the map.
         """
@@ -194,9 +207,15 @@ class Map:
                     q.append(neighbour)
                     if neighbour in self.coords:
                         continue
-        print("[BFS bus] done.                                  ")
-        self.generate_limits()
+                    # TODO gen bus coords
 
+        # 3. place taxi using bus
+        pass
+
+        print("[BFS bus] done.                                  ")
+        self.compute_limits()
+
+    def unentangled(self):
         """
         unentangled graph psuedocode
 
@@ -220,11 +239,19 @@ class Map:
         repeat while entangled
         repeat for every new point
         """
+        pass
 
-    def coords_as_list(self):
+    def to_list(self):
+        """
+        return coordinates in a serializable format
+        """
         return [c.tolist() for c in self.coords.values()]
-    
+
     def to_dot(self):
+        """
+        BFS to generate dot file.
+        """
+
         r = "graph {\nsubgraph taxi {\n"
         visited = np.zeros(self.N, dtype=bool)
         q = [self.stations[0]]
@@ -275,7 +302,6 @@ class Map:
         print("[DOT underground] done.                                  ")
         r += "}\n}"
         return r
-
 
 
 MAP = Map(MAP_DATA)

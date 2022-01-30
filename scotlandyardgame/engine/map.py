@@ -80,15 +80,15 @@ class Map:
         board[i] = np.arange(1, self.N + 1)
         return board.reshape(shape)
 
-    def get_gradient(self, coords):
-        grad = np.array([0, 0], dtype=float)
+    def get_gradient(self, coords: np.ndarray):
         m = 3
-        for c in self.coords.values():
-            d = np.linalg.norm(c - coords)
-            grad += (c - coords) / (d ** 2)
-            m = min(m, d)
-        # grad -= coords / (np.linalg.norm(coords))
-        return grad, m
+        c = np.array(list(self.coords.values()), dtype=np.ndarray)
+        s = c - coords
+        d = np.linalg.norm(s)
+        grad = s / (d ** 2)
+        m = np.min(d)
+        # grad = np.linalg.norm(coords) ** 2
+        return grad.sum(), m
 
     def generate_coordinates_radial(self):
         """
@@ -119,8 +119,8 @@ class Map:
 
             for ticket_type, neighbours in station.neighbours.items():
 
-                phi = np.random.rand() * 2 * np.pi
                 alpha = 5
+                phi = np.random.rand() * 2 * np.pi
 
                 for i, neighbour in enumerate(neighbours):
                     if neighbour < self.N and not visited[neighbour]:
@@ -156,7 +156,7 @@ class Map:
 
                         q.append(self.stations[neighbour])
 
-        print("[BFS] done.                                  ")
+        print("\33[2K[BFS] done.")
         # return self.coords_as_list()
 
     def generate(self, xmax=500, ymax=500):
@@ -203,32 +203,32 @@ class Map:
         # 3. place taxi using bus
         pass
 
-        print("[BFS bus] done.                                  ")
+        print("\33[2K[BFS bus] done.")
         self.compute_limits()
 
     def unentangled(self):
         """
-        unentangled graph psuedocode
+          unentangled graph psuedocode
 
-                if no points are placed:
-                place anywhere
-        else:
-                [do not adjust placement if conditions are already satisified; in such cases, continue loop (or average position of all iterations)]
-                for every cycle:
+                  if no points are placed:
+                  place anywhere
+          else:
+                  [do not adjust placement if conditions are already satisified; in such cases, continue loop (or average position of all iterations)]
+                  for every cycle:
 
-                        if current point is connected to cycle
-                                compute centroid of cycle
-                                if current point is connected to all points in cycle, place at centroid
-                                else:
-                                        compute theta = theta_max - theta_min of minor sector in which points in cycle connected to current point
-                                        compute max_radius in sector measured at centroid
-                                        place point at k * radius * [cos(theta) sin(theta)] for some k
-                        else:
-                                place outside cycle
-                for every remaining tree:
-                        place on concave side
-        repeat while entangled
-        repeat for every new point
+                          if current point is connected to cycle
+                                  compute centroid of cycle
+                                  if current point is connected to all points in cycle, place at centroid
+                                  else:
+        compute theta = theta_max - theta_min of minor sector in which points in cycle connected to current point
+        compute max_radius in sector measured at centroid
+        place point at k * radius * [cos(theta) sin(theta)] for some k
+                          else:
+                                  place outside cycle
+                  for every remaining tree:
+                          place on concave side
+          repeat while entangled
+          repeat for every new point
         """
         pass
 
@@ -258,7 +258,7 @@ class Map:
                 if neighbour < self.N and not visited[neighbour]:
                     r += f"{station.location} -- {neighbour}\n"
                     q.append(self.stations[neighbour])
-        print("[DOT taxi] done.                                  ")
+        print("\33[2K[DOT taxi] done.")
         r += "}\nsubgraph bus {\n"
         visited = np.zeros(self.N, dtype=bool)
         q = [self.stations[0]]
@@ -274,7 +274,7 @@ class Map:
                 if neighbour < self.N and not visited[neighbour]:
                     r += f"{station.location} -- {neighbour}\n"
                     q.append(self.stations[neighbour])
-        print("[DOT bus] done.                                  ")
+        print("\33[2K[DOT bus] done.")
         r += "}\nsubgraph underground {\n"
         visited = np.zeros(self.N, dtype=bool)
         q = [self.stations[0]]
@@ -290,7 +290,7 @@ class Map:
                 if neighbour < self.N and not visited[neighbour]:
                     r += f"{station.location} -- {neighbour}\n"
                     q.append(self.stations[neighbour])
-        print("[DOT underground] done.                                  ")
+        print("\33[2K[DOT underground] done.")
         r += "}\n}"
         return r
 

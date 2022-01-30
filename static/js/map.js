@@ -1,7 +1,7 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-ctx.canvas.height = window.innerHeight - 30;
-ctx.canvas.width = window.innerWidth - 30;
+ctx.canvas.height = window.innerHeight * 0.9;
+ctx.canvas.width = window.innerWidth * 0.6;
 const MARGIN = 50;
 const SPACING = 50;
 

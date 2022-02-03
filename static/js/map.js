@@ -107,8 +107,12 @@ function draw_ui() {
   draw_board();
 }
 
-
-canvas.addEventListener("onmouseup", e => console.log(e.clientX, e.clientY));
+canvas.addEventListener('mousemove', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  console.log(x, y);
+});
 
 
 draw_ui();

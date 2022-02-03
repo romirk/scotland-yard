@@ -43,6 +43,6 @@ main {
 }
 
 canvas {
-  flex-basis: 1;
+  flex-basis: auto;
   flex-shrink: 0;
 }

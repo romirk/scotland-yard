@@ -107,4 +107,8 @@ function draw_ui() {
   draw_board();
 }
 
+
+canvas.addEventListener("onmouseup", e => console.log(e.clientX, e.clientY));
+
+
 draw_ui();

@@ -1,9 +1,33 @@
+@keyframes floatin {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+@keyframes floatout {
+  from {
+    opacity: 0.6;
+    transform: translateY(0px);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+    display: none;
+  }
+}
+
 body {
   transition: opacity 0.2s;
 }
 
 #main {
   margin: auto;
+  display: none;
 }
 
 #players {
@@ -26,6 +50,22 @@ body {
 .player .material-icons {
   position: relative;
   top: 0.5vh;
+}
+
+.new {
+  animation: floatin 1s;
+}
+
+.los {
+  opacity: 0.6;
+}
+
+.disconnect {
+  animation: floatout 1s forwards;
+}
+
+.disconnected {
+  display: none;
 }
 
 #buttons {
@@ -51,6 +91,7 @@ body {
 
 #copy-link {
   background-color: #0d6efd;
+  display: none;
 }
 
 #start {
@@ -58,16 +99,12 @@ body {
   display: none;
 }
 
-.los {
-  opacity: 0.6;
-}
-
-#previewsvg {
+.previewsvg {
   width: 100%;
   height: 100%;
 }
 
-#playerheadpath {
+.playerheadpath {
   transform-origin: 25% 30%;
   transform: rotate(-90deg);
 }
@@ -83,18 +120,26 @@ body {
   background: none;
 }
 
-#overlay {
+.overlay {
   position: fixed; /* Sit on top of the page content */
-  display: none; /* Hidden by default */
+  display: block; /* Hidden by default */
   width: 100%; /* Full width (cover the whole page) */
   height: 100%; /* Full height (cover the whole page) */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
   z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
   /* cursor: pointer; Add a pointer on hover */
+}
+
+#preload {
+  z-index: 0;
+}
+
+#start-overlay {
+  background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+  display: none;
 }
 
 #overlay-text {

@@ -35,8 +35,8 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
             await self.accept()
 
     async def disconnect(self, close_code):
-        print(
-            f"disconnecting {self.channel_name} with close code {close_code}")
+        print(f"disconnecting {self.channel_name} with close code {close_code}")
+        await self.channel_layer.group_discard(self.game_id, self.channel_name)
         if hasattr(self, 'player_id'):
             # leaveRoom(self.game_id, self.player_id)
             game = getGameByID(self.game_id)
@@ -46,30 +46,30 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
                 await self.delayedRelease(self.player_id)
             else:
                 await self.removeMessage()
-        await self.channel_layer.group_discard(self.game_id, self.channel_name)
 
     async def ws_send(self, event):
         await self.send(event["text"])
 
     async def delayedRelease(self, player_id: str, timeout: float = 2.0):
-        if timeout > 0:
+        if timeout > 0 and player_id in TRACK_DISCONNECTED:
             await sleep(timeout)
-        if player_id in TRACK_DISCONNECTED:
-            game = getGameByID(self.game_id)
-            prevHost, prevX = game.getHostID(), game.getMrX()
-            leaveRoom(self.game_id, player_id)
-            if game.state == GameState.STOPPED:
+        game = getGameByID(self.game_id)
+        prevHost, prevX = game.getHostID(), game.getMrX()
+        leaveRoom(self.game_id, player_id)
+        if game.state == GameState.STOPPED:
+            await self.group_send(Messages.abort())
+            return
+        newHost, newX = game.getHostID(), game.getMrX()
 
-                await self.group_send(Messages.abort())
-                return
-            newHost, newX = game.getHostID(), game.getMrX()
-            await self.removeMessage(
-                newHost if newHost != prevHost else None,
-                newX if newX != prevX else None
-            )
+        await self.removeMessage(
+            player_id,
+            newHost if newHost != prevHost else None,
+            newX if newX != prevX else None
+        )
 
-    async def removeMessage(self, newHost=None, newX=None):
-        await self.group_send(Messages.remove(self.player_id))
+
+    async def removeMessage(self,player_id, newHost=None, newX=None):
+        await self.group_send(Messages.remove(player_id))
         if newHost is not None:
             await self.group_send(Messages.setHost(newHost))
         if newX is not None:

@@ -36,25 +36,21 @@ class LobbyProtocol(Protocol):
         else:
             await self.group_send(LobbyMessages.setColor(self.player_id, color))
 
-    async def reqmrx(self):
+    async def reqmrx(self,player_id):
         try:
             setMrX(getGameIDWithPlayer(self.player_id),
-                   self.player_id)
+                   player_id)
         except Exception as e:
             print(e)
         else:
-            await self.group_send(LobbyMessages.setMrX(self.player_id))
+            await self.group_send(LobbyMessages.setMrX(player_id))
 
     async def disconnect(self):
         TRACK_DISCONNECTED.add(self.player_id)
-        await self.consumer.delayedRelease(self.player_id, 0)
-        await self.consumer.channel_layer.group_discard(self.consumer.game_id, self.consumer.channel_name)
         await self.consumer.close()
 
     async def leave(self):
-        leaveRoom(getGameIDWithPlayer(self.player_id),
-                  self.player_id)
-        await self.group_send(LobbyMessages.remove(self.player_id))
+        await self.consumer.close()
 
     async def ready(self):
         print(f"{self.player_id} is ready")

@@ -259,7 +259,10 @@ class ScotlandYard:
         """add a player to the game"""
         print(f"\tregistering {player_name}...")
         if self.state != GameState.PENDING:
-            raise RuntimeError("Game already started")
+            if self.state == GameState.STOPPED:
+                raise RuntimeError("Game has ended")
+            else:
+                raise RuntimeError("Game already started")
         if len(self.__players) >= MAX_PLAYERS:
             raise RuntimeError("Game is full!")
         if player_id in self.__players:
@@ -309,7 +312,8 @@ class ScotlandYard:
 
         print(f"removing player {player_id} from {self.ID}")
 
-        self.__available_colors.append(player.color)
+        if player.color != 'X':
+            self.__available_colors.append(player.color)
 
         if self.state == GameState.PENDING:
             self.__available_start_locations.append(player.location)

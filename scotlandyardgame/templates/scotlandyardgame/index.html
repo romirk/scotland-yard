@@ -31,10 +31,11 @@
       type="font/woff2"
     />
     <link rel="prefetch" href="/js/anime.es.js" as="script" />
+    <script src="/js/index.js" type="module"></script>
   </head>
 
   <body>
-    <div class="layout-transparent mdl-layout mdl-js-layout">
+    <div class="layout-transparent mdl-layout mdl-js-layout" id="main">
       <header class="mdl-layout__header mdl-layout__header--transparent">
         <div class="mdl-layout__header-row">
           <span class="mdl-layout-title display-1" id="logo">scotlandyard</span>
@@ -77,6 +78,7 @@
                     placeholder="Name"
                     pattern="^\w+$"
                     title="letters, numbers and underscores"
+                    required
                   />
                   <input
                     type="hidden"
@@ -86,7 +88,13 @@
                   />
                 </div>
                 <div class="col-3">
-                  <button type="submit" class="btn btn-primary">Start</button>
+                  <button
+                    id="start-button"
+                    onclick="unload()"
+                    class="btn btn-primary"
+                  >
+                    Start
+                  </button>
                 </div>
               </div>
             </form>

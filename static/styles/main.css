@@ -15,6 +15,29 @@
   src: url("/styles/fonts/Comfortaa.ttf") format("truetype");
 }
 
+@keyframes floatin {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+@keyframes floatout {
+  from {
+    opacity: 0.6;
+    transform: translateY(0px);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+    display: none;
+  }
+}
+
 body * {
   font-family: "comfortaa";
 }

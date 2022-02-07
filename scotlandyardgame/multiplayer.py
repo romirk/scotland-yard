@@ -31,7 +31,11 @@ def getGameState(game_id: str) -> GameState:
 
 def getPlayerConnectedGame(player_id: str) -> str:
     game_id = getGameIDWithPlayer(player_id)
-    return game_id if game_id is not None and GAMES[game_id].state != GameState.STOPPED else None
+    return (
+        game_id
+        if game_id is not None and GAMES[game_id].state != GameState.STOPPED
+        else None
+    )
 
 
 def getPlayerInfo(game_id: str, player_id: str) -> dict:
@@ -101,12 +105,14 @@ def move(game_id: str, player_id: str, ticket: str, data: dict):
         raise ValueError("Game is not running")
     return game.requestMove(player_id, ticket, data)
 
+
 def leaveRoom(game_id: str, player_id: str):
     game = getGameByID(game_id)
     if game.state != GameState.CONNECTING:
         del PLAYER_TO_GAME[player_id]
         game.removePlayer(player_id)
         print(f"removed {player_id} from {game_id}")
+
 
 def deleteGame(game_id: str):
     for p in getPlayerIDs(game_id):

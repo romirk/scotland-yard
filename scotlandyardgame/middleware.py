@@ -1,8 +1,9 @@
-from django.http import HttpRequest
 from uuid import uuid4
 
+from django.http import HttpRequest
 
-class Middleware:
+
+class PlayerIdMiddleware:
     """Ensures every request has an associated player_id"""
 
     def __init__(self, get_response) -> None:

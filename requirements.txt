@@ -1,3 +1,5 @@
-django
 channels
+django
+django-cors-headers
 json-fix
+numpy

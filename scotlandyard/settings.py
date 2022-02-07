@@ -26,8 +26,10 @@ SECRET_KEY = 'django-insecure-0gh!qz1g6c22l!%f5l#)qawg+$-tn#to$b9r#aosxq5ibhwr$0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["ancient-headland-46868.herokuapp.com", "scotlandyard.imagifight.in", "localhost"]
-CSRF_TRUSTED_ORIGINS = ["https://ancient-headland-46868.herokuapp.com", "http://scotlandyard.imagifight.in", "http://localhost"]
+ALLOWED_HOSTS = ["ancient-headland-46868.herokuapp.com",
+                 "scotlandyard.imagifight.in", "localhost"]
+CSRF_TRUSTED_ORIGINS = ["https://ancient-headland-46868.herokuapp.com",
+                        "http://scotlandyard.imagifight.in", "http://localhost"]
 
 
 # Application definition
@@ -40,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels'
+    'channels',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -51,7 +54,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'scotlandyardgame.middleware.Middleware'
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'scotlandyardgame.middleware.PlayerIdMiddleware'
 ]
 
 ROOT_URLCONF = 'scotlandyard.urls'
@@ -144,3 +149,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "https://maps.googleapis.com",
+]

@@ -36,3 +36,13 @@ svg {
 [contenteditable] {
   outline: 0px solid transparent;
 }
+
+main {
+  display: flex;
+  flex-direction: row;
+}
+
+canvas {
+  flex-basis: auto;
+  flex-shrink: 0;
+}

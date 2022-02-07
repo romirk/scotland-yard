@@ -14,11 +14,18 @@ class Station:
             UNDERGROUND_TICKET: set(),
             BLACK_TICKET: set(),
         }
+        self.coords = None
 
     def getNeighbours(self, ticket_type: str) -> set[int]:
         """gets all neighbours of this station that are reachable by the given ticket type"""
         return self.neighbours[ticket_type]
 
+    def getAllNeighbours(self) -> set[int]:
+        return set.union(*self.neighbours.values())
+
     def addNeighbour(self, ticket_type: str, station: int):
         """adds a neighbour to this station"""
         self.neighbours[ticket_type].add(station)
+
+    def __lt__(self, other):
+        return self.location < other.location

@@ -1,14 +1,13 @@
 from uuid import uuid4
 
-from asgiref.sync import async_to_sync
 from channels.testing import WebsocketCommunicator
 from django.test import TestCase
 
-from .multiplayer import (createRoom, getGameByID, joinRoom,
-                          startRollCall)
+from .multiplayer import createRoom, getGameByID, joinRoom, startRollCall
 from .ws.GameConsumer import GameConsumer
 
 ### TODO uhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+
 
 class EngineTestCase(TestCase):
     """
@@ -26,8 +25,10 @@ class EngineTestCase(TestCase):
 
         startRollCall(self.test_game_id)
 
-        self.communicators = [WebsocketCommunicator(
-            GameConsumer.as_asgi(), f"/game/{self.test_game_id}") for _ in range(6)]
+        self.communicators = [
+            WebsocketCommunicator(GameConsumer.as_asgi(), f"/game/{self.test_game_id}")
+            for _ in range(6)
+        ]
 
         print("\033[32mset up succesfully\033[0m")
 
@@ -44,9 +45,7 @@ class EngineTestCase(TestCase):
     async def do_roll_call(self):
         await self.start_comms()
         # do stuff
-            
 
     async def test_basic(self):
         # await self.start_comms()
         pass
-

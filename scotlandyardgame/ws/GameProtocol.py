@@ -1,5 +1,3 @@
-from asyncio import sleep
-
 from scotlandyardgame.ws.protocol import Protocol
 
 from ..engine.constants import DOUBLE_TICKET, GameState

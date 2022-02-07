@@ -1,8 +1,9 @@
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+import sys
 from threading import Thread
 from time import sleep
-import sys
+
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
 GAME_ID = None
 
@@ -27,7 +28,9 @@ def run_mr_x():
     elem.send_keys("x")
     elem.send_keys(Keys.RETURN)
     GAME_ID = driver.execute_script("return GAME_ID;")
-    while s:= driver.execute_script("return document.getElementById('start').style.display !== 'initial';"):
+    while s := driver.execute_script(
+        "return document.getElementById('start').style.display !== 'initial';"
+    ):
         sleep(0.5)
     sleep(1)
     elem = driver.find_element_by_id("start")
@@ -42,7 +45,8 @@ mr_x_thread.start()
 sleep(10)
 print(GAME_ID)
 detective_threads = [
-    Thread(target=run_detectives, args=(GAME_ID, i)) for i in range(1, 6)]
+    Thread(target=run_detectives, args=(GAME_ID, i)) for i in range(1, 6)
+]
 for thread in detective_threads:
     thread.start()
     # thread.join()

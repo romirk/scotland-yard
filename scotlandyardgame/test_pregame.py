@@ -39,7 +39,7 @@
 
 #     def test_add_player(self):
 #         '''
-#         Adding a new player 
+#         Adding a new player
 #         '''
 #         self.game.addPlayer("B", "Player B")
 #         player_IDs = self.game.getPlayerIDs()
@@ -100,7 +100,7 @@
 #         self.game.addPlayer("B", "Player B")
 #         self.game.removePlayer("B")
 #         self.assertEqual(len(self.game.getPlayerIDs()), 1)
-    
+
 #     def test_remove_host(self):
 #         self.game.addPlayer("B", "Player B")
 #         print(self.game.getPlayerIDs())

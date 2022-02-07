@@ -1,5 +1,6 @@
 from scotlandyardgame.ws.messages import Messages
-from ..multiplayer import getGameByID, getGameIDWithPlayer, getPlayerIDs, getPlayerInfo
+
+from ..multiplayer import getGameIDWithPlayer, getPlayerIDs, getPlayerInfo
 from .WebSocketConsumer import TRACK_DISCONNECTED
 
 

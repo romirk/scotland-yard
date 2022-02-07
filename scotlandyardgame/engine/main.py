@@ -2,11 +2,9 @@ from random import choice, randrange, shuffle
 from typing import Final
 
 from .constants import *
-from .map import Map
-from .mapdata import MAPDATA
+from .map import MAP
 from .player import Player
 
-MAP = Map(MAPDATA)
 
 
 class ScotlandYard:
@@ -48,6 +46,7 @@ class ScotlandYard:
         raise AttributeError("ID assignment not allowed.")
 
     # private methods
+
     def __isValidMove(self, player_id: str, location: int, ticket: str) -> bool:
         """checks if player with ```player_id``` can move to ```location``` using ```ticket```"""
         player = self.__getPlayerByID(player_id)
@@ -122,7 +121,7 @@ class ScotlandYard:
     def __doubleMove(
         self, player: Player, ticket1: str, location1: int, ticket2: str, location2: int
     ):
-        """perofrms a double move"""
+        """performs a double move"""
         old_location = player.location
         old_tickets = player.tickets.all()
         try:

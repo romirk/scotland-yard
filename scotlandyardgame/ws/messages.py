@@ -24,4 +24,3 @@ class Messages:
     def setMrX(player_id: str) -> dict:
         """set player to Mr. X for the lobby"""
         return f"SET_MRX {player_id}"
-

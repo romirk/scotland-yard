@@ -1,4 +1,11 @@
-from .constants import TAXI_TICKET, BUS_TICKET, TICKET_TYPES, UNDERGROUND_TICKET, BLACK_TICKET, DOUBLE_TICKET
+from .constants import (
+    TAXI_TICKET,
+    BUS_TICKET,
+    TICKET_TYPES,
+    UNDERGROUND_TICKET,
+    BLACK_TICKET,
+    DOUBLE_TICKET,
+)
 
 
 class Tickets:
@@ -28,7 +35,7 @@ class Tickets:
         elif ticket_type == DOUBLE_TICKET:
             self.__double -= 1
         else:
-            raise ValueError('Invalid ticket type: {}'.format(ticket_type))
+            raise ValueError("Invalid ticket type: {}".format(ticket_type))
 
     def gain(self, ticket_type: str) -> None:
         if not self.__is_mr_x:
@@ -44,7 +51,7 @@ class Tickets:
         elif ticket_type == DOUBLE_TICKET and self.__is_mr_x:
             self.__double += 1
         else:
-            raise ValueError('Invalid ticket type: {}'.format(ticket_type))
+            raise ValueError("Invalid ticket type: {}".format(ticket_type))
 
     def all(self) -> dict[str, int]:
         return {
@@ -52,12 +59,12 @@ class Tickets:
             BUS_TICKET: self.__bus,
             UNDERGROUND_TICKET: self.__underground,
             BLACK_TICKET: self.__black if self.__is_mr_x else 0,
-            DOUBLE_TICKET: self.__double if self.__is_mr_x else 0
+            DOUBLE_TICKET: self.__double if self.__is_mr_x else 0,
         }
 
     def get(self, ticket: str):
         if ticket not in TICKET_TYPES:
-            raise ValueError('Invalid ticket type: {}'.format(ticket))
+            raise ValueError("Invalid ticket type: {}".format(ticket))
         return self.all()[ticket]
 
     def set(self, tickets: dict[str, int]):

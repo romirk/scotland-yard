@@ -2,7 +2,6 @@ let move_order = [];
 let turn = 0;
 let player_location = 0;
 
-
 let log = "";
 const logElement = document.getElementById("gameLog");
 
@@ -34,7 +33,6 @@ commandbox.addEventListener("keyup", (event) => {
 });
 commandbox.focus(); //autofocus on commandbox
 
-
 function wsSend(msg) {
   socket.send(msg);
   log += `<br><span style="color:blue">${msg}</span>`;
@@ -59,7 +57,7 @@ socket.onmessage = (msg) => {
       if (move_order[turn] == PLAYER_ID) {
         wsSend("GET_PLAYER_INFO");
       }
-      
+
       turn = (turn + 1) % 6;
       if (move_order[turn] == PLAYER_ID) {
         log += "<br><span class=turn>It's your turn!</span>";
@@ -72,7 +70,7 @@ socket.onmessage = (msg) => {
       console.log(gameInfo);
       move_order = gameInfo.move_order;
       break;
-    
+
     case "PLAYER_INFO":
       let playerInfo = JSON.parse(msg.data.split("PLAYER_INFO ")[1]);
       console.log(playerInfo);

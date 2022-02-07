@@ -1,5 +1,6 @@
-from django.http import HttpRequest
 from uuid import uuid4
+
+from django.http import HttpRequest
 
 
 class PlayerIdMiddleware:

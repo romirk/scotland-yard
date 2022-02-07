@@ -84,7 +84,7 @@ class Map:
     def get_gradient(self, coords: np.ndarray):
         s = np.array(list(self.coords.values())) - coords
         d: np.ndarray = np.linalg.norm(s, axis=1).reshape(-1, 1)
-        grad = s / (d ** 2)
+        grad = s / (d**2)
         return grad.sum(axis=0), np.min(d)
 
     def get_scale(self):
@@ -151,9 +151,7 @@ class Map:
 
                         while d < 1:
                             # print(f"* {neighbour} {computed_cooordinates} {d} {grad}")
-                            computed_cooordinates = (
-                                computed_cooordinates - alpha * grad
-                            )
+                            computed_cooordinates = computed_cooordinates - alpha * grad
                             grad, d = self.get_gradient(computed_cooordinates)
 
                         self.coords[neighbour] = self.stations[

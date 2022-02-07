@@ -6,7 +6,6 @@ from django.urls import reverse
 from django.utils.cache import patch_response_headers
 
 from scotlandyardgame.engine.map import MAP
-from scotlandyardgame.engine.mapdata import MAP_DATA
 
 from . import multiplayer
 from .engine.constants import AVAILABLE_COLORS, GameState
@@ -93,7 +92,9 @@ def game(request: HttpRequest):
     game_id = multiplayer.getGameIDWithPlayer(player_id)
     if game_id is None:
         return redirectWithError("indexerror", "not in game")
-    if (game := multiplayer.getGameByID(game_id)).state == multiplayer.GameState.STOPPED:
+    if (
+        game := multiplayer.getGameByID(game_id)
+    ).state == multiplayer.GameState.STOPPED:
         return redirectWithError("indexerror", "game stopped")
     if game.state == multiplayer.GameState.PENDING:
         return redirect("lobby")
@@ -109,6 +110,7 @@ def game(request: HttpRequest):
     }
     print(f"{context['name']} in game")
     return render(request, "scotlandyardgame/game.html", context=context)
+
 
 def dot(request: HttpRequest):
     dot = MAP.to_dot()

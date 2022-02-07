@@ -1,4 +1,4 @@
-from .constants import (BLACK_TICKET, BUS_TICKET, TAXI_TICKET, UNDERGROUND_TICKET)
+from .constants import BLACK_TICKET, BUS_TICKET, TAXI_TICKET, UNDERGROUND_TICKET
 
 
 class Station:
@@ -12,16 +12,16 @@ class Station:
             TAXI_TICKET: set(),
             BUS_TICKET: set(),
             UNDERGROUND_TICKET: set(),
-            BLACK_TICKET: set()
+            BLACK_TICKET: set(),
         }
-        self.coords = None 
-        
+        self.coords = None
+
     def getNeighbours(self, ticket_type: str) -> set[int]:
         return self.neighbours[ticket_type]
-    
+
     def getAllNeighbours(self) -> set[int]:
         return set.union(*self.neighbours.values())
-        
+
     def addNeighbour(self, ticket_type: str, station: int):
         self.neighbours[ticket_type].add(station)
 

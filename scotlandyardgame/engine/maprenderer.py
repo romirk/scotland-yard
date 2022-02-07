@@ -1,4 +1,5 @@
-import numpy as np
+from heapq import heappop, heappush
+
 from scotlandyardgame.engine.constants import (
     BLACK_TICKET,
     BUS_TICKET,
@@ -7,7 +8,6 @@ from scotlandyardgame.engine.constants import (
 )
 
 from .map import Map
-from heapq import heappop, heappush
 
 
 def generate_board_bfs(map: Map):

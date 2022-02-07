@@ -5,6 +5,7 @@ from .constants import *
 from .map import MAP
 from .player import Player
 
+
 class ScotlandYard:
     """
     Instance of a ```ScotlandYard``` game. Stores all game information and handles game logic.

@@ -9,6 +9,7 @@ from .constants import (
 )
 import numpy as np
 
+
 class Map:
     """
     Map of the game board.
@@ -26,6 +27,7 @@ class Map:
         self.stations: list[Station] = []
         self.coords: dict[int, np.ndarray] = dict()
         self.limits = {"min": np.array((0, 0)), "max": np.array((0, 0))}
+        self.adjacency_matrix = np.zeros((self.N, self.N))
 
         self.sub_graphs: dict[str, set[int]] = {
             TAXI_TICKET: set(),
@@ -34,16 +36,14 @@ class Map:
             BLACK_TICKET: set(),
         }
 
-        for index in range(self.N):
-            station = Station(index)
-            for type in range(len(map_data[index])):
-                for neighbour in range(len(map_data[index][type])):
-                    station.addNeighbour(
-                        TICKET_TYPES[type], map_data[index][type][neighbour] - 1
-                    )
-                    self.sub_graphs[TICKET_TYPES[type]].add(
-                        map_data[index][type][neighbour] - 1
-                    )
+        for i in range(self.N):
+            station = Station(i)
+            for edge_type in range(len(map_data[i])):
+                for j in range(len(map_data[i][edge_type])):
+                    neighbour = map_data[i][edge_type][j] - 1
+                    station.addNeighbour(TICKET_TYPES[edge_type], neighbour)
+                    self.sub_graphs[TICKET_TYPES[edge_type]].add(neighbour)
+                    self.adjacency_matrix[i, neighbour] = 1
             self.stations.append(station)
 
         print("initialized map with", self.N, "stations.\ngenerating coordinates...")

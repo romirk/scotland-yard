@@ -33,5 +33,5 @@ class Protocol:
 
     def group_send(self, msg: str):
         return self.consumer.channel_layer.group_send(
-            self.consumer.game_id, {"type": "ws.send", "text": msg}
+            self.consumer.type + "_" + self.consumer.game_id, {"type": "ws.send", "text": msg}
         )

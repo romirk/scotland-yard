@@ -187,7 +187,6 @@ const app = (socket) => {
   // sockets
 
   socket.onclose = () => window.location.assign("/");
-  socket.onopen = () => socket.send("JOIN " + my.player_id);
 
   socket.onmessage = (msg) => {
     console.log("[ws/server]", msg.data);

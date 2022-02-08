@@ -48,7 +48,8 @@ class LobbyProtocol(Protocol):
         await self.consumer.close(code=1000, reason="Leaving")
 
     async def ready(self):
-        print(f"{self.player_id} is ready")
+        print(f"{self.consumer.player_id} is ready")
+        self.player_id = self.consumer.player_id
         if (
             getGameHost(game_id := getGameIDWithPlayer(self.player_id))
             != self.player_id
@@ -58,7 +59,7 @@ class LobbyProtocol(Protocol):
         c = 0
         for player in getPlayerIDs(game_id):
             if player in TRACK_DISCONNECTED:
-                leaveRoom(self.game_id, player)
+                leaveRoom(game_id, player)
                 TRACK_DISCONNECTED.remove(player)
             else:
                 c += 1

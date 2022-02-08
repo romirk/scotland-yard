@@ -41,12 +41,13 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
             )
             await self.accept()
 
-        await self.group_send(self.message_service.player_joined(self.player_id))
-        await self.send(
-            self.message_service.acknowledge(
-                getGameIDWithPlayer(self.player_id), TRACK_DISCONNECTED
+            
+            await self.send(
+                self.message_service.acknowledge(
+                    getGameIDWithPlayer(self.player_id), TRACK_DISCONNECTED
+                )
             )
-        )
+            await self.group_send(self.message_service.player_joined(self.player_id))
 
     async def disconnect(self, close_code: int = 1006):
         print(f"disconnecting {self.player_id} with close code {close_code}")
@@ -108,5 +109,5 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
 
     def group_send(self, msg: str):
         return self.channel_layer.group_send(
-            self.game_id, {"type": "ws.send", "text": msg}
+            self.type + "_" + self.game_id, {"type": "ws.send", "text": msg}
         )

@@ -101,7 +101,7 @@ class ScotlandYard:
         return (
             player is not None
             and (ticket != BLACK_TICKET or player.is_mr_x)
-            and player.getTickets(ticket) > 0
+            and player.tickets.get(ticket) > 0
             and location in MAP.stations[player.location].getNeighbours(ticket)
             and (
                 self.__getPlayerAt(location) is None

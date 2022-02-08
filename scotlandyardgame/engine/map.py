@@ -16,7 +16,7 @@ class Map:
     Represented as a four layer graph network, with Station objects comprising nodes.
     """
 
-    def __init__(self, map_data: list[list[list[int]]] = []) -> None:
+    def __init__(self, map_data: list[list[list[int]]]) -> None:
         """
         Initialize the map.
         Currently using radial generation.
@@ -43,7 +43,7 @@ class Map:
                     neighbour = map_data[i][edge_type][j] - 1
                     station.addNeighbour(TICKET_TYPES[edge_type], neighbour)
                     self.sub_graphs[TICKET_TYPES[edge_type]].add(neighbour)
-                    self.adjacency_matrix[i, neighbour] = 1
+                    # self.adjacency_matrix[i, neighbour] = 1
             self.stations.append(station)
 
         print("initialized map with", self.N, "stations.\ngenerating coordinates...")

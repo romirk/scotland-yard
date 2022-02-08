@@ -13,18 +13,35 @@ import numpy as np
 import numpy.linalg as la
 
 
-def compute_attraction(c: np.ndarray, adjacency_matrix: np.ndarray) -> np.ndarray:
+def combinations(n):
+    return np.transpose(np.triu_indices(n, 1))
+
+
+def compute_attraction(
+    p: np.ndarray, c: np.ndarray, adjacency_matrix: np.ndarray
+) -> np.ndarray:
     """
     Computes the attraction force acting on each vertex, if they are connected by an edge.
     """
     return np.log(c * adjacency_matrix)
 
 
-def compute_repulsion(c: np.ndarray):
+def compute_repulsion(p: np.ndarray, c: np.ndarray):
     """
     Computes the repulsion force acting on each vertex according to the inverse square law.
     """
-    return 1 / (c ** 2)
+    return 1 / (c**2) * 1
+
+
+def compute_distances(p: np.ndarray):
+    """
+    Computes the distance matrix between all vertices.
+    """
+    N = p.shape[0]
+    c = np.zeros((N, N))
+    for i, j in combinations(N):
+        c[i, j] = c[j, i] = la.norm(p[i] - p[j])
+    return c
 
 
 def force_directed_graph(
@@ -32,7 +49,7 @@ def force_directed_graph(
     adjacency_matrix: np.ndarray,
     xmax=500,
     ymax=500,
-    repulsion_constant= 0.89875,
+    repulsion_constant=0.89875,
     attraction_constant=0.66743,
     iterations=100,
 ) -> np.ndarray:
@@ -68,11 +85,7 @@ def force_directed_graph(
     p = np.random.rand(N, 2) * np.array((xmax, ymax))
 
     # populate the distance matrix with distances between each station.
-    c = np.zeros((N, N))
-    for i in range(N):
-        for j in range(N):
-            c[i, j] = la.norm(p[i] - p[j])
-
+    c = compute_distances(p)
 
     i = 0
     while i < iterations:
@@ -80,9 +93,10 @@ def force_directed_graph(
         # This is the sum of the attractive and repulsive forces acting on each vertex.
         # The attractive forces are calculated by the distance between the vertices and are independent of edges.
         # The repulsive forces are calculated by the distance between the vertices squared.
-        repulsive_forces = compute_repulsion(c) * repulsion_constant
-        attractive_forces = compute_attraction(c, adjacency_matrix) * attraction_constant
+        repulsive_forces = compute_repulsion(p, c) * repulsion_constant
+        attractive_forces = (
+            compute_attraction(p, c, adjacency_matrix) * attraction_constant
+        )
 
         # apply the forces to the vertices.
         c = c + attractive_forces + repulsive_forces
-

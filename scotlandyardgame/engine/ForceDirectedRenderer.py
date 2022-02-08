@@ -108,7 +108,7 @@ def force_directed_graph(
 
         repulsive_forces = compute_repulsion(p, field, c) * repulsion_constant
         attractive_forces = (
-            compute_attraction(p, c, adjacency_matrix) * attraction_constant
+            compute_attraction(p, field, c, adjacency_matrix) * attraction_constant
         )
 
         # apply the forces to the vertices.

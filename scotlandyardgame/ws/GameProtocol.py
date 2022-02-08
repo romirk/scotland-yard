@@ -44,11 +44,6 @@ class GameProtocol(Protocol):
             answerRollCall(game_id, player_id)
             await self.group_send(GameMessages.player_joined(player_id))
 
-        await self.send(GameMessages.acknowledge(game_id))
-
-        if player_id in TRACK_DISCONNECTED:
-            TRACK_DISCONNECTED.remove(player_id)
-
         if getGameState(game_id) == GameState.RUNNING:
             await self.group_send(GameMessages.game_starting())
 

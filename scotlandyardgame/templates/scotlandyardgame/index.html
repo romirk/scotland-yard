@@ -60,9 +60,9 @@
             >
               {% csrf_token %} {% if error is not None %}
               <span id="error">{{ error }}</span>
-              {% endif %} {% if isJoining == "true" %}
+              {% endif %} {% if is_joining  %}
               <span id="room">
-                Joining room: <b>{{ game_id }}</b>.
+                Joining room: <strong>{{ game_id }}</strong>.
                 <a class="link-light" href="/" id="create-link"
                   >Create your own room.</a
                 ><br /><br />

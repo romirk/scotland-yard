@@ -53,7 +53,7 @@ class Map:
         print(
             f"map generated with dimensions {self.limits['max'][0] - self.limits['min'][0]}x{self.limits['max'][1] - self.limits['min'][1]}"
         )
-        print(f"coordinates normalized to {self.get_scale()}: {self.to_list()}")
+        print(f"coordinates normalized to {self.get_scale()}")
 
     def compute_limits(self):
         """
@@ -218,7 +218,6 @@ class Map:
                     # TODO gen bus coords
 
         # 3. place taxi using bus
-        pass
 
         print("\33[2K[BFS bus] done.")
         self.compute_limits()

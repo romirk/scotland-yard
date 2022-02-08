@@ -1,3 +1,4 @@
+from ast import Str
 import json
 
 from ..engine.constants import DOUBLE_TICKET
@@ -10,7 +11,7 @@ class GameMessages:
     """
 
     @staticmethod
-    def playerJoined(player_id: str) -> dict:
+    def playerJoined(player_id: str) -> str:
         player_info = getPlayerInfo(getGameIDWithPlayer(player_id), player_id)
         return f"PLAYER_JOINED {player_id}" + (
             f' {player_info["location"]}' if player_info["color"] != "X" else ""
@@ -22,22 +23,22 @@ class GameMessages:
         return "ACKNOWLEDGE " + " ".join(roll)
 
     @staticmethod
-    def gameStarting() -> dict:
+    def gameStarting() -> str:
         return f"GAME_STARTING"
 
     @staticmethod
-    def playerMoved(moveMade: dict) -> dict:
-        return_msg = f'PLAYER_MOVED {moveMade["player_id"]} {moveMade["cycle_number"]} {moveMade["ticket"]} '
-        if moveMade["is_mr_x"]:
-            if moveMade["ticket"] == DOUBLE_TICKET:
+    def playerMoved(move_info: dict) -> dict:
+        return_msg = f'PLAYER_MOVED {move_info["player_id"]} {move_info["cycle_number"]} {move_info["ticket"]} '
+        if move_info["is_mr_x"]:
+            if move_info["ticket"] == DOUBLE_TICKET:
                 return_msg += (
-                    f'{moveMade["double_tickets"][0]} {moveMade["double_tickets"][1]} '
+                    f'{move_info["double_tickets"][0]} {move_info["double_tickets"][1]} '
                 )
-            if moveMade["is_surface_move"]:
-                return_msg += str(moveMade["destination"])
+            if move_info["is_surface_move"]:
+                return_msg += str(move_info["destination"])
 
         else:
-            return_msg += str(moveMade["destination"])
+            return_msg += str(move_info["destination"])
 
         return return_msg
 

@@ -45,7 +45,7 @@ def compute_distances(p: np.ndarray):
 
 
 def force_directed_graph(
-    N: int,
+    n: int,
     adjacency_matrix: np.ndarray,
     xmax=500,
     ymax=500,
@@ -82,7 +82,7 @@ def force_directed_graph(
     # Step 1: Place all vertices at random points on the plane.
     # The primary index of p corresponds to the specific station on the map represented by the
     # vertex.
-    p = np.random.rand(N, 2) * np.array((xmax, ymax))
+    p = np.random.rand(n, 2) * np.array((xmax, ymax))
 
     # populate the distance matrix with distances between each station.
     c = compute_distances(p)

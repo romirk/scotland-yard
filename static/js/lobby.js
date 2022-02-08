@@ -68,8 +68,8 @@ const app = (socket) => {
 
   // UI
   function updateUI() {
-    players.sort((a, b) =>
-      a.player_id === my.player_id ? -1 : b.player_id === my.player_id ? 1 : 0
+    players.sort(
+      (a, b) => (b.player_id === my.player_id) - (a.player_id === my.player_id)
     );
 
     let avail_colors = [
@@ -83,9 +83,7 @@ const app = (socket) => {
     ];
 
     let html = "";
-    let c = 0;
-    for (let i = 0; i < players.length; i++) {
-      const player = players[i];
+    for (const player of players) {
       html += `<div class="row">
                 <div class="col player ${player.state}" 
                 id="p-${player.player_id}" 
@@ -100,7 +98,7 @@ const app = (socket) => {
                     <div class="reqm" id="b-${player.player_id}"></div>
                 </div>
             </div>`;
-      if (player.state === "new") players[i].state = "";
+      if (player.state === "new") player.state = "";
       let idx = avail_colors.findIndex((c) => c === player.color);
       if (idx !== -1) avail_colors.splice(idx, 1);
     }
@@ -167,9 +165,7 @@ const app = (socket) => {
 
     const list = document.getElementById("colorList");
     list.innerHTML = "";
-    for (let i = 0; i < COLORS.length; i++) {
-      const c = COLORS[i];
-
+    for (const c of COLORS) {
       const a = document.createElement("a");
       a.className = "list-group-item list-group-item-action";
       a.style.color = `rgb(var(--color-${c}))`;
@@ -311,8 +307,8 @@ const app = (socket) => {
     location.protocol + "//" + window.location.host + "/" + my.game_id;
 
   const heads = document.getElementsByClassName("playerheadpath");
-  for (let i = 0; i < heads.length; i++) {
-    heads[i].setAttribute("d", circlePath(25, 30, 18));
+  for (const head of heads) {
+    head.setAttribute("d", circlePath(25, 30, 18));
   }
 
   // event listeners
@@ -332,11 +328,13 @@ const app = (socket) => {
 window.addEventListener("load", () => {
   console.log("start");
 
-  const socket = new WebSocket(
-    `ws${location.protocol === "https:" ? "s" : ""}://${
-      window.location.host
-    }/ws/lobby/${GAME_ID}`
-  );
+  const ws_url = `ws${location.protocol === "https:" ? "s" : ""}://${
+    window.location.host
+  }/ws/lobby/${GAME_ID}/${PLAYER_ID}`;
+
+  console.log("ws_url", ws_url);
+
+  const socket = new WebSocket(ws_url);
 
   app(socket);
 });

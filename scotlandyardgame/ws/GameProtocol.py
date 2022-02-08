@@ -42,7 +42,7 @@ class GameProtocol(Protocol):
             if getGameState(game_id) != GameState.CONNECTING:
                 raise RuntimeError("Can't connect to this game")
             answerRollCall(game_id, player_id)
-            await self.group_send(GameMessages.playerJoined(player_id))
+            await self.group_send(GameMessages.player_joined(player_id))
 
         await self.send(GameMessages.acknowledge(game_id))
 
@@ -50,7 +50,7 @@ class GameProtocol(Protocol):
             TRACK_DISCONNECTED.remove(player_id)
 
         if getGameState(game_id) == GameState.RUNNING:
-            await self.group_send(GameMessages.gameStarting())
+            await self.group_send(GameMessages.game_starting())
 
     async def reqmove(self, ticket: str, *args):
         if self.game_id != getGameIDWithPlayer(self.player_id):
@@ -59,7 +59,7 @@ class GameProtocol(Protocol):
             raise RuntimeError("Game is not running")
 
         if ticket == DOUBLE_TICKET:
-            moveData = move(
+            move_data = move(
                 self.game_id,
                 self.player_id,
                 DOUBLE_TICKET,
@@ -71,25 +71,27 @@ class GameProtocol(Protocol):
                 },
             )
         elif ticket == "pass":
-            moveData = move(self.game_id, self.player_id, ticket, {})
+            move_data = move(self.game_id, self.player_id, ticket, {})
         else:
-            moveData = move(
+            move_data = move(
                 self.game_id, self.player_id, ticket, {"location": int(args[0])}
             )
 
-        if moveData["accepted"]:
-            await self.group_send(GameMessages.playerMoved(moveData))
-            if moveData["game_state"] != GameState.RUNNING:
-                await self.group_send(f"GAME_OVER {moveData['game_state']}")
+        if move_data["accepted"]:
+            await self.group_send(GameMessages.player_moved(move_data))
+            if move_data["game_state"] != GameState.RUNNING:
+                await self.group_send(f"GAME_OVER {move_data['game_state']}")
                 deleteGame(self.game_id)
 
         else:
-            await self.send(f"DENIED {moveData['message']}")
+            await self.send(f"DENIED {move_data['message']}")
 
     async def get_game_info(self):
-        await self.send(GameMessages.gameInfo(getGameInfo(self.game_id)))
+        await self.send(GameMessages.game_info(getGameInfo(self.game_id)))
 
     async def get_player_info(self, player_id: str = None):
         if player_id != "ALL":
             player_id = self.player_id
-        await self.send(GameMessages.playerInfo(getPlayerInfo(self.game_id, player_id)))
+        await self.send(
+            GameMessages.player_info(getPlayerInfo(self.game_id, player_id))
+        )

@@ -16,11 +16,11 @@ class Messages:
         return f"DISCONNECT {player_id}"
 
     @staticmethod
-    def setHost(player_id: str) -> dict:
+    def setHost(player_id: str) -> str:
         """set player to lobby host"""
         return f"SET_HOST {player_id}"
 
     @staticmethod
-    def setMrX(player_id: str) -> dict:
+    def setMrX(player_id: str) -> str:
         """set player to Mr. X for the lobby"""
         return f"SET_MRX {player_id}"

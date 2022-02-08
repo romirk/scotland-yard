@@ -17,22 +17,6 @@ def combinations(n):
     return np.transpose(np.triu_indices(n, 1))
 
 
-def compute_attraction(
-    p: np.ndarray, c: np.ndarray, adjacency_matrix: np.ndarray
-) -> np.ndarray:
-    """
-    Computes the attraction force acting on each vertex, if they are connected by an edge.
-    """
-    return np.log(c * adjacency_matrix)
-
-
-def compute_repulsion(p: np.ndarray, c: np.ndarray):
-    """
-    Computes the repulsion force acting on each vertex according to the inverse square law.
-    """
-    return 1 / (c**2) * 1
-
-
 def compute_distances(p: np.ndarray):
     """
     Computes the distance matrix between all vertices.
@@ -42,6 +26,31 @@ def compute_distances(p: np.ndarray):
     for i, j in combinations(N):
         c[i, j] = c[j, i] = la.norm(p[i] - p[j])
     return c
+
+
+def get_field(p: np.ndarray):
+    N = p.shape[0]
+    c = np.zeros((N, N))
+    for i, j in combinations(N):
+        c[i, j] = (p[i] - p[j]) / la.norm(p[i] - p[j])
+        c[j, i] = -c[i, j]
+    return c
+
+
+def compute_attraction(
+    p: np.ndarray, field: np.ndarray, c: np.ndarray, adjacency_matrix: np.ndarray
+) -> np.ndarray:
+    """
+    Computes the attraction force acting on each vertex, if they are connected by an edge.
+    """
+    return np.log(c * adjacency_matrix) * field
+
+
+def compute_repulsion(p: np.ndarray, field: np.ndarray, c: np.ndarray):
+    """
+    Computes the repulsion force acting on each vertex according to the inverse square law.
+    """
+    return field / (c**2)
 
 
 def force_directed_graph(
@@ -84,16 +93,20 @@ def force_directed_graph(
     # vertex.
     p = np.random.rand(n, 2) * np.array((xmax, ymax))
 
-    # populate the distance matrix with distances between each station.
-    c = compute_distances(p)
-
     i = 0
     while i < iterations:
         # Step 2: Calculate the net forces acting on each vertex.
         # This is the sum of the attractive and repulsive forces acting on each vertex.
         # The attractive forces are calculated by the distance between the vertices and are independent of edges.
         # The repulsive forces are calculated by the distance between the vertices squared.
-        repulsive_forces = compute_repulsion(p, c) * repulsion_constant
+
+        # populate the distance matrix with distances between each station.
+        c = compute_distances(p)
+
+        # compute the directional field
+        field = get_field(p)
+
+        repulsive_forces = compute_repulsion(p, field, c) * repulsion_constant
         attractive_forces = (
             compute_attraction(p, c, adjacency_matrix) * attraction_constant
         )

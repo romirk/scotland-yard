@@ -18,23 +18,13 @@ class LobbyProtocol(Protocol):
         super().__init__(
             consumer,
             {
-                "JOIN": self.join,
                 "REQCOLOR": self.reqcolor,
                 "REQMRX": self.reqmrx,
-                # "DISCONNECT": self.disconnect,
                 "LEAVE": self.leave,
                 "READY": self.ready,
             },
         )
         self.player_id = None
-
-    async def join(self, player_id: str):
-        # JOIN player_id
-        self.player_id = player_id
-        await self.group_send(LobbyMessages.newPlayer(player_id))
-        await self.send(LobbyMessages.acknowledge(getGameIDWithPlayer(player_id)))
-        if player_id in TRACK_DISCONNECTED:
-            TRACK_DISCONNECTED.remove(player_id)
 
     async def reqcolor(self, color: str):
         try:
@@ -42,7 +32,7 @@ class LobbyProtocol(Protocol):
         except Exception as e:
             print(e)
         else:
-            await self.group_send(LobbyMessages.setColor(self.player_id, color))
+            await self.group_send(LobbyMessages.set_color(self.player_id, color))
 
     async def reqmrx(self, player_id):
         try:
@@ -80,4 +70,4 @@ class LobbyProtocol(Protocol):
         except RuntimeError as e:
             print(e)
         else:
-            await self.group_send(LobbyMessages.startGame())
+            await self.group_send(LobbyMessages.start_game())

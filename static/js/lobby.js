@@ -45,28 +45,6 @@ const app = (socket) => {
     return players.findIndex((player) => player.player_id === id);
   }
 
-  function reqColor(c) {
-    socket.send(`REQCOLOR ${c}`);
-  }
-
-  function reqMrX(pid) {
-    if (!my.host_authorization) return;
-    socket.send(`REQMRX ${pid}`);
-  }
-
-  function startGame() {
-    if (!my.host_authorization || players.length !== 6) return;
-    socket.send(`READY`);
-  }
-
-  function leave() {
-    socket.send(`LEAVE`);
-    socket.close(1000, "Leaving");
-    document.body.classList.add("los");
-    document.getElementById("players").innerHTML = "";
-    setTimeout(() => window.location.assign("/"), 500);
-  }
-
   // UI
   function updateUI() {
     players.sort(
@@ -235,7 +213,7 @@ const app = (socket) => {
         document.getElementById("copy-link").style.display = "initial";
         break;
 
-      case "NEW_PLAYER":
+      case "PLAYER_JOINED":
         if (!player_ids.includes(tokens[1]))
           players.push({
             player_id: tokens[1],
@@ -311,6 +289,30 @@ const app = (socket) => {
   const heads = document.getElementsByClassName("playerheadpath");
   for (const head of heads) {
     head.setAttribute("d", circlePath(25, 30, 18));
+  }
+
+  // event handlers
+
+  function reqColor(c) {
+    socket.send(`REQCOLOR ${c}`);
+  }
+
+  function reqMrX(pid) {
+    if (!my.host_authorization) return;
+    socket.send(`REQMRX ${pid}`);
+  }
+
+  function startGame() {
+    if (!my.host_authorization || players.length !== 6) return;
+    socket.send(`READY`);
+  }
+
+  function leave() {
+    socket.send(`LEAVE`);
+    socket.close(1000, "Leaving");
+    document.body.classList.add("los");
+    document.getElementById("players").innerHTML = "";
+    setTimeout(() => window.location.assign("/"), 500);
   }
 
   // event listeners

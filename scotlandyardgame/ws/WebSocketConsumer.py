@@ -1,10 +1,12 @@
 from asyncio import sleep
 
 from channels.generic.websocket import AsyncWebsocketConsumer
+from scotlandyardgame.ws.GameMessages import GameMessages
+from scotlandyardgame.ws.LobbyMessages import LobbyMessages
 from scotlandyardgame.ws.messages import Messages
 
 from ..engine.constants import GameState
-from ..multiplayer import getGameByID, leaveRoom
+from ..multiplayer import getGameByID, leaveRoom, getGameIDWithPlayer
 
 TRACK_DISCONNECTED = set()
 
@@ -14,10 +16,14 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
     Defines the handler for the websocket.
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.type = "generic"
+
     async def connect(self):
         self.game_id: str = self.scope["url_route"]["kwargs"]["game_id"]
         self.player_id: str = self.scope["url_route"]["kwargs"]["player_id"]
-        self.type = "generic"
+        self.message_service = GameMessages if self.type == "game" else LobbyMessages
 
         try:
             game = getGameByID(self.game_id)
@@ -35,9 +41,18 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
             )
             await self.accept()
 
+        await self.group_send(self.message_service.player_joined(self.player_id))
+        await self.send(
+            self.message_service.acknowledge(
+                getGameIDWithPlayer(self.player_id), TRACK_DISCONNECTED
+            )
+        )
+
     async def disconnect(self, close_code: int = 1006):
         print(f"disconnecting {self.player_id} with close code {close_code}")
-        await self.channel_layer.group_discard(self.game_id, self.channel_name)
+        await self.channel_layer.group_discard(
+            self.type + "_" + self.game_id, self.channel_name
+        )
 
         TRACK_DISCONNECTED.add(self.player_id)
         game = getGameByID(self.game_id)
@@ -56,6 +71,7 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
         if timeout > 0 and player_id in TRACK_DISCONNECTED:
             print(f"Now tracking {player_id} for {timeout} seconds")
             await sleep(timeout)
+
         if player_id not in TRACK_DISCONNECTED:
             return
 
@@ -89,7 +105,6 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
             f"\033[36m[ws/client\033[33m{' ' + self.player_id[:8]}\033[36m]\033[0m {text_data}"
         )
         await self.handler.process(text_data)
-        self.player_id = self.handler.player_id
 
     def group_send(self, msg: str):
         return self.channel_layer.group_send(

@@ -61,6 +61,7 @@ const app = (socket) => {
 
   function leave() {
     socket.send(`LEAVE`);
+    socket.close(1000, "Leaving");
     document.body.classList.add("los");
     document.getElementById("players").innerHTML = "";
     setTimeout(() => window.location.assign("/"), 500);
@@ -266,6 +267,7 @@ const app = (socket) => {
 
       case "STARTGAME":
         overlay.on();
+        socket.close(1000, "Game started");
         setTimeout(() => window.location.assign("/game"), 1000);
         break;
 
@@ -328,11 +330,9 @@ const app = (socket) => {
 window.addEventListener("load", () => {
   console.log("start");
 
-  const ws_url = `ws${location.protocol === "https:" ? "s" : ""}://${
+  const ws_url = `${location.protocol === "https:" ? "wss" : "ws"}://${
     window.location.host
   }/ws/lobby/${GAME_ID}/${PLAYER_ID}`;
-
-  console.log("ws_url", ws_url);
 
   const socket = new WebSocket(ws_url);
 

@@ -3,7 +3,6 @@ from asyncio import sleep
 from channels.generic.websocket import AsyncWebsocketConsumer
 from scotlandyardgame.ws.messages import Messages
 
-
 from ..engine.constants import GameState
 from ..multiplayer import getGameByID, leaveRoom
 
@@ -36,23 +35,24 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
             )
             await self.accept()
 
-    async def disconnect(self, close_code):
+    async def disconnect(self, close_code: int = 1006):
         print(f"disconnecting {self.player_id} with close code {close_code}")
         await self.channel_layer.group_discard(self.game_id, self.channel_name)
-        if hasattr(self, "player_id"):
-            # leaveRoom(self.game_id, self.player_id)
-            game = getGameByID(self.game_id)
-            if game is not None and game.state != GameState.CONNECTING:
-                TRACK_DISCONNECTED.add(self.player_id)
-                await self.group_send(Messages.LOS(self.player_id))
-                await self.delayedRelease(self.player_id)
-            else:
-                await self.removeMessage(self.player_id)
+
+        TRACK_DISCONNECTED.add(self.player_id)
+        game = getGameByID(self.game_id)
+        state = game.state
+
+        if close_code == 1000 and state != GameState.CONNECTING:
+            await self.delayed_release(self.player_id, 0)
+        else:
+            await self.group_send(Messages.LOS(self.player_id))
+            await self.delayed_release(self.player_id)
 
     async def ws_send(self, event):
         await self.send(event["text"])
 
-    async def delayedRelease(self, player_id: str, timeout: float = 3.0):
+    async def delayed_release(self, player_id: str, timeout: float = 3.0):
         if timeout > 0 and player_id in TRACK_DISCONNECTED:
             print(f"Now tracking {player_id} for {timeout} seconds")
             await sleep(timeout)
@@ -71,13 +71,13 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
             return
         new_host, new_x = game.getHostID(), game.getMrX()
 
-        await self.removeMessage(
+        await self.send_remove(
             player_id,
             new_host if new_host != prev_host else None,
             new_x if new_x != prev_x else None,
         )
 
-    async def removeMessage(self, player_id, new_host=None, new_x=None):
+    async def send_remove(self, player_id, new_host=None, new_x=None):
         await self.group_send(Messages.remove(player_id))
         if new_host is not None:
             await self.group_send(Messages.setHost(new_host))
@@ -86,7 +86,7 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         print(
-            f"\033[36m[ws/client\033[33m{' ' + self.player_id[:8] if hasattr(self, 'player_id') and self.player_id is not None else ''}\033[36m]\033[0m {text_data}"
+            f"\033[36m[ws/client\033[33m{' ' + self.player_id[:8]}\033[36m]\033[0m {text_data}"
         )
         await self.handler.process(text_data)
         self.player_id = self.handler.player_id

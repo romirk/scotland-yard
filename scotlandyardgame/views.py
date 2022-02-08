@@ -21,19 +21,19 @@ def index(request: HttpRequest, game_id=None, error=None):
     player_id = request.session["player_id"]
     is_joining = game_id is not None
     context = {
-        "game_id": game_id if is_joining else ""    ,
+        "game_id": game_id if is_joining else "",
         "is_joining": is_joining,
         "player_id": player_id,
         "error": error,
     }
 
     if not is_joining:
-        game_id = multiplayer.getPlayerConnectedGame(player_id)
+        game_id = multiplayer.get_player_connected_game(player_id)
         if game_id is not None:
             print("player already connected, redirecting")
             return redirect(
                 "lobby"
-                if multiplayer.getGameByID(game_id).state == GameState.PENDING
+                if multiplayer.get_game_by_id(game_id).state == GameState.PENDING
                 else "game"
             )
     elif game_id not in multiplayer.GAMES:
@@ -46,8 +46,8 @@ def index(request: HttpRequest, game_id=None, error=None):
 
         try:
             if not is_joining:
-                game_id = multiplayer.createRoom()
-            multiplayer.joinRoom(game_id, player_id, player_name)
+                game_id = multiplayer.create_room()
+            multiplayer.join_room(game_id, player_id, player_name)
 
         except Exception as e:
 
@@ -64,18 +64,18 @@ def index(request: HttpRequest, game_id=None, error=None):
 
 def lobby(request: HttpRequest):
     player_id = request.session["player_id"]
-    game_id = multiplayer.getGameIDWithPlayer(player_id)
+    game_id = multiplayer.get_game_id_with_player(player_id)
     if game_id is None:
         return redirect_with_error("indexerror", "not in game")
 
     if (
-        game := multiplayer.getGameByID(game_id)
+        game := multiplayer.get_game_by_id(game_id)
     ).state == multiplayer.GameState.STOPPED:
         return redirect_with_error("indexerror", "game stopped")
     if game.state == multiplayer.GameState.RUNNING:
         return redirect("game")
 
-    context = game.getPlayerInfo(player_id)
+    context = game.get_player_info(player_id)
     context["colors"] = AVAILABLE_COLORS
     print(f"{context['name']} in lobby")
 
@@ -86,17 +86,17 @@ def lobby(request: HttpRequest):
 
 def game(request: HttpRequest):
     player_id = request.session["player_id"]
-    game_id = multiplayer.getGameIDWithPlayer(player_id)
+    game_id = multiplayer.get_game_id_with_player(player_id)
     if game_id is None:
         return redirect_with_error("indexerror", "not in game")
     if (
-        game := multiplayer.getGameByID(game_id)
+        game := multiplayer.get_game_by_id(game_id)
     ).state == multiplayer.GameState.STOPPED:
         return redirect_with_error("indexerror", "game stopped")
     if game.state == multiplayer.GameState.PENDING:
         return redirect("lobby")
 
-    context = game.getPlayerInfo(player_id) | {
+    context = game.get_player_info(player_id) | {
         "board": MAP.generate_board_rectangular((15, 20)).tolist(),
         "coords": MAP.to_list(),
         "map_data": MAP.map_data,

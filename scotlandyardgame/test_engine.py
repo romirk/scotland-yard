@@ -3,7 +3,7 @@ from uuid import uuid4
 from channels.testing import WebsocketCommunicator
 from django.test import TestCase
 
-from .multiplayer import createRoom, getGameByID, joinRoom, startRollCall
+from .multiplayer import create_room, get_game_by_id, join_room, start_roll_call
 from .ws.GameConsumer import GameConsumer
 
 ### TODO uhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
@@ -15,15 +15,15 @@ class EngineTestCase(TestCase):
     """
 
     def setUp(self) -> None:
-        self.test_game_id = createRoom()
-        self.game = getGameByID(self.test_game_id)
+        self.test_game_id = create_room()
+        self.game = get_game_by_id(self.test_game_id)
 
         self.player_ids = [uuid4() for _ in range(6)]
 
         for i in range(6):
-            joinRoom(self.test_game_id, self.player_ids[i], f"player{i}")
+            join_room(self.test_game_id, self.player_ids[i], f"player{i}")
 
-        startRollCall(self.test_game_id)
+        start_roll_call(self.test_game_id)
 
         self.communicators = [
             WebsocketCommunicator(GameConsumer.as_asgi(), f"/game/{self.test_game_id}")

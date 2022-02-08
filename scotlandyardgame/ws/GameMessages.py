@@ -1,7 +1,7 @@
 import json
 
 from ..engine.constants import DOUBLE_TICKET
-from ..multiplayer import getGameByID, getPlayerInfo, getGameIDWithPlayer
+from ..multiplayer import get_game_by_id, get_player_info, get_game_id_with_player
 
 
 class GameMessages:
@@ -11,14 +11,14 @@ class GameMessages:
 
     @staticmethod
     def player_joined(player_id: str) -> str:
-        player_info = getPlayerInfo(getGameIDWithPlayer(player_id), player_id)
+        player_info = get_player_info(get_game_id_with_player(player_id), player_id)
         return f"PLAYER_JOINED {player_id}" + (
             f' {player_info["location"]}' if player_info["color"] != "X" else ""
         )
 
     @staticmethod
     def acknowledge(game_id: str, t: list) -> str:
-        roll = getGameByID(game_id).rollCall
+        roll = get_game_by_id(game_id).rollCall
         return "ACKNOWLEDGE " + " ".join(roll)
 
     @staticmethod

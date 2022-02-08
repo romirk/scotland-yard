@@ -6,7 +6,7 @@ from scotlandyardgame.ws.LobbyMessages import LobbyMessages
 from scotlandyardgame.ws.messages import Messages
 
 from ..engine.constants import GameState
-from ..multiplayer import getGameByID, leaveRoom, getGameIDWithPlayer
+from ..multiplayer import get_game_by_id, leave_room, get_game_id_with_player
 
 TRACK_DISCONNECTED = set()
 
@@ -26,7 +26,7 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
         self.message_service = GameMessages if self.type == "game" else LobbyMessages
 
         try:
-            game = getGameByID(self.game_id)
+            game = get_game_by_id(self.game_id)
         except ValueError as e:
             print(e)
             return
@@ -44,7 +44,7 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
             
             await self.send(
                 self.message_service.acknowledge(
-                    getGameIDWithPlayer(self.player_id), TRACK_DISCONNECTED
+                    get_game_id_with_player(self.player_id), TRACK_DISCONNECTED
                 )
             )
             await self.group_send(self.message_service.player_joined(self.player_id))
@@ -56,7 +56,7 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
         )
 
         TRACK_DISCONNECTED.add(self.player_id)
-        game = getGameByID(self.game_id)
+        game = get_game_by_id(self.game_id)
         state = game.state
 
         if close_code == 1000 and state != GameState.CONNECTING:
@@ -79,14 +79,14 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
         print(f"\033[33m{player_id}\033[0m is disconnected, releasing")
         TRACK_DISCONNECTED.remove(player_id)
 
-        game = getGameByID(self.game_id)
-        prev_host, prev_x = game.getHostID(), game.getMrX()
-        leaveRoom(self.game_id, player_id)
+        game = get_game_by_id(self.game_id)
+        prev_host, prev_x = game.get_host_id(), game.get_mr_x()
+        leave_room(self.game_id, player_id)
 
         if game.state == GameState.STOPPED:
             await self.group_send(Messages.abort())
             return
-        new_host, new_x = game.getHostID(), game.getMrX()
+        new_host, new_x = game.get_host_id(), game.get_mr_x()
 
         await self.send_remove(
             player_id,

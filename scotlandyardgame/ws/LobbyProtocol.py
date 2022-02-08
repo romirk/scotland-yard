@@ -1,12 +1,12 @@
 from ..engine.constants import MAX_PLAYERS
 from ..multiplayer import (
-    getGameHost,
-    getGameIDWithPlayer,
-    getPlayerIDs,
-    leaveRoom,
-    setColor,
-    setMrX,
-    startRollCall,
+    get_game_host,
+    get_game_id_with_player,
+    get_player_ids,
+    leave_room,
+    set_color,
+    set_mr_x,
+    start_roll_call,
 )
 from .LobbyMessages import LobbyMessages
 from .protocol import Protocol
@@ -28,7 +28,7 @@ class LobbyProtocol(Protocol):
 
     async def reqcolor(self, color: str):
         try:
-            setColor(getGameIDWithPlayer(self.player_id), self.player_id, color)
+            set_color(get_game_id_with_player(self.player_id), self.player_id, color)
         except Exception as e:
             print(e)
         else:
@@ -36,7 +36,7 @@ class LobbyProtocol(Protocol):
 
     async def reqmrx(self, player_id):
         try:
-            setMrX(getGameIDWithPlayer(self.player_id), self.player_id)
+            set_mr_x(get_game_id_with_player(self.player_id), self.player_id)
         except Exception as e:
             print(e)
         else:
@@ -51,15 +51,15 @@ class LobbyProtocol(Protocol):
         print(f"{self.consumer.player_id} is ready")
         self.player_id = self.consumer.player_id
         if (
-            getGameHost(game_id := getGameIDWithPlayer(self.player_id))
+            get_game_host(game_id := get_game_id_with_player(self.player_id))
             != self.player_id
         ):
             print("Only host can start game")
             return
         c = 0
-        for player in getPlayerIDs(game_id):
+        for player in get_player_ids(game_id):
             if player in TRACK_DISCONNECTED:
-                leaveRoom(game_id, player)
+                leave_room(game_id, player)
                 TRACK_DISCONNECTED.remove(player)
             else:
                 c += 1
@@ -67,7 +67,7 @@ class LobbyProtocol(Protocol):
         if c < MAX_PLAYERS:
             return
         try:
-            startRollCall(game_id)
+            start_roll_call(game_id)
         except RuntimeError as e:
             print(e)
         else:

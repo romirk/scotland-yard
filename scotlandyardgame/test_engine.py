@@ -40,7 +40,6 @@ class EngineTestCase(TestCase):
 
         for i, player_id in enumerate(self.player_ids):
             await self.communicators[i].send_to(text_data=f"JOIN {player_id}")
-            response = await communicator.receive_from()
 
     async def do_roll_call(self):
         await self.start_comms()

@@ -17,12 +17,12 @@ def get_game_by_id(game_id: str) -> ScotlandYard:
     return game
 
 
-def get_game_id_with_player(player_id: str) -> str:
-    id = PLAYER_TO_GAME[player_id] if player_id in PLAYER_TO_GAME else None
-    if id is not None and id not in GAMES:
+def get_game_id_with_player(player_id: str) -> str | None:
+    game_id = PLAYER_TO_GAME[player_id] if player_id in PLAYER_TO_GAME else None
+    if game_id is not None and game_id not in GAMES:
         del PLAYER_TO_GAME[player_id]
         return None
-    return id
+    return game_id
 
 
 def get_game_state(game_id: str) -> GameState:

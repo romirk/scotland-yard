@@ -1,3 +1,5 @@
+from typing import Final
+
 from .tickets import Tickets
 
 
@@ -6,7 +8,7 @@ class Player:
         self, player_id: str, player_name: str, player_location: int, player_color: str
     ) -> None:
         # private
-        self.__ID: str = player_id
+        self.__ID: Final = player_id
         self.__player_location: int = player_location
         self.__tickets: Tickets = Tickets(player_color == "X")
 
@@ -17,7 +19,7 @@ class Player:
     # getters
 
     @property
-    def ID(self) -> str:
+    def id(self) -> str:
         return self.__ID
 
     @property
@@ -35,12 +37,12 @@ class Player:
 
     # setters
 
-    @ID.setter
-    def ID(self, newID: str):
+    @id.setter
+    def id(self, *args):
         raise AttributeError("ID assignment not allowed.")
 
     @location.setter
-    def location(self, newLocation: int):
+    def location(self, new_location: int):
         self.__player_location = (
-            newLocation if 1 <= newLocation <= 200 else self.__player_location
+            new_location if 1 <= new_location <= 200 else self.__player_location
         )

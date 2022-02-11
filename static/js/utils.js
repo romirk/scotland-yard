@@ -52,8 +52,8 @@ function copyToClipboard(elem) {
 }
 
 const overlay = {
-  on: () => (document.getElementById("overlay").style.display = "block"),
-  off: () => (document.getElementById("overlay").style.display = "none"),
+  on: () => (document.getElementById("start-overlay").style.display = "block"),
+  off: () => (document.getElementById("start-overlay").style.display = "none"),
 };
 
 function circlePath(cx, cy, r) {

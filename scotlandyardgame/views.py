@@ -10,51 +10,48 @@ from scotlandyardgame.engine.map import MAP
 from . import multiplayer
 from .engine.constants import AVAILABLE_COLORS, GameState
 
-# from .engine.maprenderer import generate_board_rectangular
-
 name_re = compile(r"^\w+$")
 
 
-def redirectWithError(location, errmsg):
+def redirect_with_error(location, errmsg):
     return redirect(reverse(location, kwargs={"error": errmsg}))
 
 
-def index(request: HttpRequest, game_id="", error=None):
+def index(request: HttpRequest, game_id=None, error=None):
     player_id = request.session["player_id"]
-    isJoining = game_id != ""
+    is_joining = game_id is not None
     context = {
-        "game_id": game_id,
-        "isJoining": "true" if isJoining else "false",
+        "game_id": game_id if is_joining else "",
+        "is_joining": is_joining,
         "player_id": player_id,
         "error": error,
     }
 
-    if not isJoining:
-        game_id = multiplayer.getPlayerConnectedGame(player_id)
+    if not is_joining:
+        game_id = multiplayer.get_player_connected_game(player_id)
         if game_id is not None:
             print("player already connected, redirecting")
             return redirect(
                 "lobby"
-                if multiplayer.getGameByID(game_id).state == GameState.PENDING
+                if multiplayer.get_game_by_id(game_id).state == GameState.PENDING
                 else "game"
             )
-    else:
-        if game_id not in multiplayer.GAMES:
-            return redirectWithError("indexerror", f"no such game with ID {game_id}")
+    elif game_id not in multiplayer.GAMES:
+        return redirect_with_error("indexerror", f"no such game with ID {game_id}")
 
     if request.method == "POST":  # (create and) join game
         player_name = request.POST.get("player_name")
         if not search(name_re, player_name):
-            return redirectWithError("indexerror", "invalid name")
+            return redirect_with_error("indexerror", "invalid name")
 
         try:
-            if not isJoining:
-                game_id = multiplayer.createRoom()
-            multiplayer.joinRoom(game_id, player_id, player_name)
+            if not is_joining:
+                game_id = multiplayer.create_room()
+            multiplayer.join_room(game_id, player_id, player_name)
 
         except Exception as e:
 
-            print(f"\033[31merror creating lobby: {e}\n({context})\033[0m")
+            print(f"\033[31merror creating lobby: {e}\033[0m")
             return redirect(
                 reverse("indexerror", args=["could not join game: " + str(e)])
             )
@@ -67,18 +64,18 @@ def index(request: HttpRequest, game_id="", error=None):
 
 def lobby(request: HttpRequest):
     player_id = request.session["player_id"]
-    game_id = multiplayer.getGameIDWithPlayer(player_id)
+    game_id = multiplayer.get_game_id_with_player(player_id)
     if game_id is None:
-        return redirectWithError("indexerror", "not in game")
+        return redirect_with_error("indexerror", "not in game")
 
     if (
-        game := multiplayer.getGameByID(game_id)
+        game := multiplayer.get_game_by_id(game_id)
     ).state == multiplayer.GameState.STOPPED:
-        return redirectWithError("indexerror", "game stopped")
+        return redirect_with_error("indexerror", "game stopped")
     if game.state == multiplayer.GameState.RUNNING:
         return redirect("game")
 
-    context = game.getPlayerInfo(player_id)
+    context = game.get_player_info(player_id)
     context["colors"] = AVAILABLE_COLORS
     print(f"{context['name']} in lobby")
 
@@ -89,17 +86,17 @@ def lobby(request: HttpRequest):
 
 def game(request: HttpRequest):
     player_id = request.session["player_id"]
-    game_id = multiplayer.getGameIDWithPlayer(player_id)
+    game_id = multiplayer.get_game_id_with_player(player_id)
     if game_id is None:
-        return redirectWithError("indexerror", "not in game")
+        return redirect_with_error("indexerror", "not in game")
     if (
-        game := multiplayer.getGameByID(game_id)
+        game := multiplayer.get_game_by_id(game_id)
     ).state == multiplayer.GameState.STOPPED:
-        return redirectWithError("indexerror", "game stopped")
+        return redirect_with_error("indexerror", "game stopped")
     if game.state == multiplayer.GameState.PENDING:
         return redirect("lobby")
 
-    context = game.getPlayerInfo(player_id) | {
+    context = game.get_player_info(player_id) | {
         "board": MAP.generate_board_rectangular((15, 20)).tolist(),
         "coords": MAP.to_list(),
         "map_data": MAP.map_data,

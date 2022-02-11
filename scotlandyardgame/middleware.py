@@ -4,6 +4,8 @@ from django.http import HttpRequest
 
 
 class PlayerIdMiddleware:
+    """Ensures every request has an associated player_id"""
+
     def __init__(self, get_response) -> None:
         self.get_response = get_response
 

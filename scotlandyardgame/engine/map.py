@@ -1,5 +1,5 @@
-from scotlandyardgame.engine.mapdata import MAP_DATA
-from .station import Station
+import numpy as np
+
 from .constants import (
     BLACK_TICKET,
     BUS_TICKET,
@@ -7,7 +7,9 @@ from .constants import (
     TICKET_TYPES,
     UNDERGROUND_TICKET,
 )
-import numpy as np
+from .ForceDirectedRenderer import force_directed_graph
+from .mapdata import MAP_DATA
+from .station import Station
 
 
 class Map:
@@ -16,7 +18,7 @@ class Map:
     Represented as a four layer graph network, with Station objects comprising nodes.
     """
 
-    def __init__(self, map_data: list[list[list[int]]] = []) -> None:
+    def __init__(self, map_data: list[list[list[int]]]) -> None:
         """
         Initialize the map.
         Currently using radial generation.
@@ -27,6 +29,7 @@ class Map:
         self.stations: list[Station] = []
         self.coords: list[tuple[float, float]] = [(x, y) for x, y in zip(*[iter(map(float,open("Coordinates.txt","r").read().split(',')))]*2)]
         self.limits = {"min": np.array((0, 0)), "max": np.array((0, 0))}
+        self.adjacency_matrix = np.zeros((self.N, self.N))
 
         self.sub_graphs: dict[str, set[int]] = {
             TAXI_TICKET: set(),
@@ -35,26 +38,29 @@ class Map:
             BLACK_TICKET: set(),
         }
 
-        for index in range(self.N):
-            station = Station(index)
-            for type in range(len(map_data[index])):
-                for neighbour in range(len(map_data[index][type])):
-                    station.addNeighbour(
-                        TICKET_TYPES[type], map_data[index][type][neighbour] - 1
-                    )
-                    self.sub_graphs[TICKET_TYPES[type]].add(
-                        map_data[index][type][neighbour] - 1
-                    )
+        for i in range(self.N):
+            station = Station(i)
+            for edge_type in range(len(map_data[i])):
+                for j in range(len(map_data[i][edge_type])):
+                    neighbour = map_data[i][edge_type][j] - 1
+                    station.addNeighbour(TICKET_TYPES[edge_type], neighbour)
+                    self.sub_graphs[TICKET_TYPES[edge_type]].add(neighbour)
+
+                    if neighbour >= self.N:
+                        continue
+                    self.adjacency_matrix[i, neighbour] = 1
             self.stations.append(station)
 
         print("initialized map with", self.N, "stations.\ngenerating coordinates...")
-        self.generate_coordinates_radial()
+        self.coords = {i:p for i, p in enumerate(force_directed_graph(self.N, self.adjacency_matrix))}
+        # self.generate_coordinates_radial()
         self.normalize_coordinates()
         self.compute_limits()
         print(
             f"map generated with dimensions {self.limits['max'][0] - self.limits['min'][0]}x{self.limits['max'][1] - self.limits['min'][1]}"
         )
-        print(f"coordinates normalized to {self.get_scale()}: {self.to_list()}")
+        print(f"coordinates normalized to {self.get_scale()}")
+        print(f"coordinates: {self.coords}")
 
     def compute_limits(self):
         """
@@ -219,7 +225,6 @@ class Map:
                     # TODO gen bus coords
 
         # 3. place taxi using bus
-        pass
 
         print("\33[2K[BFS bus] done.")
         self.compute_limits()
@@ -248,7 +253,7 @@ class Map:
           repeat while entangled
           repeat for every new point
         """
-        pass
+        raise NotImplementedError()
 
     def to_list(self):
         """

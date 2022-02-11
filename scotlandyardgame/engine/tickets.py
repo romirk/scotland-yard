@@ -9,6 +9,8 @@ from .constants import (
 
 
 class Tickets:
+    """Handles player tickets"""
+
     def __init__(self, is_mr_x: bool) -> None:
         self.__is_mr_x = is_mr_x
 
@@ -24,6 +26,7 @@ class Tickets:
             self.__underground = 4
 
     def discard(self, ticket_type: str) -> None:
+        """discards a ticket from the player's stash"""
         if ticket_type == TAXI_TICKET:
             self.__taxi -= 1
         elif ticket_type == BUS_TICKET:
@@ -38,6 +41,7 @@ class Tickets:
             raise ValueError("Invalid ticket type: {}".format(ticket_type))
 
     def gain(self, ticket_type: str) -> None:
+        """gives a ticket to Mr. X"""
         if not self.__is_mr_x:
             return
         if ticket_type == TAXI_TICKET:
@@ -54,6 +58,7 @@ class Tickets:
             raise ValueError("Invalid ticket type: {}".format(ticket_type))
 
     def all(self) -> dict[str, int]:
+        """Get all tickets in the player's stash"""
         return {
             TAXI_TICKET: self.__taxi,
             BUS_TICKET: self.__bus,
@@ -63,11 +68,13 @@ class Tickets:
         }
 
     def get(self, ticket: str):
+        """Get the number of tickets of the given type"""
         if ticket not in TICKET_TYPES:
             raise ValueError("Invalid ticket type: {}".format(ticket))
         return self.all()[ticket]
 
     def set(self, tickets: dict[str, int]):
+        """reset player stash to given values"""
         self.__taxi = tickets[TAXI_TICKET]
         self.__bus = tickets[BUS_TICKET]
         self.__underground = tickets[UNDERGROUND_TICKET]

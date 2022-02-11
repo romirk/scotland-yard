@@ -8,14 +8,14 @@ const logElement = document.getElementById("gameLog");
 const socket = new WebSocket(
   `ws${location.protocol === "https:" ? "s" : ""}://${
     window.location.host
-  }/ws/game/${GAME_ID}`
+  }/ws/game/${GAME_ID}/${PLAYER_ID}`
 );
 
 socket.onclose = function (event) {
   console.log("Socket closed");
   log += "<br><span style=color:red>Socket closed</span>";
   logElement.innerHTML = log;
-  // window.location.assign("/");
+  window.location.assign("/");
 };
 
 socket.onopen = function (event) {
@@ -38,10 +38,6 @@ function wsSend(msg) {
   log += `<br><span style="color:blue">${msg}</span>`;
   logElement.innerHTML = log;
 }
-
-// document.getElementById("send").addEventListener("click", () => {
-//   wsSend(commandbox.innerText);
-// });
 
 socket.onmessage = (msg) => {
   console.log(msg);

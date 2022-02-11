@@ -1,16 +1,7 @@
 from scotlandyardgame.ws.protocol import Protocol
 
+from .. import multiplayer
 from ..engine.constants import DOUBLE_TICKET, GameState
-from ..multiplayer import (
-    answerRollCall,
-    deleteGame,
-    getGameByID,
-    getGameIDWithPlayer,
-    getGameInfo,
-    getGameState,
-    getPlayerInfo,
-    move,
-)
 from .GameMessages import GameMessages
 from .protocol import Protocol
 from .WebSocketConsumer import TRACK_DISCONNECTED, WebSocketConsumer
@@ -34,32 +25,27 @@ class GameProtocol(Protocol):
     async def join(self, player_id: str):
         # JOIN player_id
         self.player_id = player_id
-        if (game_id := getGameIDWithPlayer(player_id)) is None:
+        if (game_id := multiplayer.get_game_id_with_player(player_id)) is None:
             raise RuntimeError("Player is not in a game")
         self.game_id = game_id
 
-        if player_id not in getGameByID(self.game_id).rollCall:
-            if getGameState(game_id) != GameState.CONNECTING:
+        if player_id not in multiplayer.get_game_by_id(self.game_id).rollCall:
+            if multiplayer.get_game_state(game_id) != GameState.CONNECTING:
                 raise RuntimeError("Can't connect to this game")
-            answerRollCall(game_id, player_id)
-            await self.group_send(GameMessages.playerJoined(player_id))
+            multiplayer.answer_roll_call(game_id, player_id)
+            await self.group_send(GameMessages.player_joined(player_id))
 
-        await self.send(GameMessages.acknowledge(game_id))
-
-        if player_id in TRACK_DISCONNECTED:
-            TRACK_DISCONNECTED.remove(player_id)
-
-        if getGameState(game_id) == GameState.RUNNING:
-            await self.group_send(GameMessages.gameStarting())
+        if multiplayer.get_game_state(game_id) == GameState.RUNNING:
+            await self.group_send(GameMessages.game_starting())
 
     async def reqmove(self, ticket: str, *args):
-        if self.game_id != getGameIDWithPlayer(self.player_id):
+        if self.game_id != multiplayer.get_game_id_with_player(self.player_id):
             raise RuntimeError("Player is not in a game")
-        if getGameState(self.game_id) != GameState.RUNNING:
+        if multiplayer.get_game_state(self.game_id) != GameState.RUNNING:
             raise RuntimeError("Game is not running")
 
         if ticket == DOUBLE_TICKET:
-            moveData = move(
+            move_data = multiplayer.move(
                 self.game_id,
                 self.player_id,
                 DOUBLE_TICKET,
@@ -71,25 +57,29 @@ class GameProtocol(Protocol):
                 },
             )
         elif ticket == "pass":
-            moveData = move(self.game_id, self.player_id, ticket, {})
+            move_data = multiplayer.move(self.game_id, self.player_id, ticket, {})
         else:
-            moveData = move(
+            move_data = multiplayer.move(
                 self.game_id, self.player_id, ticket, {"location": int(args[0])}
             )
 
-        if moveData["accepted"]:
-            await self.group_send(GameMessages.playerMoved(moveData))
-            if moveData["game_state"] != GameState.RUNNING:
-                await self.group_send(f"GAME_OVER {moveData['game_state']}")
-                deleteGame(self.game_id)
+        if move_data["accepted"]:
+            await self.group_send(GameMessages.player_moved(move_data))
+            if move_data["game_state"] != GameState.RUNNING:
+                await self.group_send(f"GAME_OVER {move_data['game_state']}")
+                multiplayer.delete_game(self.game_id)
 
         else:
-            await self.send(f"DENIED {moveData['message']}")
+            await self.send(f"DENIED {move_data['message']}")
 
     async def get_game_info(self):
-        await self.send(GameMessages.gameInfo(getGameInfo(self.game_id)))
+        await self.send(GameMessages.game_info(multiplayer.get_game_info(self.game_id)))
 
     async def get_player_info(self, player_id: str = None):
         if player_id != "ALL":
             player_id = self.player_id
-        await self.send(GameMessages.playerInfo(getPlayerInfo(self.game_id, player_id)))
+        await self.send(
+            GameMessages.player_info(
+                multiplayer.get_player_info(self.game_id, player_id)
+            )
+        )

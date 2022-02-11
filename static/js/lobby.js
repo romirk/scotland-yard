@@ -45,31 +45,10 @@ const app = (socket) => {
     return players.findIndex((player) => player.player_id === id);
   }
 
-  function reqColor(c) {
-    socket.send(`REQCOLOR ${c}`);
-  }
-
-  function reqMrX(pid) {
-    if (!my.host_authorization) return;
-    socket.send(`REQMRX ${pid}`);
-  }
-
-  function startGame() {
-    if (!my.host_authorization || players.length !== 6) return;
-    socket.send(`READY`);
-  }
-
-  function leave() {
-    socket.send(`LEAVE`);
-    document.body.classList.add("los");
-    document.getElementById("players").innerHTML = "";
-    setTimeout(() => window.location.assign("/"), 500);
-  }
-
   // UI
   function updateUI() {
-    players.sort((a, b) =>
-      a.player_id === my.player_id ? -1 : b.player_id === my.player_id ? 1 : 0
+    players.sort(
+      (a, b) => (b.player_id === my.player_id) - (a.player_id === my.player_id)
     );
 
     let avail_colors = [
@@ -83,9 +62,7 @@ const app = (socket) => {
     ];
 
     let html = "";
-    let c = 0;
-    for (let i = 0; i < players.length; i++) {
-      const player = players[i];
+    for (const player of players) {
       html += `<div class="row">
                 <div class="col player ${player.state}" 
                 id="p-${player.player_id}" 
@@ -100,7 +77,7 @@ const app = (socket) => {
                     <div class="reqm" id="b-${player.player_id}"></div>
                 </div>
             </div>`;
-      if (player.state === "new") players[i].state = "";
+      if (player.state === "new") player.state = "";
       let idx = avail_colors.findIndex((c) => c === player.color);
       if (idx !== -1) avail_colors.splice(idx, 1);
     }
@@ -167,9 +144,7 @@ const app = (socket) => {
 
     const list = document.getElementById("colorList");
     list.innerHTML = "";
-    for (let i = 0; i < COLORS.length; i++) {
-      const c = COLORS[i];
-
+    for (const c of COLORS) {
       const a = document.createElement("a");
       a.className = "list-group-item list-group-item-action";
       a.style.color = `rgb(var(--color-${c}))`;
@@ -212,7 +187,6 @@ const app = (socket) => {
   // sockets
 
   socket.onclose = () => window.location.assign("/");
-  socket.onopen = () => socket.send("JOIN " + my.player_id);
 
   socket.onmessage = (msg) => {
     console.log("[ws/server]", msg.data);
@@ -238,7 +212,7 @@ const app = (socket) => {
         document.getElementById("copy-link").style.display = "initial";
         break;
 
-      case "NEW_PLAYER":
+      case "PLAYER_JOINED":
         if (!player_ids.includes(tokens[1]))
           players.push({
             player_id: tokens[1],
@@ -270,6 +244,7 @@ const app = (socket) => {
 
       case "STARTGAME":
         overlay.on();
+        socket.close(1000, "Game started");
         setTimeout(() => window.location.assign("/game"), 1000);
         break;
 
@@ -311,8 +286,32 @@ const app = (socket) => {
     location.protocol + "//" + window.location.host + "/" + my.game_id;
 
   const heads = document.getElementsByClassName("playerheadpath");
-  for (let i = 0; i < heads.length; i++) {
-    heads[i].setAttribute("d", circlePath(25, 30, 18));
+  for (const head of heads) {
+    head.setAttribute("d", circlePath(25, 30, 18));
+  }
+
+  // event handlers
+
+  function reqColor(c) {
+    socket.send(`REQCOLOR ${c}`);
+  }
+
+  function reqMrX(pid) {
+    if (!my.host_authorization) return;
+    socket.send(`REQMRX ${pid}`);
+  }
+
+  function startGame() {
+    if (!my.host_authorization || players.length !== 6) return;
+    socket.send(`READY`);
+  }
+
+  function leave() {
+    socket.send(`LEAVE`);
+    socket.close(1000, "Leaving");
+    document.body.classList.add("los");
+    document.getElementById("players").innerHTML = "";
+    setTimeout(() => window.location.assign("/"), 500);
   }
 
   // event listeners
@@ -332,11 +331,11 @@ const app = (socket) => {
 window.addEventListener("load", () => {
   console.log("start");
 
-  const socket = new WebSocket(
-    `ws${location.protocol === "https:" ? "s" : ""}://${
-      window.location.host
-    }/ws/lobby/${GAME_ID}`
-  );
+  const ws_url = `${location.protocol === "https:" ? "wss" : "ws"}://${
+    window.location.host
+  }/ws/lobby/${GAME_ID}/${PLAYER_ID}`;
+
+  const socket = new WebSocket(ws_url);
 
   app(socket);
 });

@@ -1,5 +1,5 @@
-from scotlandyardgame.engine.mapdata import MAP_DATA
-from .station import Station
+import numpy as np
+
 from .constants import (
     BLACK_TICKET,
     BUS_TICKET,
@@ -7,7 +7,9 @@ from .constants import (
     TICKET_TYPES,
     UNDERGROUND_TICKET,
 )
-import numpy as np
+from .ForceDirectedRenderer import force_directed_graph
+from .mapdata import MAP_DATA
+from .station import Station
 
 
 class Map:
@@ -43,17 +45,22 @@ class Map:
                     neighbour = map_data[i][edge_type][j] - 1
                     station.addNeighbour(TICKET_TYPES[edge_type], neighbour)
                     self.sub_graphs[TICKET_TYPES[edge_type]].add(neighbour)
-                    # self.adjacency_matrix[i, neighbour] = 1
+
+                    if neighbour >= self.N:
+                        continue
+                    self.adjacency_matrix[i, neighbour] = 1
             self.stations.append(station)
 
         print("initialized map with", self.N, "stations.\ngenerating coordinates...")
-        self.generate_coordinates_radial()
+        self.coords = {i:p for i, p in enumerate(force_directed_graph(self.N, self.adjacency_matrix))}
+        # self.generate_coordinates_radial()
         self.normalize_coordinates()
         self.compute_limits()
         print(
             f"map generated with dimensions {self.limits['max'][0] - self.limits['min'][0]}x{self.limits['max'][1] - self.limits['min'][1]}"
         )
         print(f"coordinates normalized to {self.get_scale()}")
+        print(f"coordinates: {self.coords}")
 
     def compute_limits(self):
         """
@@ -246,7 +253,7 @@ class Map:
           repeat while entangled
           repeat for every new point
         """
-        pass
+        raise NotImplementedError()
 
     def to_list(self):
         """

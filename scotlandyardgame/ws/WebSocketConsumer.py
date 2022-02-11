@@ -62,7 +62,7 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
         if close_code == 1000 and state != GameState.CONNECTING:
             await self.delayed_release(self.player_id, 0)
         else:
-            await self.group_send(Messages.LOS(self.player_id))
+            await self.group_send(Messages.los(self.player_id))
             await self.delayed_release(self.player_id)
 
     async def ws_send(self, event):
@@ -97,9 +97,9 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
     async def send_remove(self, player_id, new_host=None, new_x=None):
         await self.group_send(Messages.remove(player_id))
         if new_host is not None:
-            await self.group_send(Messages.setHost(new_host))
+            await self.group_send(Messages.set_host(new_host))
         if new_x is not None:
-            await self.group_send(Messages.setMrX(new_x))
+            await self.group_send(Messages.set_mr_x(new_x))
 
     async def receive(self, text_data):
         print(

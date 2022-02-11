@@ -30,27 +30,42 @@ def compute_distances(p: np.ndarray):
 
 def get_field(p: np.ndarray):
     N = p.shape[0]
-    c = np.zeros((N, N))
+    f = np.zeros((N, N, 2))
     for i, j in combinations(N):
-        c[i, j] = (p[i] - p[j]) / la.norm(p[i] - p[j])
-        c[j, i] = -c[i, j]
-    return c
+        f[i, j] = (p[i] - p[j]) / la.norm(p[i] - p[j])
+        f[j, i] = -f[i, j]
+    return f
 
 
 def compute_attraction(
-    p: np.ndarray, field: np.ndarray, c: np.ndarray, adjacency_matrix: np.ndarray
+    field: np.ndarray, c: np.ndarray, adjacency_matrix: np.ndarray
 ) -> np.ndarray:
     """
     Computes the attraction force acting on each vertex, if they are connected by an edge.
     """
-    return np.log(c * adjacency_matrix) * field
+    l = np.log(c)
+    l[np.diag_indices(c.shape[0])] = 0
+    l *= adjacency_matrix
+    a = np.repeat(l[:, :, np.newaxis], 2, axis=2) * field
+    # print(f"a: {a[0]}")
+    return a
 
 
-def compute_repulsion(p: np.ndarray, field: np.ndarray, c: np.ndarray):
+def compute_repulsion(field: np.ndarray, c: np.ndarray):
     """
     Computes the repulsion force acting on each vertex according to the inverse square law.
     """
-    return field / (c**2)
+    r = -np.divide(field, np.repeat(c[:, :, np.newaxis], 2, axis=2))
+    r[np.diag_indices(c.shape[0])] = np.array((0, 0))
+    # print(f"r: {r[0]}")
+    return r
+
+
+def apply_forces(p: np.ndarray, f: np.ndarray):
+    """
+    Applies the forces to the vertices.
+    """
+    return p + np.add.reduce(f, axis=1)
 
 
 def force_directed_graph(
@@ -92,9 +107,16 @@ def force_directed_graph(
     # The primary index of p corresponds to the specific station on the map represented by the
     # vertex.
     p = np.random.rand(n, 2) * np.array((xmax, ymax))
+    # print(p[0])
+    # print(adjacency_matrix[0])
 
     i = 0
     while i < iterations:
+        progress = int((i / iterations) * 10)
+        print(
+            f"[FDG] [{progress * '=' + (10 - progress) * ' '}]",
+            end="\r",
+        )
         # Step 2: Calculate the net forces acting on each vertex.
         # This is the sum of the attractive and repulsive forces acting on each vertex.
         # The attractive forces are calculated by the distance between the vertices and are independent of edges.
@@ -106,10 +128,14 @@ def force_directed_graph(
         # compute the directional field
         field = get_field(p)
 
-        repulsive_forces = compute_repulsion(p, field, c) * repulsion_constant
+        repulsive_forces = compute_repulsion(field, c) * repulsion_constant
         attractive_forces = (
-            compute_attraction(p, field, c, adjacency_matrix) * attraction_constant
+            compute_attraction(field, c, adjacency_matrix) * attraction_constant
         )
-
+        net_forces = attractive_forces + repulsive_forces
+        # print(f"net_forces: {net_forces[0]}")
         # apply the forces to the vertices.
-        c = c + attractive_forces + repulsive_forces
+        p = apply_forces(p, net_forces)
+        # print(p[0], p.shape)
+        i += 1
+    return p

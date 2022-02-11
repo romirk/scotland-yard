@@ -1,7 +1,7 @@
 class Messages:
     """Generic messages"""
     @staticmethod
-    def LOS(player_id: str):
+    def los(player_id: str):
         """report LOS"""
         return f"LOS {player_id}"
 
@@ -16,11 +16,11 @@ class Messages:
         return f"DISCONNECT {player_id}"
 
     @staticmethod
-    def setHost(player_id: str) -> str:
+    def set_host(player_id: str) -> str:
         """set player to lobby host"""
         return f"SET_HOST {player_id}"
 
     @staticmethod
-    def setMrX(player_id: str) -> str:
+    def set_mr_x(player_id: str) -> str:
         """set player to Mr. X for the lobby"""
         return f"SET_MRX {player_id}"

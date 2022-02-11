@@ -40,7 +40,7 @@ class LobbyProtocol(Protocol):
         except Exception as e:
             print(e)
         else:
-            await self.group_send(LobbyMessages.setMrX(player_id))
+            await self.group_send(LobbyMessages.set_mr_x(player_id))
 
     async def leave(self):
         # leaveRoom(getGameIDWithPlayer(self.player_id), self.player_id)

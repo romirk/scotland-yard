@@ -5,19 +5,27 @@ ctx.canvas.width = window.innerWidth * 0.9;
 const MARGIN = 50;
 const SPACING = 50;
 
-const SCALING =
+const SCALING = [
   Math.min(
     ctx.canvas.width / (LIMITS.max[0] - LIMITS.min[0]),
     ctx.canvas.height / (LIMITS.max[1] - LIMITS.min[1])
-  ) * 0.9;
+  ) * 0.9,
+  (ctx.canvas.width *
+    Math.min(
+      ctx.canvas.width / (LIMITS.max[0] - LIMITS.min[0]),
+      ctx.canvas.height / (LIMITS.max[1] - LIMITS.min[1])
+    ) *
+    0.9) /
+    ctx.canvas.height,
+];
 
 for (let i = 0; i < STATIONS.length; i++) {
-  STATIONS[i][0] *= SCALING;
-  STATIONS[i][1] *= SCALING;
+  STATIONS[i][0] *= SCALING[0];
+  STATIONS[i][1] *= SCALING[1];
 }
 ctx.translate(
-  MARGIN - LIMITS.min[0] * SCALING + MARGIN,
-  MARGIN - LIMITS.min[1] * SCALING
+  MARGIN - LIMITS.min[0] * SCALING[0] + MARGIN,
+  MARGIN - LIMITS.min[1] * SCALING[1]
 );
 
 const LINE_WIDTH = 3;
@@ -68,11 +76,7 @@ function draw_board() {
       station.forEach((neighbour_set) => {
         neighbour_set.forEach((neighbour) => {
           if (neighbour < STATIONS.length)
-            draw_line(
-              STATIONS[c],
-              STATIONS[neighbour - 1],
-              TRANSIT_COLORS[t]
-            );
+            draw_line(STATIONS[c], STATIONS[neighbour - 1], TRANSIT_COLORS[t]);
         });
         t++;
       });
@@ -106,7 +110,12 @@ function draw_ui() {
   ctx.clearRect(-1000, -1000, 2000, 2000);
   draw_board();
   ctx.beginPath();
-  ctx.rect(LIMITS.min[0],LIMITS.min[1],LIMITS.max[0]-LIMITS.min[0],LIMITS.max[1]-LIMITS.min[1]);
+  ctx.rect(
+    LIMITS.min[0] * SCALING[0],
+    LIMITS.min[1] * SCALING[1],
+    (LIMITS.max[0] - LIMITS.min[0]) * SCALING[0],
+    (LIMITS.max[1] - LIMITS.min[1]) * SCALING[1]
+  );
   ctx.strokeStyle = "#000";
   ctx.stroke();
 }

@@ -25,7 +25,7 @@ class Map:
         self.N = len(map_data)
         self.map_data = map_data
         self.stations: list[Station] = []
-        self.coords: dict[int, np.ndarray] = dict()
+        self.coords: list[tuple[float, float]] = [(x, y) for x, y in zip(*[iter(map(float,open("Coordinates.txt","r").read().split(',')))]*2)]
         self.limits = {"min": np.array((0, 0)), "max": np.array((0, 0))}
 
         self.sub_graphs: dict[str, set[int]] = {

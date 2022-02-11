@@ -5,18 +5,16 @@ ctx.canvas.width = window.innerWidth * 0.9;
 const MARGIN = 50;
 const SPACING = 50;
 
-const SCALING = [
+const SCALE_FACTOR =
   Math.min(
     ctx.canvas.width / (LIMITS.max[0] - LIMITS.min[0]),
     ctx.canvas.height / (LIMITS.max[1] - LIMITS.min[1])
-  ) * 0.9,
-  (ctx.canvas.height *
-    Math.min(
-      ctx.canvas.width / (LIMITS.max[0] - LIMITS.min[0]),
-      ctx.canvas.height / (LIMITS.max[1] - LIMITS.min[1])
-    ) *
-    0.9) /
-    ctx.canvas.width,
+  ) * 0.9;
+
+const SCALING = [
+  SCALE_FACTOR,
+  (SCALE_FACTOR * Math.max(ctx.canvas.height, ctx.canvas.width)) /
+    Math.min(ctx.canvas.height, ctx.canvas.width),
 ];
 
 for (let i = 0; i < STATIONS.length; i++) {

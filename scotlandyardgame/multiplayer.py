@@ -17,7 +17,7 @@ def get_game_by_id(game_id: str) -> ScotlandYard:
     return game
 
 
-def get_game_id_with_player(player_id: str) -> str | None:
+def get_game_id_with_player(player_id: str):
     game_id = PLAYER_TO_GAME[player_id] if player_id in PLAYER_TO_GAME else None
     if game_id is not None and game_id not in GAMES:
         del PLAYER_TO_GAME[player_id]

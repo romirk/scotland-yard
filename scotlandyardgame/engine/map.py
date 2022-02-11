@@ -1,5 +1,5 @@
 import numpy as np
-
+import os
 from .constants import (
     BLACK_TICKET,
     BUS_TICKET,
@@ -27,7 +27,7 @@ class Map:
         self.N = len(map_data)
         self.map_data = map_data
         self.stations: list[Station] = []
-        self.coords: list[tuple[float, float]] = [(x, y) for x, y in zip(*[iter(map(float,open("Coordinates.txt","r").read().split(',')))]*2)]
+        self.coords: list[tuple[float, float]] = [[x, y] for x, y in zip(*[iter(map(float,open(os.path.dirname(os.path.abspath(__file__))+"/Coordinates.txt","r").read().split(',')))]*2)]
         self.limits = {"min": np.array((0, 0)), "max": np.array((0, 0))}
         self.adjacency_matrix = np.zeros((self.N, self.N))
 
@@ -52,9 +52,9 @@ class Map:
             self.stations.append(station)
 
         print("initialized map with", self.N, "stations.\ngenerating coordinates...")
-        self.coords = {i:p for i, p in enumerate(force_directed_graph(self.N, self.adjacency_matrix))}
+        #self.coords = {i:p for i, p in enumerate(force_directed_graph(self.N, self.adjacency_matrix))}
         # self.generate_coordinates_radial()
-        self.normalize_coordinates()
+        # self.normalize_coordinates()
         self.compute_limits()
         print(
             f"map generated with dimensions {self.limits['max'][0] - self.limits['min'][0]}x{self.limits['max'][1] - self.limits['min'][1]}"
@@ -68,7 +68,7 @@ class Map:
         """
         self.limits["min"] = np.array([np.inf, np.inf])
         self.limits["max"] = np.array([-np.inf, -np.inf])
-        for c in self.coords.values():
+        for c in self.coords:
             self.limits["min"] = np.minimum(self.limits["min"], c)
             self.limits["max"] = np.maximum(self.limits["max"], c)
 
@@ -255,11 +255,11 @@ class Map:
         """
         raise NotImplementedError()
 
-    def to_list(self):
-        """
-        return coordinates in a serializable format
-        """
-        return [c.tolist() for c in self.coords.values()]
+    # def to_list(self):
+    #     """
+    #     return coordinates in a serializable format
+    #     """
+    #     return [c.tolist() for c in self.coords.values()]
 
     def to_dot(self):
         """

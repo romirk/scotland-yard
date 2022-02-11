@@ -1,7 +1,7 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 ctx.canvas.height = window.innerHeight * 0.9;
-ctx.canvas.width = window.innerWidth * 0.6;
+ctx.canvas.width = window.innerWidth * 0.9;
 const MARGIN = 50;
 const SPACING = 50;
 
@@ -68,7 +68,7 @@ function draw_board() {
       station.forEach((neighbour_set) => {
         neighbour_set.forEach((neighbour) => {
           if (neighbour < STATIONS.length)
-            draw_transit(
+            draw_line(
               STATIONS[c],
               STATIONS[neighbour - 1],
               TRANSIT_COLORS[t]
@@ -105,6 +105,10 @@ function draw_board() {
 function draw_ui() {
   ctx.clearRect(-1000, -1000, 2000, 2000);
   draw_board();
+  ctx.beginPath();
+  ctx.rect(LIMITS.min[0],LIMITS.min[1],LIMITS.max[0]-LIMITS.min[0],LIMITS.max[1]-LIMITS.min[1]);
+  ctx.strokeStyle = "#000";
+  ctx.stroke();
 }
 
 canvas.addEventListener("mousemove", (e) => {

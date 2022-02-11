@@ -10,13 +10,13 @@ const SCALING = [
     ctx.canvas.width / (LIMITS.max[0] - LIMITS.min[0]),
     ctx.canvas.height / (LIMITS.max[1] - LIMITS.min[1])
   ) * 0.9,
-  (ctx.canvas.width *
+  (ctx.canvas.height *
     Math.min(
       ctx.canvas.width / (LIMITS.max[0] - LIMITS.min[0]),
       ctx.canvas.height / (LIMITS.max[1] - LIMITS.min[1])
     ) *
     0.9) /
-    ctx.canvas.height,
+    ctx.canvas.width,
 ];
 
 for (let i = 0; i < STATIONS.length; i++) {

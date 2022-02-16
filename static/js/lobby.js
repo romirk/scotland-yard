@@ -19,7 +19,7 @@ import anime from "./anime.es.js";
  */
 const app = (socket, player_info) => {
   /** @type {Player[]} */
-  const players = [];
+  const players = [player_info];
   /** @type {Player[]} */
   let available_colors = [
     "red",
@@ -200,6 +200,7 @@ const app = (socket, player_info) => {
         if (parseInt(tokens[1]) !== 0)
           playerdata.forEach((playerstr) => {
             let info = playerstr.split(" ");
+            if (!players.some((e) => e.player_id === parseInt(info[0]))) return;
             players.push({
               player_id: info[0],
               name: info[1],
@@ -335,8 +336,7 @@ $(document).ready(() => {
     const ws_url = `${location.protocol === "https:" ? "wss" : "ws"}://${
       window.location.host
     }/ws/lobby/${player_info.game_id}/${player_info.player_id}`;
-
-    console.log(ws_url);
+    player_info.state = "new";
     const socket = new WebSocket(ws_url);
     app(socket, player_info);
   });

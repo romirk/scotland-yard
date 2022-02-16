@@ -3,6 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="cyan"
+    />
+
+    <link rel="manifest" href="/manifest.json" />
+
     <title>Scotland Yard</title>
 
     <link
@@ -60,7 +68,7 @@
             >
               {% csrf_token %} {% if error is not None %}
               <span id="error">{{ error }}</span>
-              {% endif %} {% if is_joining  %}
+              {% endif %} {% if is_joining %}
               <span id="room">
                 Joining room: <strong>{{ game_id }}</strong>.
                 <a class="link-light" href="/" id="create-link"
@@ -108,8 +116,6 @@
       integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
       crossorigin="anonymous"
     ></script>
-    <script>
-     
-    </script>
+    <script></script>
   </body>
 </html>

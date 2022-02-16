@@ -1,0 +1,16 @@
+{
+    "short_name": "Scotland Yard",
+    "name": "Scotland Yard: Multiplayer Online Board Game",
+    "theme_color": "cyan",
+    "background_color": "cyan",
+    "icons": [
+        {
+            "src": "/img/favicon.png",
+            "sizes": "169x244",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "display": "standalone",
+    "start_url": "/"
+}

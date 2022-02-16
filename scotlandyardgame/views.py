@@ -1,3 +1,4 @@
+import json
 from re import compile, search
 
 from django.http import HttpRequest, HttpResponse
@@ -76,10 +77,9 @@ def lobby(request: HttpRequest):
         return redirect("game")
 
     context = game.get_player_info(player_id)
-    context["colors"] = AVAILABLE_COLORS
     print(f"{context['name']} in lobby")
 
-    res = render(request, "scotlandyardgame/lobby.html", context=context)
+    res = render(request, "scotlandyardgame/lobby.html")
     patch_response_headers(res, cache_timeout=2)
     return res
 
@@ -109,6 +109,11 @@ def game(request: HttpRequest):
     return render(request, "scotlandyardgame/game.html", context=context)
 
 
-def dot(request: HttpRequest):
-    dot = MAP.to_dot()
-    return HttpResponse(dot, content_type="text/plain")
+def info(request: HttpRequest):
+    player_id = request.session["player_id"]
+    game_id = multiplayer.get_game_id_with_player(player_id)
+    if game_id is None:
+        player_info = {"player_id": player_id}
+    else:
+        player_info = multiplayer.get_game_by_id(game_id).get_player_info(player_id)
+    return HttpResponse(json.dumps(player_info), content_type="application/json")

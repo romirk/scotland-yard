@@ -16,4 +16,6 @@ const colorGrads = {
   X: [255, 255, 255],
 };
 
-export { colorGrads, grad };
+const COLORS = ["red", "blue", "purple", "green", "yellow", "orange"];
+
+export { colorGrads, grad, COLORS };

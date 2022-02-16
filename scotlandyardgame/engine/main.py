@@ -307,7 +307,7 @@ class ScotlandYard:
         if self.state == GameState.RUNNING:
             self.end(EndState.ABORTED)
 
-        print(f"removing player {player_id} from {self.id}")
+        print(f"removing player {player_id} from game {self.id}")
 
         if player.color != "X":
             self.__available_colors.append(player.color)

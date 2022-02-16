@@ -60,7 +60,7 @@ class Map:
             f"map generated with dimensions {self.limits['max'][0] - self.limits['min'][0]}x{self.limits['max'][1] - self.limits['min'][1]}"
         )
         print(f"coordinates normalized to {self.get_scale()}")
-        print(f"coordinates: {self.coords}")
+        # print(f"coordinates: {self.coords}")
 
     def compute_limits(self):
         """

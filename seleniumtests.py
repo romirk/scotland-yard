@@ -1,4 +1,3 @@
-from concurrent.futures import thread
 import sys
 from threading import Thread
 from time import sleep

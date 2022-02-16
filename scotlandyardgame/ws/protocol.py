@@ -11,7 +11,7 @@ class Protocol:
     """
 
     def __init__(self, consumer: WebSocketConsumer, fmap: dict[str, Callable]) -> None:
-        self.__handlers = fmap
+        self.handlers = fmap
         self.consumer = consumer
 
     async def process(self, msg: str) -> None:
@@ -24,12 +24,12 @@ class Protocol:
 
         keyword = tokens[0]
 
-        if keyword not in self.__handlers:
+        if keyword not in self.handlers:
             await self.send(f"ERROR - invalid message: {keyword}")
             return
 
         try:
-            await self.__handlers[keyword](*(tokens[1:] if len(tokens) > 1 else []))
+            await self.handlers[keyword](*(tokens[1:] if len(tokens) > 1 else []))
         except Exception as e:
             await self.send(f"ERROR {e}")
 

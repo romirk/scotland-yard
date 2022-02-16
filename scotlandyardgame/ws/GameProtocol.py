@@ -16,12 +16,15 @@ class GameProtocol(Protocol):
                 "REQMOVE": self.reqmove,
                 "GET_GAME_INFO": self.get_game_info,
                 "GET_PLAYER_INFO": self.get_player_info,
+                "HELP": self.help,
             },
         )
 
-
     async def reqmove(self, ticket: str, *args):
-        if self.consumer.game_id != multiplayer.get_game_id_with_player(self.consumer.player_id):
+        """request a move"""
+        if self.consumer.game_id != multiplayer.get_game_id_with_player(
+            self.consumer.player_id
+        ):
             raise RuntimeError("Player is not in a game")
         if multiplayer.get_game_state(self.consumer.game_id) != GameState.RUNNING:
             raise RuntimeError("Game is not running")
@@ -39,10 +42,15 @@ class GameProtocol(Protocol):
                 },
             )
         elif ticket == "pass":
-            move_data = multiplayer.move(self.consumer.game_id, self.consumer.player_id, ticket, {})
+            move_data = multiplayer.move(
+                self.consumer.game_id, self.consumer.player_id, ticket, {}
+            )
         else:
             move_data = multiplayer.move(
-                self.consumer.game_id, self.consumer.player_id, ticket, {"location": int(args[0])}
+                self.consumer.game_id,
+                self.consumer.player_id,
+                ticket,
+                {"location": int(args[0])},
             )
 
         if move_data["accepted"]:
@@ -55,9 +63,13 @@ class GameProtocol(Protocol):
             await self.send(f"DENIED {move_data['message']}")
 
     async def get_game_info(self):
-        await self.send(GameMessages.game_info(multiplayer.get_game_info(self.consumer.game_id)))
+        """get information about the game"""
+        await self.send(
+            GameMessages.game_info(multiplayer.get_game_info(self.consumer.game_id))
+        )
 
     async def get_player_info(self, player_id: str = None):
+        """get information about yourself, or all players"""
         if player_id is None:
             player_id = self.consumer.player_id
         else:
@@ -68,3 +80,7 @@ class GameProtocol(Protocol):
                 multiplayer.get_player_info(self.consumer.game_id, player_id)
             )
         )
+
+    async def help(self):
+        """display help and exit"""
+        await self.send(GameMessages.help(self.handlers))

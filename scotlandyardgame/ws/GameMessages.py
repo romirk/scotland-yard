@@ -30,9 +30,7 @@ class GameMessages:
         return_msg = f'PLAYER_MOVED {move_info["player_id"]} {move_info["cycle_number"]} {move_info["ticket"]} '
         if move_info["is_mr_x"]:
             if move_info["ticket"] == DOUBLE_TICKET:
-                return_msg += (
-                    f'{move_info["double_tickets"][0]} {move_info["double_tickets"][1]} '
-                )
+                return_msg += f'{move_info["double_tickets"][0]} {move_info["double_tickets"][1]} '
             if move_info["is_surface_move"]:
                 return_msg += str(move_info["destination"])
 
@@ -52,3 +50,7 @@ class GameMessages:
     @staticmethod
     def player_info(info: dict) -> str:
         return "PLAYER_INFO " + json.dumps(info)
+
+    @staticmethod
+    def help(fmap: dict) -> str:
+        return "HELP\n" + "\n".join(f"{k}\t{v.__doc__}" for k, v in fmap.items())

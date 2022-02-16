@@ -19,7 +19,7 @@ import anime from "./anime.es.js";
  */
 const app = (socket, player_info) => {
   /** @type {Player[]} */
-  const players = [player_info];
+  const players = [];
   /** @type {Player[]} */
   let available_colors = [
     "red",
@@ -84,7 +84,7 @@ const app = (socket, player_info) => {
     available_colors = avail_colors;
     document.getElementById("players").innerHTML = html;
 
-    if (player_info.host_authorization)
+    if (player_info.is_host)
       players.forEach((player) => {
         if (player.color == "X") return;
         let btn = document.createElement("button");
@@ -112,7 +112,7 @@ const app = (socket, player_info) => {
         (layout.style.background = `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
     });
 
-    if (players.length === 6 && player_info.host_authorization) {
+    if (players.length === 6 && player_info.is_host) {
       document.getElementById("start").style.display = "initial";
     }
 
@@ -200,7 +200,6 @@ const app = (socket, player_info) => {
         if (parseInt(tokens[1]) !== 0)
           playerdata.forEach((playerstr) => {
             let info = playerstr.split(" ");
-            if (!players.some((e) => e.player_id === parseInt(info[0]))) return;
             players.push({
               player_id: info[0],
               name: info[1],
@@ -227,9 +226,9 @@ const app = (socket, player_info) => {
         break;
 
       case "SET_HOST":
-        player_info.host_authorization = player_info.player_id === tokens[1];
+        player_info.is_host = player_info.player_id === tokens[1];
         getPlayerById(player_info.player_id).is_host =
-          player_info.host_authorization;
+          player_info.is_host;
         break;
 
       case "SET_MRX":
@@ -299,12 +298,12 @@ const app = (socket, player_info) => {
   }
 
   function reqMrX(pid) {
-    if (!player_info.host_authorization) return;
+    if (!player_info.is_host) return;
     socket.send(`REQMRX ${pid}`);
   }
 
   function startGame() {
-    if (!player_info.host_authorization || players.length !== 6) return;
+    if (!player_info.is_host || players.length !== 6) return;
     socket.send(`READY`);
   }
 
@@ -333,6 +332,7 @@ const app = (socket, player_info) => {
 $(document).ready(() => {
   $.getJSON("/info", (data) => {
     const player_info = data;
+    window.GAME_ID = player_info.game_id;
     const ws_url = `${location.protocol === "https:" ? "wss" : "ws"}://${
       window.location.host
     }/ws/lobby/${player_info.game_id}/${player_info.player_id}`;

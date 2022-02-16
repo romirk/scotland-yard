@@ -7,6 +7,7 @@ from scotlandyardgame.ws.messages import Messages
 
 from ..engine.constants import GameState
 from ..multiplayer import get_game_by_id, leave_room, get_game_id_with_player
+from scotlandyardgame import multiplayer
 
 TRACK_DISCONNECTED = set()
 
@@ -33,21 +34,30 @@ class WebSocketConsumer(AsyncWebsocketConsumer):
 
         print(f"ws-connecting: {self.channel_name} \033[33m{self.game_id}\033[0m")
 
+        prev_state = game.state
+
         if game is not None:
             TRACK_DISCONNECTED.discard(self.player_id)
+
+            if game.state == GameState.CONNECTING:
+                multiplayer.answer_roll_call(self.game_id, self.player_id)
+                
             print("\033[32maccepted\033[0m")
             await self.channel_layer.group_add(
                 self.type + "_" + self.game_id, self.channel_name
             )
             await self.accept()
 
-            
             await self.send(
                 self.message_service.acknowledge(
-                    get_game_id_with_player(self.player_id), TRACK_DISCONNECTED
+                    game.id, TRACK_DISCONNECTED
                 )
             )
             await self.group_send(self.message_service.player_joined(self.player_id))
+
+            
+            if prev_state != GameState.RUNNING and game.state == GameState.RUNNING:
+                await self.group_send(GameMessages.game_starting())
 
     async def disconnect(self, close_code: int = 1006):
         print(f"disconnecting {self.player_id} with close code {close_code}")

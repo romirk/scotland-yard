@@ -16,11 +16,16 @@ class Protocol:
 
     async def process(self, msg: str) -> None:
         """parse incoming ws client message"""
+        msg = msg.strip()
         tokens = msg.split()
+
+        if len(tokens) < 1:
+            return
+
         keyword = tokens[0]
 
         if keyword not in self.__handlers:
-            await self.send(f"invalid message: {keyword}")
+            await self.send(f"ERROR - invalid message: {keyword}")
             return
 
         try:
@@ -33,5 +38,6 @@ class Protocol:
 
     def group_send(self, msg: str):
         return self.consumer.channel_layer.group_send(
-            self.consumer.type + "_" + self.consumer.game_id, {"type": "ws.send", "text": msg}
+            self.consumer.type + "_" + self.consumer.game_id,
+            {"type": "ws.send", "text": msg},
         )

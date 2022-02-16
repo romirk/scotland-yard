@@ -98,7 +98,7 @@ def game(request: HttpRequest):
 
     context = game.get_player_info(player_id) | {
         "board": MAP.generate_board_rectangular((15, 20)).tolist(),
-        "coords": MAP.coords,
+        "coords": MAP.coordinates,
         "map_data": MAP.map_data,
         "limits": {
             "max": MAP.limits["max"].tolist(),
@@ -117,3 +117,7 @@ def info(request: HttpRequest):
     else:
         player_info = multiplayer.get_game_by_id(game_id).get_player_info(player_id)
     return HttpResponse(json.dumps(player_info), content_type="application/json")
+
+
+def map(request: HttpRequest):
+    return HttpResponse(json.dumps({"map_data": MAP.map_data, "coordinates": MAP.coordinates}), content_type="application/json")

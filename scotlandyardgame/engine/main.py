@@ -92,11 +92,11 @@ class ScotlandYard:
             return EndState.DETECTIVES_WIN
         return EndState.NOT_ENDED
 
-    def __get_player_by_id(self, playerID: str) -> Player:
+    def __get_player_by_id(self, player_id: str) -> Player:
         """returns ```Player``` in current game with ID ```playerID```"""
-        if playerID not in self.__players:
+        if player_id not in self.__players:
             raise ValueError("player does not exist in this game")
-        return self.__players[playerID]
+        return self.__players[player_id]
 
     def __get_player_at(self, loc: int) -> Player:
         """returns ```Player``` in current game with location ```loc```"""

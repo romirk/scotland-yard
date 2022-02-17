@@ -1,12 +1,10 @@
-const grad = {
-  c1r: 0,
-  c1g: 0,
-  c1b: 0,
-  c2r: 0,
-  c2g: 0,
-  c2b: 0,
-  d: 45,
+const gradient = {
+  start: "rgba(0, 0, 0, 1)",
+  mid: "rgba(0, 0, 0, 0)",
+  end: "rgba(0, 0, 0, 1)",
+  deg: 45
 };
+
 const colorGrads = {
   red: [189, 40, 40],
   purple: [133, 78, 241],
@@ -19,4 +17,4 @@ const colorGrads = {
 
 const COLORS = ["red", "blue", "purple", "green", "yellow", "orange"];
 
-export { colorGrads, grad, COLORS };
+export { colorGrads, gradient, COLORS };

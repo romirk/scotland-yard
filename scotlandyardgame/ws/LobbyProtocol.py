@@ -27,15 +27,21 @@ class LobbyProtocol(Protocol):
 
     async def reqcolor(self, color: str):
         try:
-            set_color(get_game_id_with_player(self.consumer.player_id), self.consumer.player_id, color)
+            set_color(
+                get_game_id_with_player(self.consumer.player_id),
+                self.consumer.player_id,
+                color,
+            )
         except Exception as e:
             print(e)
         else:
-            await self.group_send(LobbyMessages.set_color(self.consumer.player_id, color))
+            await self.group_send(
+                LobbyMessages.set_color(self.consumer.player_id, color)
+            )
 
-    async def reqmrx(self, player_id):
+    async def reqmrx(self, player_id: str):
         try:
-            set_mr_x(get_game_id_with_player(self.consumer.player_id), self.consumer.player_id)
+            set_mr_x(get_game_id_with_player(self.consumer.player_id), player_id)
         except Exception as e:
             print(e)
         else:

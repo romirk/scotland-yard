@@ -1,5 +1,12 @@
-import { colorGrads, grad, COLORS } from "./constants.js";
-import { copyToClipboard, overlay, circlePath } from "./utils.js";
+import { colorGrads, gradient, COLORS } from "./constants.js";
+import {
+  copyToClipboard,
+  overlay,
+  circlePath,
+  linear_gradient,
+  cancelAnimation,
+  cancelAllAnimations,
+} from "./utils.js";
 import anime from "./anime.es.js";
 
 /**
@@ -31,12 +38,28 @@ const app = (socket, player_info) => {
     "X",
   ];
 
+  const layout = document.getElementById("layout");
+  let loop_animation = anime();
+
   function getPlayerById(id) {
     return players.find((p) => p.player_id === id);
   }
 
   function getPlayerindex(id) {
     return players.findIndex((player) => player.player_id === id);
+  }
+
+  function unload(callback) {
+    cancelAllAnimations();
+    $("#main").fadeOut(1000);
+    console.log("unload");
+    linear_gradient(
+      gradient,
+      { start: "#000", end: "#000", deg: 0 },
+      1000,
+      layout,
+      callback
+    );
   }
 
   // UI
@@ -96,50 +119,46 @@ const app = (socket, player_info) => {
         document.getElementById("b-" + player.player_id).appendChild(btn);
       });
 
-    const layout = document.getElementById("layout");
-
+    console.log(anime.running);
     if (player_info.color !== "X") {
-      anime({
-        targets: grad,
-        c1r: 0,
-        c1g: 0,
-        c1b: 0,
-        c2r: colorGrads[player_info.color][0],
-        c2g: colorGrads[player_info.color][1],
-        c2b: colorGrads[player_info.color][2],
-        duration: 1000,
-        easing: "easeInQuad",
-        update: () =>
-          (layout.style.background = `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
-      });
+      loop_animation.pause();
+      linear_gradient(
+        gradient,
+        {
+          start: "rgb(0, 0, 0)",
+          end: `rgba(${colorGrads[player_info.color][0]}, ${
+            colorGrads[player_info.color][1]
+          }, ${colorGrads[player_info.color][2]}, 1)`,
+          deg: 45,
+        },
+        1000,
+        layout
+      );
     } else {
+      cancelAnimation(loop_animation);
       anime({
-        targets: grad,
-        c1r: 255,
-        c1g: 0,
-        c1b: 0,
-        c2r: 0,
-        c2g: 42,
-        c2b: 255,
-        d: 135,
+        targets: gradient,
+        start: "#f00",
+        end: "#002aff",
+        deg: 135,
         loop: false,
         duration: 3000,
         direction: "normal",
         easing: "easeInOutSine",
         update: () =>
-          (layout.style.background = `linear-gradient(${grad.d}deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(0,0,0) 50%, rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
-      }).finished.then(() =>
-        anime({
-          targets: grad,
-          d: 100,
+          (layout.style.background = `linear-gradient(${gradient.deg}deg, ${gradient.start}, #000, ${gradient.end}) center / cover`),
+      }).finished.then(() => {
+        loop_animation = anime({
+          targets: gradient,
+          deg: () => 100,
           duration: 7000,
           easing: "easeInOutSine",
           direction: "alternate",
-          loop: true,
-          update: () =>
-            (layout.style.background = `linear-gradient(${grad.d}deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(0,0,0) 50%, rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
-        })
-      );
+          loop: false,
+          update: (a) =>
+            (layout.style.background = `linear-gradient(${gradient.deg}deg, ${gradient.start}, #000, ${gradient.end}) center / cover`),
+        });
+      });
     }
 
     if (players.length === 6 && player_info.is_host) {
@@ -216,7 +235,11 @@ const app = (socket, player_info) => {
 
   // sockets
 
-  socket.onclose = () => window.location.assign("/");
+  socket.onclose = (e) => {
+    console.log("Socket closed with code: " + e.code);
+    if (e.code !== 1000)
+      unload(() => window.location.assign("/error/connection%20lost"));
+  };
 
   socket.onmessage = (msg) => {
     console.log("[ws/server]", msg.data);
@@ -274,8 +297,11 @@ const app = (socket, player_info) => {
 
       case "STARTGAME":
         overlay.on();
-        socket.close(1000, "Game started");
-        setTimeout(() => window.location.assign("/game"), 1000);
+        unload(() => {
+          console.log("[ws/server]", "unloading");
+          socket.close(1000, "Game Started");
+          window.location.assign("/");
+        });
         break;
 
       case "LOS":
@@ -337,30 +363,12 @@ const app = (socket, player_info) => {
   }
 
   function leave() {
-    // document.getElementById("players").innerHTML = "";
-    $("#main").fadeOut(1000);
-    // document.body.classList.add("los");
-    anime({
-      targets: grad,
-      c1r: 0,
-      c1g: 0,
-      c1b: 0,
-      c2r: 0,
-      c2g: 0,
-      c2b: 0,
-      d: 315,
-      loop: false,
-      duration: 1000,
-      direction: "normal",
-      easing: "easeInOutSine",
-      update: () =>
-        (layout.style.background = `linear-gradient(${grad.d}deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
-    }).finished.then(() => {
+    unload(() => {
       socket.send(`LEAVE`);
       socket.close(1000, "Leaving");
 
       window.location.assign("/");
-    }, 500);
+    });
   }
 
   // event listeners

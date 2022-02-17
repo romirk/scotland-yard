@@ -1,3 +1,5 @@
+import anime from "./anime.es.js";
+
 function copyToClipboard(elem) {
   // create hidden text element, if it doesn't already exist
   var targetId = "_hiddenCopyText_";
@@ -80,4 +82,51 @@ function circlePath(cx, cy, r) {
   );
 }
 
-export { copyToClipboard, overlay, circlePath };
+function linear_gradient(
+  target,
+  to,
+  duration = 1000,
+  elem = document.getElementById("layout"),
+  callback = () => {}
+) {
+  console.log(target, to);
+  let a = anime({
+    targets: target,
+    start: to.start,
+    end: to.end,
+    deg: to.deg,
+    loop: false,
+    duration: duration,
+    direction: "normal",
+    easing: "easeInOutSine",
+    update: (anim) => {
+      elem.style.background = `linear-gradient(${target.deg}deg, ${target.start}, ${target.mid}, ${target.end}) center / cover`;
+      console.log(Math.round(anim.progress) + "%");
+    },
+    complete: callback,
+  });
+  a.play();
+  setTimeout(callback, duration);
+  console.log(a);
+}
+
+function cancelAnimation(animation) {
+  console.log(anime.running);
+  let activeInstances = anime.running;
+  let index = activeInstances.indexOf(animation);
+  activeInstances.splice(index, 1);
+  animation.pause();
+}
+
+function cancelAllAnimations() {
+  anime.running.forEach(cancelAnimation);
+}
+
+export {
+  copyToClipboard,
+  overlay,
+  circlePath,
+  linear_gradient,
+  cancelAnimation,
+  cancelAllAnimations,
+};

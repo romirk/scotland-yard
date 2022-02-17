@@ -6,7 +6,7 @@
   --color-purple: 107, 48, 186;
   --color-yellow: 255, 191, 0;
   --color-orange: 239, 125, 14;
-  --color-X: 63, 72, 78;
+  --color-X: 42, 42, 42;
   --compl-blue: #ffc107;
 }
 
@@ -14,6 +14,28 @@
   font-family: "comfortaa";
   src: url("/styles/fonts/Comfortaa.ttf") format("truetype");
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    display: none;
+  }
+}
+
 
 @keyframes floatin {
   from {
@@ -38,10 +60,6 @@
   }
 }
 
-body * {
-  font-family: "comfortaa";
-}
-
 .clickable {
   cursor: pointer;
 }
@@ -59,34 +77,3 @@ body * {
   color: white;
 }
 
-.title {
-  margin: auto;
-  padding-top: 15vh;
-  width: max-content;
-  height: 100%;
-  text-align: center;
-}
-
-main {
-  color: white;
-}
-
-.container {
-  height: 100%;
-}
-
-form > div {
-  margin: 1vh;
-}
-
-#error {
-  color: red;
-}
-
-.link-light {
-  transition: 0.3s;
-}
-
-.link-light:hover {
-  color: rgb(255, 64, 129);
-}

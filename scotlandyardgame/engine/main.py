@@ -96,11 +96,11 @@ class ScotlandYard:
             return EndState.DETECTIVES_WIN
         return EndState.NOT_ENDED
 
-    def __get_player_by_id(self, playerID: str) -> Player:
+    def __get_player_by_id(self, player_id: str) -> Player:
         """returns ```Player``` in current game with ID ```playerID```"""
-        if playerID not in self.__players:
+        if player_id not in self.__players:
             raise ValueError("player does not exist in this game")
-        return self.__players[playerID]
+        return self.__players[player_id]
 
     def __get_player_at(self, loc: int) -> Player:
         """returns ```Player``` in current game with location ```loc```"""
@@ -234,7 +234,9 @@ class ScotlandYard:
         if color == player.color:
             return
         if color not in self.__available_colors:
-            raise ValueError("Color not available.")
+            raise ValueError(
+                f"Color not available. Available colors: {self.__available_colors}"
+            )
         if player.is_mr_x:
             raise RuntimeError("Cannot assign color to Mr. X.")
         old_color = player.color
@@ -311,10 +313,12 @@ class ScotlandYard:
         if self.state == GameState.RUNNING:
             self.end(EndState.ABORTED)
 
-        print(f"removing player {player_id} from {self.id}")
+        print(f"removing player {player_id} from game {self.id}")
 
         if player.color != "X":
             self.__available_colors.append(player.color)
+
+        print(f"\tcolor: {player.color} {self.__available_colors}")
 
         if self.state == GameState.PENDING:
             self.__available_start_locations.append(player.location)
@@ -327,6 +331,7 @@ class ScotlandYard:
         if is_x:
             new_x_id = choice(tuple(self.__players.keys()))
             self.__mr_x = self.__get_player_by_id(new_x_id)
+            self.__available_colors.append(self.__mr_x.color)
             self.set_mr_x(self.__mr_x.id)
 
         if is_host:

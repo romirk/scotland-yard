@@ -1,10 +1,11 @@
 const grad = {
-  c1r: 109,
-  c1g: 182,
-  c1b: 243,
-  c2r: 195,
-  c2g: 208,
-  c2b: 56,
+  c1r: 0,
+  c1g: 0,
+  c1b: 0,
+  c2r: 0,
+  c2g: 0,
+  c2b: 0,
+  d: 45,
 };
 const colorGrads = {
   red: [189, 40, 40],
@@ -16,4 +17,6 @@ const colorGrads = {
   X: [255, 255, 255],
 };
 
-export { colorGrads, grad };
+const COLORS = ["red", "blue", "purple", "green", "yellow", "orange"];
+
+export { colorGrads, grad, COLORS };

@@ -1,14 +1,16 @@
+import json
 from re import compile, search
 
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.cache import patch_response_headers
+from scotlandyardgame.__version__ import __version__
 
 from scotlandyardgame.engine.map import MAP
 
 from . import multiplayer
-from .engine.constants import AVAILABLE_COLORS, GameState
+from .engine.constants import GameState
 
 name_re = compile(r"^\w+$")
 
@@ -25,6 +27,7 @@ def index(request: HttpRequest, game_id=None, error=None):
         "is_joining": is_joining,
         "player_id": player_id,
         "error": error,
+        "version": __version__,
     }
 
     if not is_joining:
@@ -76,10 +79,9 @@ def lobby(request: HttpRequest):
         return redirect("game")
 
     context = game.get_player_info(player_id)
-    context["colors"] = AVAILABLE_COLORS
     print(f"{context['name']} in lobby")
 
-    res = render(request, "scotlandyardgame/lobby.html", context=context)
+    res = render(request, "scotlandyardgame/lobby.html")
     patch_response_headers(res, cache_timeout=2)
     return res
 
@@ -98,7 +100,7 @@ def game(request: HttpRequest):
 
     context = game.get_player_info(player_id) | {
         "board": MAP.generate_board_rectangular((15, 20)).tolist(),
-        "coords": MAP.coords,
+        "coords": MAP.coordinates,
         "map_data": MAP.map_data,
         "limits": {
             "max": MAP.limits["max"].tolist(),
@@ -109,6 +111,18 @@ def game(request: HttpRequest):
     return render(request, "scotlandyardgame/game.html", context=context)
 
 
-def dot(request: HttpRequest):
-    dot = MAP.to_dot()
-    return HttpResponse(dot, content_type="text/plain")
+def info(request: HttpRequest):
+    player_id = request.session["player_id"]
+    game_id = multiplayer.get_game_id_with_player(player_id)
+    if game_id is None:
+        player_info = {"player_id": player_id}
+    else:
+        player_info = multiplayer.get_game_by_id(game_id).get_player_info(player_id)
+    return HttpResponse(json.dumps(player_info), content_type="application/json")
+
+
+def map(request: HttpRequest):
+    return HttpResponse(
+        json.dumps({"map_data": MAP.map_data, "coordinates": MAP.coordinates}),
+        content_type="application/json",
+    )

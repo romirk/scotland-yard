@@ -1,11 +1,12 @@
-import { colorGrads, grad } from "./constants.js";
+import { colorGrads, grad, COLORS } from "./constants.js";
 import { copyToClipboard, overlay, circlePath } from "./utils.js";
 import anime from "./anime.es.js";
 
 /**
  * @typedef {Object} Player
+ * @property {string} game_id
  * @property {string} player_id
- * @property {string} name
+ * @property {string} names
  * @property {string} color
  * @property {bool} is_host
  * @property {string} state
@@ -14,16 +15,9 @@ import anime from "./anime.es.js";
 /**
  * Main lobby app
  * @param {WebSocket} socket
+ * @param {Player} player_info
  */
-const app = (socket) => {
-  const my = {
-    game_id: GAME_ID,
-    player_id: PLAYER_ID,
-    name: NAME,
-    color: color,
-    host_authorization: IS_HOST,
-  };
-
+const app = (socket, player_info) => {
   /** @type {Player[]} */
   const players = [];
   /** @type {Player[]} */
@@ -48,7 +42,9 @@ const app = (socket) => {
   // UI
   function updateUI() {
     players.sort(
-      (a, b) => (b.player_id === my.player_id) - (a.player_id === my.player_id)
+      (a, b) =>
+        (b.player_id === player_info.player_id) -
+        (a.player_id === player_info.player_id)
     );
 
     let avail_colors = [
@@ -72,7 +68,11 @@ const app = (socket) => {
                           player.color === "X" ? "help_outline" : "person"
                         }</span> 
                         ${player.name}
-                        ${player.player_id === my.player_id ? "(You)" : ""}
+                        ${
+                          player.player_id === player_info.player_id
+                            ? "(You)"
+                            : ""
+                        }
                     </div>
                     <div class="reqm" id="b-${player.player_id}"></div>
                 </div>
@@ -84,7 +84,7 @@ const app = (socket) => {
     available_colors = avail_colors;
     document.getElementById("players").innerHTML = html;
 
-    if (my.host_authorization)
+    if (player_info.is_host)
       players.forEach((player) => {
         if (player.color == "X") return;
         let btn = document.createElement("button");
@@ -98,21 +98,51 @@ const app = (socket) => {
 
     const layout = document.getElementById("layout");
 
-    anime({
-      targets: grad,
-      c1r: 0,
-      c1g: 0,
-      c1b: 0,
-      c2r: colorGrads[my.color][0],
-      c2g: colorGrads[my.color][1],
-      c2b: colorGrads[my.color][2],
-      duration: 1000,
-      easing: "easeInQuad",
-      update: () =>
-        (layout.style.background = `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
-    });
+    if (player_info.color !== "X") {
+      anime({
+        targets: grad,
+        c1r: 0,
+        c1g: 0,
+        c1b: 0,
+        c2r: colorGrads[player_info.color][0],
+        c2g: colorGrads[player_info.color][1],
+        c2b: colorGrads[player_info.color][2],
+        duration: 1000,
+        easing: "easeInQuad",
+        update: () =>
+          (layout.style.background = `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
+      });
+    } else {
+      anime({
+        targets: grad,
+        c1r: 255,
+        c1g: 0,
+        c1b: 0,
+        c2r: 0,
+        c2g: 42,
+        c2b: 255,
+        d: 135,
+        loop: false,
+        duration: 3000,
+        direction: "normal",
+        easing: "easeInOutSine",
+        update: () =>
+          (layout.style.background = `linear-gradient(${grad.d}deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(0,0,0) 50%, rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
+      }).finished.then(() =>
+        anime({
+          targets: grad,
+          d: 100,
+          duration: 7000,
+          easing: "easeInOutSine",
+          direction: "alternate",
+          loop: true,
+          update: () =>
+            (layout.style.background = `linear-gradient(${grad.d}deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(0,0,0) 50%, rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
+        })
+      );
+    }
 
-    if (players.length === 6 && my.host_authorization) {
+    if (players.length === 6 && player_info.is_host) {
       document.getElementById("start").style.display = "initial";
     }
 
@@ -128,15 +158,16 @@ const app = (socket) => {
 
   function colorHandler(c, e) {
     return () => {
-      drawPreview(c);
+      console.log(c);
       reqColor(c);
+      drawPreview(c);
     };
   }
 
   function updateColorUI() {
     const colorBtn = document.getElementById("colorButton");
-    colorBtn.style.backgroundColor = `rgb(var(--color-${my.color}))`;
-    if (my.color === "X") {
+    colorBtn.style.backgroundColor = `rgb(var(--color-${player_info.color}))`;
+    if (player_info.color === "X") {
       colorBtn.style.display = "none";
     } else {
       colorBtn.style.display = "block";
@@ -151,7 +182,7 @@ const app = (socket) => {
       a.style.cursor = "default";
       a.innerText = c;
 
-      if (c === my.color) {
+      if (c === player_info.color) {
         a.style.backgroundColor = `rgba(var(--color-${c}), 0.3)`;
       } else if (!available_colors.includes(c)) {
         a.style.color = "#8b8b8b";
@@ -168,7 +199,6 @@ const app = (socket) => {
   }
 
   function drawPreview(c) {
-    console.log("draw");
     document.getElementById(
       "playerbody"
     ).style.stroke = `rgb(var(--color-${c}))`;
@@ -226,8 +256,8 @@ const app = (socket) => {
         break;
 
       case "SET_HOST":
-        my.host_authorization = my.player_id === tokens[1];
-        getPlayerById(my.player_id).is_host = my.host_authorization;
+        player_info.is_host = player_info.player_id === tokens[1];
+        getPlayerById(player_info.player_id).is_host = player_info.is_host;
         break;
 
       case "SET_MRX":
@@ -254,7 +284,7 @@ const app = (socket) => {
 
       case "DISCONNECT":
         players[getPlayerindex(tokens[1])].state = "disconnect";
-        if (tokens[1] === my.player_id) window.location.assign("/");
+        if (tokens[1] === player_info.player_id) window.location.assign("/");
         break;
 
       case "ERROR":
@@ -271,8 +301,8 @@ const app = (socket) => {
         return;
     }
 
-    const self = players.find((p) => p.player_id === my.player_id);
-    if (self) my.color = self.color;
+    const self = players.find((p) => p.player_id === player_info.player_id);
+    if (self) player_info.color = self.color;
     updateUI();
     for (let i = players.length - 1; i >= 0; i--) {
       if (players[i].state === "disconnect") {
@@ -283,7 +313,7 @@ const app = (socket) => {
 
   //add data
   document.getElementById("link").innerHTML =
-    location.protocol + "//" + window.location.host + "/" + my.game_id;
+    location.protocol + "//" + window.location.host + "/" + player_info.game_id;
 
   const heads = document.getElementsByClassName("playerheadpath");
   for (const head of heads) {
@@ -297,21 +327,40 @@ const app = (socket) => {
   }
 
   function reqMrX(pid) {
-    if (!my.host_authorization) return;
+    if (!player_info.is_host) return;
     socket.send(`REQMRX ${pid}`);
   }
 
   function startGame() {
-    if (!my.host_authorization || players.length !== 6) return;
+    if (!player_info.is_host || players.length !== 6) return;
     socket.send(`READY`);
   }
 
   function leave() {
-    socket.send(`LEAVE`);
-    socket.close(1000, "Leaving");
-    document.body.classList.add("los");
-    document.getElementById("players").innerHTML = "";
-    setTimeout(() => window.location.assign("/"), 500);
+    // document.getElementById("players").innerHTML = "";
+    $("#main").fadeOut(1000);
+    // document.body.classList.add("los");
+    anime({
+      targets: grad,
+      c1r: 0,
+      c1g: 0,
+      c1b: 0,
+      c2r: 0,
+      c2g: 0,
+      c2b: 0,
+      d: 315,
+      loop: false,
+      duration: 1000,
+      direction: "normal",
+      easing: "easeInOutSine",
+      update: () =>
+        (layout.style.background = `linear-gradient(${grad.d}deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
+    }).finished.then(() => {
+      socket.send(`LEAVE`);
+      socket.close(1000, "Leaving");
+
+      window.location.assign("/");
+    }, 500);
   }
 
   // event listeners
@@ -325,17 +374,19 @@ const app = (socket) => {
   document.getElementById("start").addEventListener("click", startGame);
   document
     .getElementById("colorButton")
-    .addEventListener("click", () => drawPreview(my.color));
+    .addEventListener("click", () => drawPreview(player_info.color));
 };
 
-window.addEventListener("load", () => {
-  console.log("start");
-
-  const ws_url = `${location.protocol === "https:" ? "wss" : "ws"}://${
-    window.location.host
-  }/ws/lobby/${GAME_ID}/${PLAYER_ID}`;
-
-  const socket = new WebSocket(ws_url);
-
-  app(socket);
+$(document).ready(() => {
+  $.getJSON("/info", (data) => {
+    const player_info = data;
+    window.GAME_ID = player_info.game_id;
+    const ws_url = `${location.protocol === "https:" ? "wss" : "ws"}://${
+      window.location.host
+    }/ws/lobby/${player_info.game_id}/${player_info.player_id}`;
+    player_info.state = "new";
+    const socket = new WebSocket(ws_url);
+    app(socket, player_info);
+    $("#preload").fadeOut(1200, () => $("#preload").remove());
+  });
 });

@@ -13,9 +13,9 @@ body {
   margin: auto;
 }
 
-.board {
-  width: 100%;
+#board {
   height: 100%;
+  margin: 2vh auto;
 }
 
 #textsvg {
@@ -31,6 +31,13 @@ svg {
   padding: 0;
   margin: 0;
   background-color: #252423;
+}
+
+canvas {
+  display: block;
+  margin: 5vh auto;
+  min-width: 50%;
+  width: 70vw;
 }
 
 [contenteditable] {

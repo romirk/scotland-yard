@@ -43,3 +43,5 @@ function unload() {
   $(".title").fadeOut(500);
   // main.style.animation = "floatout 1s forwards";
 }
+
+setTimeout(() => $("#preload").remove(), 1000);

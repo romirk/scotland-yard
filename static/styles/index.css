@@ -4,6 +4,7 @@
   width: max-content;
   height: 100%;
   text-align: center;
+  animation: floatin 1s forwards;
 }
 
 #main-title {

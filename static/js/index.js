@@ -1,18 +1,5 @@
 import anime from "./anime.es.js";
 
-const form = document.getElementById("start");
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    unload();
-  }
-});
-
-document.getElementById("start-button").addEventListener("click", (e) => {
-  e.preventDefault();
-  unload();
-});
-
 function unload() {
   const name = document.getElementById("player_name");
   if (name.value == "" || !name.validity.valid)
@@ -43,5 +30,18 @@ function unload() {
   $(".title").fadeOut(500);
   // main.style.animation = "floatout 1s forwards";
 }
+
+const form = document.getElementById("start");
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    unload();
+  }
+});
+
+document.getElementById("start-button").addEventListener("click", (e) => {
+  e.preventDefault();
+  unload();
+});
 
 setTimeout(() => $("#preload").remove(), 1000);

@@ -5,6 +5,7 @@ function unload() {
   if (name.value == "" || !name.validity.valid)
     return window.location.replace("/error/invalid%20name");
   $("#main-title").fadeOut(500);
+  $("#logo").fadeOut(500);
   $("footer").fadeOut(500);
   const grad = {
     c1r: 109,

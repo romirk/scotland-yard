@@ -1,3 +1,23 @@
+#mobile-overlay {
+  display: none;
+}
+@media screen and (max-width: 1024px) {
+  #mobile-overlay {
+    display: block;
+    height: 100%;
+    background-color: black;
+    color: white;
+  }
+  #mobile-overlay h3 {
+    color: white;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    /* bring your own prefixes */
+    transform: translate(-50%, -50%);
+  }
+}
+
 .title {
   margin: auto;
   padding-top: 15vh;
@@ -50,7 +70,7 @@ form > div {
 }
 
 #preload {
-  z-index: 1;
+  z-index: 3;
   background-color: black;
 }
 .fade-out {

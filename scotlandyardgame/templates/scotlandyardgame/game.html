@@ -5,23 +5,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/game.css" />
 
     <style>
       .turn {
-        color: {{ color }};
-      }
-
-      canvas {
-        display: block;
-        margin: 0 auto;
-        min-width: 50%;
-        width: 80vw;
+        color: var(--color-{{color}});
       }
     </style>
   </head>
   <body>
-    <main>
+    <main id="board">
       <canvas id="canvas"></canvas>
       <div id="ui">
         <code id="log"> </code>

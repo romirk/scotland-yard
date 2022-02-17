@@ -39,13 +39,20 @@ class ScotlandYardGame {
 
     logger.clear();
     logger.log(`Scotland Yard v${ScotlandYardGame.VERSION}`, "info");
+    logger.log(`Connected to game ${this.#game_id}`);
+    logger.log_html(
+      `<br>You are <span class=turn>${
+        this.str
+      }</span> connected as <span class=turn>${this.#player_id}<span>`
+    );
+    logger.log(`Type HELP for more options.`, "warn");
   }
 
   #get_map_data() {
     $.getJSON("/map", (data) => {
       this.#map_data = data.map_data;
       this.#coordinates = data.coordinates;
-      logger.log(`Map data loaded.`, "info");
+      logger.log(`Map data loaded.`, "debug");
     });
   }
 
@@ -76,7 +83,7 @@ class ScotlandYardGame {
     const tokens = msg.split(" ");
     const command = tokens[0];
 
-    logger.log(msg, "debug");
+    logger.log(msg);
 
     switch (command) {
       case "PLAYER_MOVED":
@@ -221,7 +228,6 @@ $(document).ready(() => {
     console.log(ws_url, player_info);
 
     const game = new ScotlandYardGame(socket, player_info);
-    console.log(game.str);
 
     const commandbox = document.getElementById("ws-command");
     window.addEventListener("keyup", (event) => {

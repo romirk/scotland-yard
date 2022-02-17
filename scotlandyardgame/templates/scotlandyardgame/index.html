@@ -12,8 +12,9 @@
     />
 
     <script src="/sw.js"></script>
+    {% endcomment %} {% comment %}
+    <link rel="manifest" href="/manifest.json" />
     {% endcomment %}
-    {% comment %} <link rel="manifest" href="/manifest.json" /> {% endcomment %}
 
     <title>Scotland Yard</title>
 
@@ -30,6 +31,7 @@
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 
     <link rel="stylesheet" href="/styles/main.css" />
+    <link rel="stylesheet" href="/styles/index.css" />
 
     <link
       rel="prefetch"
@@ -60,7 +62,7 @@
         </div>
       </header>
 
-      <main class="mdl-layout__content">
+      <main class="mdl-layout__content" id="main-title">
         <div class="container">
           <div class="title">
             <h1>Scotland Yard</h1>
@@ -113,6 +115,11 @@
           </div>
         </div>
       </main>
+      <footer class="footer">
+        <div class="container" id="version">
+          <span class="text-muted">{{version}}</span>
+        </div>
+      </footer>
     </div>
 
     <script

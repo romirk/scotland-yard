@@ -1,0 +1,36 @@
+.title {
+  margin: auto;
+  padding-top: 15vh;
+  width: max-content;
+  height: 100%;
+  text-align: center;
+}
+
+#main-title {
+  height: 100%;
+}
+
+#main-title * :not(input) {
+  color: white;
+  font-family: "comfortaa";
+}
+
+form > div {
+  margin: 1vh;
+}
+
+#error {
+  color: red;
+}
+
+.link-light {
+  transition: 0.3s;
+}
+
+.link-light:hover {
+  color: rgb(255, 64, 129);
+}
+
+#version {
+  text-align: center;
+}

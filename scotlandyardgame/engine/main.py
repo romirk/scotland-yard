@@ -1,6 +1,8 @@
 from random import choice, randrange, shuffle
 from typing import Final
 
+import scotlandyardgame.__init__ as meta
+
 from .constants import (
     AVAILABLE_COLORS,
     AVAILABLE_START_LOCATIONS,
@@ -15,6 +17,8 @@ from .constants import (
 )
 from .map import MAP
 from .player import Player
+
+print(f"\033[34m{meta.__name__}\033[0m version \033[33m{meta.__version__}\033[0m")
 
 
 class ScotlandYard:

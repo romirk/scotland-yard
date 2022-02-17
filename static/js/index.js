@@ -29,16 +29,17 @@ function unload() {
   const main = document.getElementById("main");
   anime({
     targets: grad,
-    c1r: 255,
-    c1g: 255,
-    c1b: 255,
-    c2r: 255,
-    c2g: 255,
-    c2b: 255,
+    c1r: 0,
+    c1g: 0,
+    c1b: 0,
+    c2r: 0,
+    c2g: 0,
+    c2b: 0,
     duration: 500,
     easing: "easeInQuad",
     update: () =>
       (main.style.background = `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
   });
-  main.style.animation = "floatout 1s forwards";
+  $(".title").fadeOut(500);
+  // main.style.animation = "floatout 1s forwards";
 }

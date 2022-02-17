@@ -113,9 +113,7 @@ const app = (socket, player_info) => {
           (layout.style.background = `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
       });
     } else {
-      grad.d = 100;
-      const t = anime.timeline({});
-      t.add({
+      anime({
         targets: grad,
         c1r: 255,
         c1g: 0,
@@ -126,19 +124,22 @@ const app = (socket, player_info) => {
         d: 135,
         loop: false,
         duration: 3000,
+        direction: "normal",
         easing: "easeInOutSine",
         update: () =>
           (layout.style.background = `linear-gradient(${grad.d}deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(0,0,0) 50%, rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
-      }).add({
-        targets: grad,
-        d: 100,
-        duration: 15000,
-        easing: "easeInOutSine",
-        direction: "alternate",
-        loop: true,
-        update: () =>
-          (layout.style.background = `linear-gradient(${grad.d}deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(0,0,0) 50%, rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
-      });
+      }).finished.then(() =>
+        anime({
+          targets: grad,
+          d: 100,
+          duration: 7000,
+          easing: "easeInOutSine",
+          direction: "alternate",
+          loop: true,
+          update: () =>
+            (layout.style.background = `linear-gradient(${grad.d}deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(0,0,0) 50%, rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
+        })
+      );
     }
 
     if (players.length === 6 && player_info.is_host) {
@@ -336,11 +337,30 @@ const app = (socket, player_info) => {
   }
 
   function leave() {
-    socket.send(`LEAVE`);
-    socket.close(1000, "Leaving");
-    document.body.classList.add("los");
-    document.getElementById("players").innerHTML = "";
-    setTimeout(() => window.location.assign("/"), 500);
+    // document.getElementById("players").innerHTML = "";
+    $("#main").fadeOut(1000);
+    // document.body.classList.add("los");
+    anime({
+      targets: grad,
+      c1r: 0,
+      c1g: 0,
+      c1b: 0,
+      c2r: 0,
+      c2g: 0,
+      c2b: 0,
+      d: 315,
+      loop: false,
+      duration: 1000,
+      direction: "normal",
+      easing: "easeInOutSine",
+      update: () =>
+        (layout.style.background = `linear-gradient(${grad.d}deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
+    }).finished.then(() => {
+      socket.send(`LEAVE`);
+      socket.close(1000, "Leaving");
+
+      window.location.assign("/");
+    }, 500);
   }
 
   // event listeners
@@ -367,6 +387,6 @@ $(document).ready(() => {
     player_info.state = "new";
     const socket = new WebSocket(ws_url);
     app(socket, player_info);
-    $("#preload").fadeOut(500, () => $("#preload").remove());
+    $("#preload").fadeOut(1200, () => $("#preload").remove());
   });
 });

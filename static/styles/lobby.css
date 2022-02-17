@@ -1,5 +1,6 @@
 body {
   transition: opacity 0.2s;
+  background-color: black;
 }
 
 #layout {
@@ -138,7 +139,7 @@ body {
 
 #preload {
   z-index: 1;
-  background-color: white;
+  background-color: black;
 }
 
 .fade-out {

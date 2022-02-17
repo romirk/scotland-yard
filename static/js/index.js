@@ -4,7 +4,8 @@ function unload() {
   const name = document.getElementById("player_name");
   if (name.value == "" || !name.validity.valid)
     return window.location.replace("/error/invalid%20name");
-  setTimeout(() => form.submit(), 1100);
+  $("#main-title").fadeOut(500);
+  $("footer").fadeOut(500);
   const grad = {
     c1r: 109,
     c1g: 182,
@@ -26,8 +27,7 @@ function unload() {
     easing: "easeInQuad",
     update: () =>
       (main.style.background = `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
-  });
-  $(".title").fadeOut(500);
+  }).finished.then(() => form.submit());
   // main.style.animation = "floatout 1s forwards";
 }
 

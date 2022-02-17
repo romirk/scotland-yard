@@ -5,6 +5,7 @@ const grad = {
   c2r: 195,
   c2g: 208,
   c2b: 56,
+  d: 45,
 };
 const colorGrads = {
   red: [189, 40, 40],

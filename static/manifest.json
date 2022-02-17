@@ -10,6 +10,6 @@
             "type": "image/png"
         }
     ],
-    "display": "standalone",
+    "display": "fullscreen",
     "start_url": "/"
 }

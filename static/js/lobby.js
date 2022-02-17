@@ -98,19 +98,48 @@ const app = (socket, player_info) => {
 
     const layout = document.getElementById("layout");
 
-    anime({
-      targets: grad,
-      c1r: 0,
-      c1g: 0,
-      c1b: 0,
-      c2r: colorGrads[player_info.color][0],
-      c2g: colorGrads[player_info.color][1],
-      c2b: colorGrads[player_info.color][2],
-      duration: 1000,
-      easing: "easeInQuad",
-      update: () =>
-        (layout.style.background = `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
-    });
+    if (player_info.color !== "X") {
+      anime({
+        targets: grad,
+        c1r: 0,
+        c1g: 0,
+        c1b: 0,
+        c2r: colorGrads[player_info.color][0],
+        c2g: colorGrads[player_info.color][1],
+        c2b: colorGrads[player_info.color][2],
+        duration: 1000,
+        easing: "easeInQuad",
+        update: () =>
+          (layout.style.background = `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
+      });
+    } else {
+      grad.d = 100;
+      const t = anime.timeline({});
+      t.add({
+        targets: grad,
+        c1r: 255,
+        c1g: 0,
+        c1b: 0,
+        c2r: 0,
+        c2g: 42,
+        c2b: 255,
+        d: 135,
+        loop: false,
+        duration: 3000,
+        easing: "easeInOutSine",
+        update: () =>
+          (layout.style.background = `linear-gradient(${grad.d}deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(0,0,0) 50%, rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
+      }).add({
+        targets: grad,
+        d: 100,
+        duration: 15000,
+        easing: "easeInOutSine",
+        direction: "alternate",
+        loop: true,
+        update: () =>
+          (layout.style.background = `linear-gradient(${grad.d}deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(0,0,0) 50%, rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),
+      });
+    }
 
     if (players.length === 6 && player_info.is_host) {
       document.getElementById("start").style.display = "initial";
@@ -128,8 +157,9 @@ const app = (socket, player_info) => {
 
   function colorHandler(c, e) {
     return () => {
-      drawPreview(c);
+      console.log(c);
       reqColor(c);
+      drawPreview(c);
     };
   }
 
@@ -168,7 +198,6 @@ const app = (socket, player_info) => {
   }
 
   function drawPreview(c) {
-    console.log("draw");
     document.getElementById(
       "playerbody"
     ).style.stroke = `rgb(var(--color-${c}))`;
@@ -227,8 +256,7 @@ const app = (socket, player_info) => {
 
       case "SET_HOST":
         player_info.is_host = player_info.player_id === tokens[1];
-        getPlayerById(player_info.player_id).is_host =
-          player_info.is_host;
+        getPlayerById(player_info.player_id).is_host = player_info.is_host;
         break;
 
       case "SET_MRX":
@@ -339,5 +367,6 @@ $(document).ready(() => {
     player_info.state = "new";
     const socket = new WebSocket(ws_url);
     app(socket, player_info);
+    $("#preload").fadeOut(500, () => $("#preload").remove());
   });
 });

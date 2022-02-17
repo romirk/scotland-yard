@@ -25,6 +25,18 @@
   }
 }
 
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    display: none;
+  }
+}
+
+
 @keyframes floatin {
   from {
     opacity: 0;

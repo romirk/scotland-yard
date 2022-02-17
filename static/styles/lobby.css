@@ -137,7 +137,13 @@ body {
 }
 
 #preload {
-  z-index: 0;
+  z-index: 1;
+  background-color: white;
+}
+
+.fade-out {
+  opacity: 0;
+  animation: floatout 1s forwards;
 }
 
 #start-overlay {

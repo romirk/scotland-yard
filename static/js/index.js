@@ -35,7 +35,7 @@ function unload() {
     c2r: 255,
     c2g: 255,
     c2b: 255,
-    duration: 1000,
+    duration: 500,
     easing: "easeInQuad",
     update: () =>
       (main.style.background = `linear-gradient(45deg, rgb(${grad.c1r}, ${grad.c1g}, ${grad.c1b}), rgb(${grad.c2r}, ${grad.c2g}, ${grad.c2b})) center / cover`),

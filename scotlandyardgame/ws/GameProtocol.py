@@ -13,14 +13,14 @@ class GameProtocol(Protocol):
         super().__init__(
             consumer,
             {
-                "REQMOVE": self.reqmove,
+                "MOVE": self.move,
                 "GET_GAME_INFO": self.get_game_info,
                 "GET_PLAYER_INFO": self.get_player_info,
                 "HELP": self.help,
             },
         )
 
-    async def reqmove(self, ticket: str, *args):
+    async def move(self, ticket: str, *args):
         """request a move"""
         if self.consumer.game_id != multiplayer.get_game_id_with_player(
             self.consumer.player_id

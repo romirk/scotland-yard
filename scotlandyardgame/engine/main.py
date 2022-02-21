@@ -182,19 +182,21 @@ class ScotlandYard:
         }
         """
         if player_id == "ALL":
-            info = {p: self.get_player_info(p) for p in self.__players.keys()}
+            info = {p: self.get_player_info(p)[p] for p in self.__players.keys()}
             del info[self.__mr_x.id]["location"]
             return info
 
         p = self.__get_player_by_id(player_id)
         return {
-            "game_id": self.__ID,
-            "player_id": player_id,
-            "name": p.name,
-            "color": p.color,
-            "location": p.location,
-            "tickets": p.tickets.all(),
-            "is_host": p.id == self.get_host_id(),
+            player_id: {
+                "game_id": self.__ID,
+                "player_id": player_id,
+                "name": p.name,
+                "color": p.color,
+                "location": p.location,
+                "tickets": p.tickets.all(),
+                "is_host": p.id == self.get_host_id(),
+            }
         }
 
     def get_game_info(self) -> dict:

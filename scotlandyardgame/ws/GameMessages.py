@@ -11,7 +11,7 @@ class GameMessages:
 
     @staticmethod
     def player_joined(player_id: str) -> str:
-        player_info = get_player_info(get_game_id_with_player(player_id), player_id)
+        player_info = get_player_info(get_game_id_with_player(player_id), player_id)[player_id]
         return f"PLAYER_JOINED {player_id}" + (
             f' {player_info["location"]}' if player_info["color"] != "X" else ""
         )

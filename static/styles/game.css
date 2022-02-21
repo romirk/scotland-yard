@@ -15,7 +15,10 @@ body {
 
 #board {
   height: 100%;
-  margin: 2vh auto;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  margin: 0;
 }
 
 #textsvg {
@@ -44,12 +47,12 @@ canvas {
   outline: 0px solid transparent;
 }
 
-main {
-  display: flex;
-  flex-direction: row;
-}
 
 canvas {
   flex-basis: auto;
   flex-shrink: 0;
+}
+
+#ui, #log {
+  overflow: scroll;
 }

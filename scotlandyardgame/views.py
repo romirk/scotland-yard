@@ -78,7 +78,7 @@ def lobby(request: HttpRequest):
     if game.state == multiplayer.GameState.RUNNING:
         return redirect("game")
 
-    context = game.get_player_info(player_id)
+    context = game.get_player_info(player_id)[player_id]
     print(f"{context['name']} in lobby")
 
     res = render(request, "scotlandyardgame/lobby.html")
@@ -98,7 +98,7 @@ def game(request: HttpRequest):
     if game.state == multiplayer.GameState.PENDING:
         return redirect("lobby")
 
-    context = game.get_player_info(player_id) | {
+    context = game.get_player_info(player_id)[player_id] | {
         "board": MAP.generate_board_rectangular((15, 20)).tolist(),
         "coords": MAP.coordinates,
         "map_data": MAP.map_data,
@@ -117,7 +117,7 @@ def info(request: HttpRequest):
     if game_id is None:
         player_info = {"player_id": player_id}
     else:
-        player_info = multiplayer.get_game_by_id(game_id).get_player_info(player_id)
+        player_info = multiplayer.get_game_by_id(game_id).get_player_info(player_id)[player_id]
     return HttpResponse(json.dumps(player_info), content_type="application/json")
 
 

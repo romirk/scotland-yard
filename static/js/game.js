@@ -17,6 +17,7 @@ class ScotlandYardGame {
   #tickets;
 
   #game_info = {};
+  #players = {};
 
   #map_data;
   #coordinates;
@@ -53,6 +54,7 @@ class ScotlandYardGame {
       this.#map_data = data.map_data;
       this.#coordinates = data.coordinates;
       logger.log(`Map data loaded.`, "debug");
+      this.render();
     });
   }
 
@@ -67,10 +69,12 @@ class ScotlandYardGame {
     this.#socket.onopen = (event) => {
       console.log("Socket opened");
       this.#send("GET_PLAYER_INFO");
+      this.#send("GET_PLAYER_INFO ALL");
     };
   }
 
   #send(msg) {
+    logger.log(msg, "info");
     this.#socket.send(msg);
   }
 
@@ -87,19 +91,21 @@ class ScotlandYardGame {
 
     switch (command) {
       case "PLAYER_MOVED":
-        logger.log(
-          `Player ${player_info.player_id} has moved to ${player_info.pos}`,
-          "info"
-        );
-        if (this.#move_order[this.turn] === this.#player_id) {
-          this.#send("GET_PLAYER_INFO");
-        }
+        let T = msg.split(" ");
+        let id = T[1];
+        let cycle = T[2];
+        let ticket = T[3];
+        let player_location = T[4];
 
         this.#advance_turn();
-
-        if (this.#move_order[this.turn] == this.#player_id) {
-          logger.log(`It's your turn!`, "warn");
+        if (this.cycle !== cycle) {
+          logger.log(`Cycle mismatch: ${this.cycle} | ${cycle}`, "error");
         }
+
+        if (player_location !== undefined)
+          this.#players[id].location = player_location;
+
+        this.render();
         break;
 
       case "GAME_INFO":
@@ -110,11 +116,23 @@ class ScotlandYardGame {
 
       case "PLAYER_INFO":
         let player_info = JSON.parse(msg.split("PLAYER_INFO ")[1]);
-        this.#location = player_info.location;
+        for (const player_id in player_info) {
+          this.#players[player_id] = player_info[player_id];
+          if (
+            player_id === this.#player_id &&
+            player_info[player_id].location === undefined
+          ) {
+            this.#players[player_id].location = this.#location;
+          }
+        }
+
+        this.render();
         break;
 
       case "GAME_STARTING":
         this.#send("GET_GAME_INFO");
+        this.#send("GET_PLAYER_INFO ALL");
+        this.render();
         break;
 
       case "ERROR":
@@ -212,7 +230,7 @@ class ScotlandYardGame {
   }
 
   render() {
-    renderer.render(this.#map_data, this.#coordinates);
+    renderer.render(this.#map_data, this.#coordinates, this.#players);
   }
 }
 

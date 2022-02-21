@@ -15,6 +15,7 @@ const colorGrads = {
   X: [255, 255, 255],
 };
 
-const COLORS = ["red", "blue", "purple", "green", "yellow", "orange"];
+const PLAYER_COLORS = ["red", "blue", "purple", "green", "yellow", "orange"];
+const TRANSIT_COLORS = ["#f7a73e", "green", "red", "black"];
 
-export { colorGrads, gradient, COLORS };
+export { colorGrads, gradient, PLAYER_COLORS, TRANSIT_COLORS };

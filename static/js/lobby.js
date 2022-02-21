@@ -1,4 +1,4 @@
-import { colorGrads, gradient, COLORS } from "./constants.js";
+import { colorGrads, gradient, PLAYER_COLORS } from "./constants.js";
 import {
   copyToClipboard,
   overlay,
@@ -194,7 +194,7 @@ const app = (socket, player_info) => {
 
     const list = document.getElementById("colorList");
     list.innerHTML = "";
-    for (const c of COLORS) {
+    for (const c of PLAYER_COLORS) {
       const a = document.createElement("a");
       a.className = "list-group-item list-group-item-action";
       a.style.color = `rgb(var(--color-${c}))`;

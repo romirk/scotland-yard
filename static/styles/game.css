@@ -56,3 +56,7 @@ canvas {
 #ui, #log {
   overflow: scroll;
 }
+
+#ui {
+  min-width: 25vw;
+}

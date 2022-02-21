@@ -74,7 +74,7 @@ class ScotlandYardGame {
   }
 
   #send(msg) {
-    logger.log(msg, "info");
+    logger.log(msg, "debug");
     this.#socket.send(msg);
   }
 
@@ -87,14 +87,14 @@ class ScotlandYardGame {
     const tokens = msg.split(" ");
     const command = tokens[0];
 
-    logger.log(msg);
+    logger.log(msg, "debug");
 
     switch (command) {
       case "PLAYER_MOVED":
         let T = msg.split(" ");
         let id = T[1];
         let cycle = T[2];
-        let ticket = T[3];
+        //TODO: record ticket log
         let player_location = T[4];
 
         this.#advance_turn();
@@ -116,8 +116,10 @@ class ScotlandYardGame {
 
       case "PLAYER_INFO":
         let player_info = JSON.parse(msg.split("PLAYER_INFO ")[1]);
+        console.log(player_info);
         for (const player_id in player_info) {
           this.#players[player_id] = player_info[player_id];
+
           if (
             player_id === this.#player_id &&
             player_info[player_id].location === undefined
@@ -133,6 +135,9 @@ class ScotlandYardGame {
         this.#send("GET_GAME_INFO");
         this.#send("GET_PLAYER_INFO ALL");
         this.render();
+        break;
+      case "DENIED":
+        logger.log(`${msg}`, "error");
         break;
 
       case "ERROR":
@@ -219,10 +224,33 @@ class ScotlandYardGame {
    * @returns
    */
   parse(msg) {
-    msg = msg.trim();
-    if (msg.startsWith("RENDER")) {
-      this.render();
-      return;
+    msg = msg.trim().toLowerCase();
+    let tokens = msg.split(" ");
+    switch (tokens[0]) {
+      case "render":
+        this.render();
+        return;
+      case "clear":
+        logger.clear();
+        return;
+      case "debug":
+        if (tokens.length < 2) return;
+        switch (tokens[1]) {
+          case "on":
+            logger.debug = true;
+            break;
+
+          case "off":
+            logger.debug = false;
+            break;
+          default:
+            break;
+        }
+        logger.log(`Debug mode is ${logger.debug ? "on" : "off"}`);
+        return;
+
+      default:
+        break;
     }
 
     logger.log(msg, "info");

@@ -9,6 +9,8 @@ class Logger {
 
   #log_container;
 
+  debug = true;
+
   constructor(element) {
     this.#log_container = element;
   }
@@ -19,6 +21,7 @@ class Logger {
    * @param {String} msg_type message type
    */
   log(msg, msg_type = "default") {
+    if (!this.debug && msg_type === "debug") return;
     const span = document.createElement("span");
     span.style.color =
       Logger.#TYPE_COLORS[msg_type] || Logger.#TYPE_COLORS.default;

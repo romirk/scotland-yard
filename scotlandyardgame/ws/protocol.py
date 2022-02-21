@@ -22,7 +22,7 @@ class Protocol:
         if len(tokens) < 1:
             return
 
-        keyword = tokens[0]
+        keyword = tokens[0].upper()
 
         if keyword not in self.handlers:
             await self.send(f"ERROR - invalid message: {keyword}")
@@ -31,7 +31,7 @@ class Protocol:
         try:
             await self.handlers[keyword](*(tokens[1:] if len(tokens) > 1 else []))
         except Exception as e:
-            await self.send(f"ERROR {e}")
+            await self.send(f"ERROR - {e}")
 
     def send(self, msg: str):
         return self.consumer.send(msg)

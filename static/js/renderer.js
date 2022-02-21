@@ -1,4 +1,4 @@
-import { PLAYER_COLORS, TRANSIT_COLORS } from "./constants.js";
+import { TRANSIT_COLORS } from "./constants.js";
 
 class Renderer {
   #canvas;
@@ -114,7 +114,6 @@ class Renderer {
       mid = [scale * Math.abs(p2[1] - p1[1]) + p1[0], p2[1]];
     }
 
-    // console.log(p1, mid, p2);
     this.#ctx.beginPath();
     this.#ctx.moveTo(p1[0], p1[1]);
     this.#ctx.lineTo(mid[0], mid[1]);
@@ -161,8 +160,7 @@ class Renderer {
 
   draw_board(map_data, coordinates, scaling) {
     let c = 0;
-    let data = map_data;
-    data.forEach((station) => {
+    map_data.forEach((station) => {
       let t = 0;
       station.forEach((neighbour_set) => {
         neighbour_set.forEach((neighbour) => {

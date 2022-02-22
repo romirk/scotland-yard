@@ -1,4 +1,4 @@
-from scotlandyardgame.ws.messages import Messages
+from scotlandyardserver.ws.messages import Messages
 
 from ..multiplayer import get_game_id_with_player, get_player_ids, get_player_info
 

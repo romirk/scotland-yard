@@ -7,6 +7,7 @@ from .constants import (
     DOUBLE_TICKET,
 )
 
+INVALID_TICKET_STR = "Invalid ticket type: {}"
 
 class Wallet:
     """Handles player tickets"""
@@ -38,7 +39,7 @@ class Wallet:
         elif ticket_type == DOUBLE_TICKET:
             self.__double -= 1
         else:
-            raise ValueError("Invalid ticket type: {}".format(ticket_type))
+            raise ValueError(INVALID_TICKET_STR.format(ticket_type))
 
     def gain(self, ticket_type: str) -> None:
         """gives a ticket to Mr. X"""
@@ -55,7 +56,7 @@ class Wallet:
         elif ticket_type == DOUBLE_TICKET and self.__is_mr_x:
             self.__double += 1
         else:
-            raise ValueError("Invalid ticket type: {}".format(ticket_type))
+            raise ValueError(INVALID_TICKET_STR.format(ticket_type))
 
     def all(self) -> dict[str, int]:
         """Get all tickets in the player's stash"""
@@ -70,7 +71,7 @@ class Wallet:
     def get(self, ticket: str):
         """Get the number of tickets of the given type"""
         if ticket not in TICKET_TYPES:
-            raise ValueError("Invalid ticket type: {}".format(ticket))
+            raise ValueError(INVALID_TICKET_STR.format(ticket))
         return self.all()[ticket]
 
     def set(self, tickets: dict[str, int]):

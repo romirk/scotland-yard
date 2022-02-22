@@ -1,5 +1,3 @@
-from scotlandyardgame.ws.protocol import Protocol
-
 from .. import multiplayer
 from ..engine.constants import DOUBLE_TICKET, GameState
 from .GameMessages import GameMessages

@@ -1,13 +1,13 @@
 from asyncio import sleep
 
 from channels.generic.websocket import AsyncWebsocketConsumer
-from scotlandyardgame.ws.GameMessages import GameMessages
-from scotlandyardgame.ws.LobbyMessages import LobbyMessages
-from scotlandyardgame.ws.messages import Messages
+from scotlandyardserver.ws.GameMessages import GameMessages
+from scotlandyardserver.ws.LobbyMessages import LobbyMessages
+from scotlandyardserver.ws.messages import Messages
 
 from ..engine.constants import GameState
 from ..multiplayer import get_game_by_id, leave_room, get_game_id_with_player
-from scotlandyardgame import multiplayer
+from scotlandyardserver import multiplayer
 
 TRACK_DISCONNECTED = set()
 

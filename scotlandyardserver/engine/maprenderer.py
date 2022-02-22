@@ -1,12 +1,6 @@
 from heapq import heappop, heappush
 
-from scotlandyardgame.engine.constants import (
-    BLACK_TICKET,
-    BUS_TICKET,
-    TAXI_TICKET,
-    UNDERGROUND_TICKET,
-)
-
+from .constants import BLACK_TICKET, BUS_TICKET, TAXI_TICKET, UNDERGROUND_TICKET
 from .map import Map
 
 

@@ -17,7 +17,7 @@ const logger = new Logger(document.getElementById("log"));
 /**
  * Front-end client for Scotland Yard.
  */
-class ScotlandYardGameClient {
+class ScotlandYardClient {
   /** @readonly */
   static VERSION = "0.1.1a";
 
@@ -81,7 +81,7 @@ class ScotlandYardGameClient {
 
     logger_service.clear();
     logger_service.log(
-      `Scotland Yard v${ScotlandYardGameClient.VERSION}`,
+      `Scotland Yard v${ScotlandYardClient.VERSION}`,
       "info"
     );
     logger_service.log(`Connected to game ${this.#game_id}`);
@@ -350,7 +350,7 @@ $(document).ready(() => {
     const socket = new WebSocket(ws_url);
     console.log(ws_url, player_info);
 
-    const game = new ScotlandYardGameClient(socket, player_info);
+    const game = new ScotlandYardClient(socket, player_info);
 
     const commandbox = document.getElementById("ws-command");
     window.addEventListener("keyup", (event) => {
@@ -366,4 +366,4 @@ $(document).ready(() => {
   });
 });
 
-export default ScotlandYardGameClient;
+export default ScotlandYardClient;

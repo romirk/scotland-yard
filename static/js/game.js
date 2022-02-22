@@ -182,7 +182,7 @@ class ScotlandYardGameClient {
         //TODO: record ticket log
         let player_location = T[4];
 
-        this.#advance_turn();
+        // this.#advance_turn();
         if (this.cycle !== cycle) {
           logger.log(`Cycle mismatch: ${this.cycle} | ${cycle}`, "error");
         }

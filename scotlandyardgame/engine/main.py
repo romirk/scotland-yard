@@ -54,7 +54,7 @@ class ScotlandYard:
     # setters
 
     @id.setter
-    def id(self, *args):
+    def id(self, *_):
         raise AttributeError("ID assignment not allowed.")
 
     # private methods
@@ -66,7 +66,7 @@ class ScotlandYard:
         return (
             player is not None
             and (ticket != BLACK_TICKET or player.is_mr_x)
-            and player.tickets.get(ticket) > 0
+            and player.wallet.get(ticket) > 0
             and location in MAP.stations[player.location].getNeighbours(ticket)
             and (
                 self.__get_player_at(location) is None
@@ -113,9 +113,9 @@ class ScotlandYard:
         if not self.__is_valid_move(player.id, location, ticket):
             raise ValueError("Invalid move")
         player.location = location
-        player.tickets.discard(ticket)
+        player.wallet.discard(ticket)
         if not player.is_mr_x:
-            self.__mr_x.tickets.gain(ticket)
+            self.__mr_x.wallet.gain(ticket)
 
     def __double_move(
         self, player: Player, ticket1: str, location1: int, ticket2: str, location2: int
@@ -125,14 +125,14 @@ class ScotlandYard:
             raise ValueError("Only Mr. X can double move")
 
         old_location = player.location
-        old_tickets = player.tickets.all()
+        old_tickets = player.wallet.all()
         try:
             self.__move(player, ticket1, location1)
             self.__move(player, ticket2, location2)
-            player.tickets.discard(DOUBLE_TICKET)
+            player.wallet.discard(DOUBLE_TICKET)
         except ValueError as e:
             player.location = old_location
-            player.tickets.set(old_tickets)
+            player.wallet.set(old_tickets)
             raise e
 
     def __advance_turn(self):
@@ -177,7 +177,7 @@ class ScotlandYard:
             "name",
             "color",
             "location",
-            "tickets",
+            "wallet",
             "is_host"
         }
         """
@@ -194,7 +194,7 @@ class ScotlandYard:
                 "name": p.name,
                 "color": p.color,
                 "location": p.location,
-                "tickets": p.tickets.all(),
+                "wallet": p.wallet.all(),
                 "is_host": p.id == self.get_host_id(),
             }
         }

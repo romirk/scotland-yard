@@ -9,16 +9,7 @@ import {
 } from "./utils.js";
 import anime from "./anime.es.js";
 
-/**
- * @typedef {Object} Player
- * @property {string} game_id
- * @property {string} player_id
- * @property {string} names
- * @property {string} color
- * @property {bool} is_host
- * @property {string} state
- */
-
+/** @typedef { import('./constants').Player } Player */
 /**
  * Main lobby app
  * @param {WebSocket} socket

@@ -1,3 +1,29 @@
+//typedefs
+/**
+ * @typedef {Object} Cartesian
+ * @property {number} x
+ * @property {number} y
+ */
+
+/**
+ * @typedef {Object} Wallet
+ * @property {number} taxi
+ * @property {number} bus
+ * @property {number} underground
+ * @property {number=} black
+ */
+
+/**
+ * @typedef {Object} Player
+ * @property {string} player_id
+ * @property {string} game_id
+ * @property {string} color
+ * @property {number} location
+ * @property {Wallet} wallet
+ * @property {bool} is_host
+ */
+
+
 const gradient = {
   start: "rgba(0, 0, 0, 1)",
   mid: "rgba(0, 0, 0, 0)",

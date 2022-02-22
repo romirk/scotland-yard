@@ -1,3 +1,10 @@
+/**
+ * @file Front-end logging.
+ */
+
+/**
+ * Console-style UI logging system.
+ */
 class Logger {
   static #TYPE_COLORS = {
     error: "red",
@@ -9,9 +16,17 @@ class Logger {
 
   #log_container;
 
+  /**
+   * Sets debug mode.
+   * Debug messages are not shown if this is off.
+   */
   debug = true;
 
-  constructor(element) {
+  /**
+   * Creates an instance of a {@link Logger}.
+   * @param {HTMLElement} element
+   */
+  constructor(element = document.getElementById("log")) {
     this.#log_container = element;
   }
 
@@ -31,7 +46,7 @@ class Logger {
   }
 
   /**
-   * Log to the console on UI
+   * Log to the console on UI.
    * @param {String} html html to be logged
    */
   log_html(html) {
@@ -39,7 +54,7 @@ class Logger {
   }
 
   /**
-   * Clear the log
+   * Clear the log.
    */
   clear() {
     this.#log_container.innerHTML = "";

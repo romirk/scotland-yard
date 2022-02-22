@@ -8,7 +8,7 @@ from .constants import (
 )
 
 
-class Tickets:
+class Wallet:
     """Handles player tickets"""
 
     def __init__(self, is_mr_x: bool) -> None:

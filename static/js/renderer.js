@@ -64,13 +64,21 @@ class Renderer {
    */
   constructor(canvas, map_data, coordinates, logger = new Logger()) {
     this.#canvas = canvas;
-    this.#map_data = map_data;
-    this.#coordinates = coordinates;
     this.#ctx = this.#canvas.getContext("2d");
     this.#width = canvas.clientWidth;
     this.#height = canvas.clientHeight;
     this.#ctx.imageSmoothingEnabled = false;
     this.#logger = logger;
+
+    this.load(map_data, coordinates);
+  }
+
+  load(map_data, coordinates) {
+    this.#map_data = map_data;
+    this.#coordinates = coordinates;
+    this.#compute_limits();
+    this.#compute_dimensions();
+    this.#compute_scale();
   }
 
   /**
@@ -80,11 +88,11 @@ class Renderer {
   #compute_limits() {
     if (this.#limits.min_x !== undefined) return;
 
-    let min_x = coordinates[0][0];
-    let max_x = coordinates[0][0];
-    let min_y = coordinates[0][1];
-    let max_y = coordinates[0][1];
-    for (const coords of coordinates) {
+    let min_x = this.#coordinates[0][0];
+    let max_x = this.#coordinates[0][0];
+    let min_y = this.#coordinates[0][1];
+    let max_y = this.#coordinates[0][1];
+    for (const coords of this.#coordinates) {
       if (coords[0] < min_x) min_x = coords[0];
       if (coords[0] > max_x) max_x = coords[0];
       if (coords[1] < min_y) min_y = coords[1];
@@ -128,10 +136,9 @@ class Renderer {
    * @returns {Cartesian}
    */
   #transform_origin(x, y) {
-    const scaling = this.#compute_scale();
     return {
-      x: (x - this.#limits.min_x) * scaling.x + 50,
-      y: (y - this.#limits.min_y) * scaling.y + 50,
+      x: (x - this.#limits.min_x) * this.#scale.x + 50,
+      y: (y - this.#limits.min_y) * this.#scale.y + 50,
     };
   }
 
@@ -141,21 +148,24 @@ class Renderer {
    */
   render(players) {
     this.#ctx.resetTransform();
-    this.#compute_limits(coordinates);
-    const scaling = this.#compute_scale();
+    this.#compute_dimensions();
+    this.#compute_scale();
     const origin = this.#transform_origin(0, 0);
 
-    this.#logger.log(`${this.#width}x${this.#height}`, "info");
-    this.#logger.log(`${this.#limits.min_x}x${this.#limits.max_x}`, "info");
-    this.#logger.log(`${this.#limits.min_y}x${this.#limits.max_y}`, "info");
-    this.#logger.log(`${scaling.x}x${scaling.y}`, "info");
-    this.#logger.log(`${origin.x}x${origin.y}`, "info");
+    if (this.#logger.debug) {
+      this.#logger.log("rendering", "info");
+      this.#logger.log(`${this.#width}x${this.#height}`, "info");
+      this.#logger.log(`${this.#limits.min_x}x${this.#limits.max_x}`, "info");
+      this.#logger.log(`${this.#limits.min_y}x${this.#limits.max_y}`, "info");
+      this.#logger.log(`${this.#scale.x}x${this.#scale.y}`, "info");
+      this.#logger.log(`${origin.x}x${origin.y}`, "info");
+    }
 
     this.#ctx.translate(origin.x, origin.y);
     this.#ctx.clearRect(0, 0, this.#width, this.#height);
 
-    this.draw_board(map_data, coordinates, scaling);
-    this.draw_players(players, coordinates, scaling);
+    this.draw_board();
+    this.draw_players(players);
 
     this.#ctx.beginPath();
     this.#ctx.arc(0, 0, this.line_width * 1.5, 0, 2 * Math.PI);
@@ -253,15 +263,14 @@ class Renderer {
    */
   draw_board() {
     let c = 0;
-    map_data.forEach((station) => {
+    this.#map_data.forEach((station) => {
       let t = 0;
       station.forEach((neighbour_set) => {
         neighbour_set.forEach((neighbour) => {
-          if (neighbour < coordinates.length && neighbour > c) {
+          if (neighbour < this.#coordinates.length && neighbour > c) {
             this.draw_transit(
-              coordinates[c],
-              coordinates[neighbour - 1],
-              scaling,
+              this.#coordinates[c],
+              this.#coordinates[neighbour - 1],
               t
             );
           }
@@ -270,11 +279,12 @@ class Renderer {
       });
       c++;
     });
-    for (let i = 0; i < coordinates.length; i++) {
+
+    for (let i = 0; i < this.#coordinates.length; i++) {
       this.#ctx.beginPath();
       this.#ctx.arc(
-        coordinates[i][0] * scaling.x,
-        coordinates[i][1] * scaling.y,
+        this.#coordinates[i][0] * this.#scale.x,
+        this.#coordinates[i][1] * this.#scale.y,
         this.line_width * 1.5,
         0,
         2 * Math.PI
@@ -283,8 +293,8 @@ class Renderer {
       this.#ctx.fillStyle = "#fff";
       this.#ctx.fill();
       this.#ctx.arc(
-        coordinates[i][0] * scaling.x,
-        coordinates[i][1] * scaling.y,
+        this.#coordinates[i][0] * this.#scale.x,
+        this.#coordinates[i][1] * this.#scale.y,
         this.line_width * 1.5,
         0,
         2 * Math.PI
@@ -294,8 +304,8 @@ class Renderer {
       this.#ctx.lineWidth = 1;
       this.#ctx.strokeText(
         String(i + 1),
-        coordinates[i][0] * scaling.x - this.line_width,
-        coordinates[i][1] * scaling.y - this.line_width * 2
+        this.#coordinates[i][0] * this.#scale.x - this.line_width,
+        this.#coordinates[i][1] * this.#scale.y - this.line_width * 2
       );
     }
   }

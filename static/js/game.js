@@ -13,7 +13,6 @@ import Renderer from "./renderer.js";
 /** @typedef { import('./constants').Wallet } Wallet */
 
 const logger = new Logger(document.getElementById("log"));
-const renderer = new Renderer(document.getElementById("canvas"), logger);
 
 /**
  * Front-end client for Scotland Yard.
@@ -22,7 +21,14 @@ class ScotlandYardGameClient {
   /** @readonly */
   static VERSION = "0.1.1a";
 
+  /** @type {WebSocket} */
   #socket;
+  /** @type {Renderer} */
+  #renderer;
+  /** @type {HTMLCanvasElement} */
+  #canvas;
+  /** @type {Logger} */
+  #logger;
 
   #game_id;
   #player_id;
@@ -52,9 +58,17 @@ class ScotlandYardGameClient {
    *
    * @param {WebSocket} socket
    * @param {Player} player_info
+   * @param {HTMLCanvasElement} canvas
    */
-  constructor(socket, player_info) {
+  constructor(
+    socket,
+    player_info,
+    canvas = document.getElementById("canvas"),
+    logger_service = logger
+  ) {
     this.#socket = socket;
+    this.#canvas = canvas;
+    this.#logger = logger_service;
     this.#game_id = player_info.game_id;
     this.#player_id = player_info.player_id;
     this.#player_name = player_info.name;
@@ -63,17 +77,20 @@ class ScotlandYardGameClient {
     this.#wallet = player_info.wallet;
 
     this.#configure_ws();
-    this.#get_map_data();
+    this.#create_renderer();
 
-    logger.clear();
-    logger.log(`Scotland Yard v${ScotlandYardGameClient.VERSION}`, "info");
-    logger.log(`Connected to game ${this.#game_id}`);
-    logger.log_html(
+    logger_service.clear();
+    logger_service.log(
+      `Scotland Yard v${ScotlandYardGameClient.VERSION}`,
+      "info"
+    );
+    logger_service.log(`Connected to game ${this.#game_id}`);
+    logger_service.log_html(
       `<br>You are <span class=turn>${
         this.str
       }</span> connected as <span class=turn>${this.#player_id}<span>`
     );
-    logger.log(`Type HELP for more options.`, "warn");
+    logger_service.log(`Type HELP for more options.`, "warn");
   }
 
   get state() {
@@ -121,13 +138,19 @@ class ScotlandYardGameClient {
   }
 
   /**
-   * Asynchronously retrieve map data from server.
+   * Asynchronously retrieve map data from server and initialize {@link Renderer}.
    */
-  #get_map_data() {
+  #create_renderer() {
     $.getJSON("/map", (data) => {
       this.#map_data = data.map_data;
       this.#coordinates = data.coordinates;
       logger.log(`Map data loaded.`, "debug");
+      this.#renderer = new Renderer(
+        this.#canvas,
+        this.#map_data,
+        this.#coordinates,
+        this.#logger
+      );
       this.render();
     });
   }
@@ -237,38 +260,6 @@ class ScotlandYardGameClient {
   }
 
   /**
-   * Request a move from the server.
-   * @param {string} ticket_type ticket type
-   * @param {number} target_location destination
-   * @returns {void}
-   */
-  move(ticket_type, target_location) {
-    if (this.#state !== "PLAYING") {
-      return;
-    }
-
-    if (this.#wallet[ticket_type] === 0) {
-      logger.log(`You don't have any ${ticket_type} tickets!`, "warn");
-      return;
-    }
-
-    if (this.#location === target_location) {
-      logger.log(`You're already at ${target_location}!`, "warn");
-      return;
-    }
-
-    if (this.#move_order[this.turn] !== this.#player_id) {
-      logger.log(
-        `It's not your turn! It's ${this.#move_order[this.turn]}'s turn.`,
-        "warn"
-      );
-      return;
-    }
-
-    this.#send(`MOVE ${ticket_type} ${target_location}`);
-  }
-
-  /**
    * Parse console input.
    * @param {string} msg input
    * @returns {void}
@@ -308,10 +299,43 @@ class ScotlandYardGameClient {
   }
 
   /**
+   * Request a move from the server.
+   * @param {string} ticket_type ticket type
+   * @param {number} target_location destination
+   * @returns {void}
+   */
+  move(ticket_type, target_location) {
+    if (this.#state !== "PLAYING") {
+      return;
+    }
+
+    if (this.#wallet[ticket_type] === 0) {
+      logger.log(`You don't have any ${ticket_type} tickets!`, "warn");
+      return;
+    }
+
+    if (this.#location === target_location) {
+      logger.log(`You're already at ${target_location}!`, "warn");
+      return;
+    }
+
+    if (this.#move_order[this.turn] !== this.#player_id) {
+      logger.log(
+        `It's not your turn! It's ${this.#move_order[this.turn]}'s turn.`,
+        "warn"
+      );
+      return;
+    }
+
+    this.#send(`MOVE ${ticket_type} ${target_location}`);
+  }
+
+  /**
    * Render UI.
    */
   render() {
-    renderer.render(this.#map_data, this.#coordinates, this.#players);
+    console.log("rendering");
+    this.#renderer.render(this.#players);
   }
 }
 
@@ -337,6 +361,8 @@ $(document).ready(() => {
       }
     });
     commandbox.focus(); //autofocus on commandbox
+
+    window.onresize = () => game.render();
   });
 });
 

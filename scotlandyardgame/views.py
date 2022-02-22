@@ -5,11 +5,12 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.cache import patch_response_headers
+from scotlandyardgame.__version__ import __version__
 
 from scotlandyardgame.engine.map import MAP
 
 from . import multiplayer
-from .engine.constants import AVAILABLE_COLORS, GameState
+from .engine.constants import GameState
 
 name_re = compile(r"^\w+$")
 
@@ -26,6 +27,7 @@ def index(request: HttpRequest, game_id=None, error=None):
         "is_joining": is_joining,
         "player_id": player_id,
         "error": error,
+        "version": __version__,
     }
 
     if not is_joining:
@@ -76,7 +78,7 @@ def lobby(request: HttpRequest):
     if game.state == multiplayer.GameState.RUNNING:
         return redirect("game")
 
-    context = game.get_player_info(player_id)
+    context = game.get_player_info(player_id)[player_id]
     print(f"{context['name']} in lobby")
 
     res = render(request, "scotlandyardgame/lobby.html")
@@ -96,9 +98,9 @@ def game(request: HttpRequest):
     if game.state == multiplayer.GameState.PENDING:
         return redirect("lobby")
 
-    context = game.get_player_info(player_id) | {
+    context = game.get_player_info(player_id)[player_id] | {
         "board": MAP.generate_board_rectangular((15, 20)).tolist(),
-        "coords": MAP.coords,
+        "coords": MAP.coordinates,
         "map_data": MAP.map_data,
         "limits": {
             "max": MAP.limits["max"].tolist(),
@@ -115,5 +117,12 @@ def info(request: HttpRequest):
     if game_id is None:
         player_info = {"player_id": player_id}
     else:
-        player_info = multiplayer.get_game_by_id(game_id).get_player_info(player_id)
+        player_info = multiplayer.get_game_by_id(game_id).get_player_info(player_id)[player_id]
     return HttpResponse(json.dumps(player_info), content_type="application/json")
+
+
+def map(request: HttpRequest):
+    return HttpResponse(
+        json.dumps({"map_data": MAP.map_data, "coordinates": MAP.coordinates}),
+        content_type="application/json",
+    )

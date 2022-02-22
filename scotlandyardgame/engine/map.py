@@ -27,7 +27,7 @@ class Map:
         self.N = len(map_data)
         self.map_data = map_data
         self.stations: list[Station] = []
-        self.coords: list[tuple[float, float]] = [[x, y] for x, y in zip(*[iter(map(float,open(os.path.dirname(os.path.abspath(__file__))+"/Coordinates.txt","r").read().split(',')))]*2)]
+        self.coordinates: list[tuple[float, float]] = [[x, y] for x, y in zip(*[iter(map(float,open(os.path.dirname(os.path.abspath(__file__))+"/Coordinates.txt","r").read().split(',')))]*2)]
         self.limits = {"min": np.array((0, 0)), "max": np.array((0, 0))}
         self.adjacency_matrix = np.zeros((self.N, self.N))
 
@@ -68,7 +68,7 @@ class Map:
         """
         self.limits["min"] = np.array([np.inf, np.inf])
         self.limits["max"] = np.array([-np.inf, -np.inf])
-        for c in self.coords:
+        for c in self.coordinates:
             self.limits["min"] = np.minimum(self.limits["min"], c)
             self.limits["max"] = np.maximum(self.limits["max"], c)
 
@@ -88,7 +88,7 @@ class Map:
         return np.sqrt(np.einsum("ij,ij->i", a, a))
 
     def get_gradient(self, coords: np.ndarray):
-        s = np.array(list(self.coords.values())) - coords
+        s = np.array(list(self.coordinates.values())) - coords
         d: np.ndarray = np.linalg.norm(s, axis=1).reshape(-1, 1)
         grad = s / (d**2)
         return grad.sum(axis=0), np.min(d)
@@ -115,7 +115,7 @@ class Map:
 
         visited = np.zeros(self.N, dtype=bool)
         q = [self.stations[0]]
-        self.stations[0].coords = self.coords[0] = np.array((0, 0))
+        self.stations[0].coords = self.coordinates[0] = np.array((0, 0))
 
         while q:
             progress = int(np.count_nonzero(visited) / len(visited) * 10)
@@ -137,16 +137,16 @@ class Map:
                         theta = i * 2 * np.pi / len(neighbours)
                         computed_cooordinates = np.array(
                             (
-                                self.coords[station.location][0]
+                                self.coordinates[station.location][0]
                                 + multipliers[ticket_type] * np.cos(theta + phi),
-                                self.coords[station.location][1]
+                                self.coordinates[station.location][1]
                                 + multipliers[ticket_type] * np.sin(theta + phi),
                             )
                         )
 
-                        if neighbour in self.coords:
+                        if neighbour in self.coordinates:
                             computed_cooordinates = (
-                                computed_cooordinates + self.coords[neighbour]
+                                computed_cooordinates + self.coordinates[neighbour]
                             ) / 2
 
                         grad, d = self.get_gradient(computed_cooordinates)
@@ -160,7 +160,7 @@ class Map:
                             computed_cooordinates = computed_cooordinates - alpha * grad
                             grad, d = self.get_gradient(computed_cooordinates)
 
-                        self.coords[neighbour] = self.stations[
+                        self.coordinates[neighbour] = self.stations[
                             neighbour
                         ].coords = computed_cooordinates
 
@@ -178,9 +178,9 @@ class Map:
 
         This function normalizes the coordinates of the stations on the map.
         """
-        self.coords = {
+        self.coordinates = {
             i: (c - self.limits["min"]) / self.get_scale()
-            for i, c in self.coords.items()
+            for i, c in self.coordinates.items()
         }
 
     def generate(self, xmax=500, ymax=500):
@@ -194,7 +194,7 @@ class Map:
         for i in range(n_u):
             x = np.random.rand() * xmax
             y = np.random.rand() * ymax
-            self.coords[underground_stations[i]] = np.array((x, y))
+            self.coordinates[underground_stations[i]] = np.array((x, y))
 
         print(f"placed {n_u} underground stations")
 
@@ -220,7 +220,7 @@ class Map:
                 # neighbour = self.stations[neighbour]
                 if not visited[bus_stations.index(neighbour)]:
                     q.append(neighbour)
-                    if neighbour in self.coords:
+                    if neighbour in self.coordinates:
                         continue
                     # TODO gen bus coords
 

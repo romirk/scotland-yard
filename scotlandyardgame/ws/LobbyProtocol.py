@@ -24,35 +24,40 @@ class LobbyProtocol(Protocol):
                 "READY": self.ready,
             },
         )
-        self.player_id = None
 
     async def reqcolor(self, color: str):
         try:
-            set_color(get_game_id_with_player(self.player_id), self.player_id, color)
+            set_color(
+                get_game_id_with_player(self.consumer.player_id),
+                self.consumer.player_id,
+                color,
+            )
         except Exception as e:
             print(e)
         else:
-            await self.group_send(LobbyMessages.set_color(self.player_id, color))
+            await self.group_send(
+                LobbyMessages.set_color(self.consumer.player_id, color)
+            )
 
-    async def reqmrx(self, player_id):
+    async def reqmrx(self, player_id: str):
         try:
-            set_mr_x(get_game_id_with_player(self.player_id), self.player_id)
+            set_mr_x(get_game_id_with_player(self.consumer.player_id), player_id)
         except Exception as e:
             print(e)
         else:
             await self.group_send(LobbyMessages.set_mr_x(player_id))
 
     async def leave(self):
-        # leaveRoom(getGameIDWithPlayer(self.player_id), self.player_id)
-        await self.group_send(LobbyMessages.remove(self.player_id))
+        # leaveRoom(getGameIDWithPlayer(self.consumer.player_id), self.consumer.player_id)
+        await self.group_send(LobbyMessages.remove(self.consumer.player_id))
         await self.consumer.close(code=1000, reason="Leaving")
 
     async def ready(self):
         print(f"{self.consumer.player_id} is ready")
-        self.player_id = self.consumer.player_id
+        self.consumer.player_id = self.consumer.player_id
         if (
-            get_game_host(game_id := get_game_id_with_player(self.player_id))
-            != self.player_id
+            get_game_host(game_id := get_game_id_with_player(self.consumer.player_id))
+            != self.consumer.player_id
         ):
             print("Only host can start game")
             return

@@ -13,7 +13,8 @@ def run_detectives(game_id: str, number: int):
     elem = driver.find_element_by_id("player_name")
     elem.send_keys(f"d{number}")
     elem.send_keys(Keys.RETURN)
-    sleep(10000)
+    while True:
+        sleep(1)
     driver.close()
 
 
@@ -23,12 +24,14 @@ assert "Scotland Yard" in driver.title
 elem = driver.find_element_by_id("player_name")
 elem.send_keys("x")
 elem.send_keys(Keys.RETURN)
-sleep(1.1)
-GAME_ID = driver.execute_script("return GAME_ID")
+while driver.execute_script("return window.GAME_ID") is None:
+    sleep(0.5)
+GAME_ID = driver.execute_script("return window.GAME_ID")
+print(GAME_ID)
 
 for i in range(1, 6):
-    t = Thread(target=run_detectives, args=(GAME_ID, i),daemon=True)
-    t.start() 
+    t = Thread(target=run_detectives, args=(GAME_ID, i), daemon=True)
+    t.start()
 
 while driver.execute_script(
     "return document.getElementById('start').style.display !== 'initial';"

@@ -3,6 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="img/favicon.png" />
+    {% comment %}
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="cyan"
+    />
+
+    <script src="/sw.js"></script>
+    {% endcomment %} {% comment %}
+    <link rel="manifest" href="/manifest.json" />
+    {% endcomment %}
+
     <title>Scotland Yard</title>
 
     <link
@@ -18,6 +31,7 @@
     <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 
     <link rel="stylesheet" href="/styles/main.css" />
+    <link rel="stylesheet" href="/styles/index.css" />
 
     <link
       rel="prefetch"
@@ -35,6 +49,10 @@
   </head>
 
   <body>
+    <div id="preload" class="overlay fade-out"></div>
+    <div id="mobile-overlay" class="overlay">
+      <h3 class="display-3">Scotland Yard is not currently available on mobile.</h3>
+    </div>
     <div class="layout-transparent mdl-layout mdl-js-layout" id="main">
       <header class="mdl-layout__header mdl-layout__header--transparent">
         <div class="mdl-layout__header-row">
@@ -48,7 +66,7 @@
         </div>
       </header>
 
-      <main class="mdl-layout__content">
+      <main class="mdl-layout__content" id="main-title">
         <div class="container">
           <div class="title">
             <h1>Scotland Yard</h1>
@@ -60,7 +78,7 @@
             >
               {% csrf_token %} {% if error is not None %}
               <span id="error">{{ error }}</span>
-              {% endif %} {% if is_joining  %}
+              {% endif %} {% if is_joining %}
               <span id="room">
                 Joining room: <strong>{{ game_id }}</strong>.
                 <a class="link-light" href="/" id="create-link"
@@ -88,11 +106,7 @@
                   />
                 </div>
                 <div class="col-3">
-                  <button
-                    id="start-button"
-                    onclick="unload()"
-                    class="btn btn-primary"
-                  >
+                  <button id="start-button" class="btn btn-primary">
                     Start
                   </button>
                 </div>
@@ -101,6 +115,11 @@
           </div>
         </div>
       </main>
+      <footer class="footer">
+        <div class="container" id="version">
+          <span class="text-muted">{{version}}</span>
+        </div>
+      </footer>
     </div>
 
     <script
@@ -108,8 +127,10 @@
       integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
       crossorigin="anonymous"
     ></script>
-    <script>
-     
-    </script>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>

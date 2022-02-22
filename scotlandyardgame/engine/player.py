@@ -1,6 +1,6 @@
 from typing import Final
 
-from .tickets import Tickets
+from .tickets import Wallet
 
 
 class Player:
@@ -10,7 +10,7 @@ class Player:
         # private
         self.__ID: Final = player_id
         self.__player_location: int = player_location
-        self.__tickets: Tickets = Tickets(player_color == "X")
+        self.__wallet: Wallet = Wallet(player_color == "X")
 
         # public
         self.name: str = player_name
@@ -31,14 +31,14 @@ class Player:
         return self.color == "X"
 
     @property
-    def tickets(self) -> Tickets:
+    def wallet(self) -> Wallet:
         """returns all tickets available to this player."""
-        return self.__tickets
+        return self.__wallet
 
     # setters
 
     @id.setter
-    def id(self, *args):
+    def id(self, *_):
         raise AttributeError("ID assignment not allowed.")
 
     @location.setter

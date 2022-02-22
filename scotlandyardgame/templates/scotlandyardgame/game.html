@@ -4,44 +4,34 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="img/favicon.png" />
+
     <title>Document</title>
+    <link rel="stylesheet" href="styles/main.css" />
     <link rel="stylesheet" href="styles/game.css" />
 
     <style>
       .turn {
-        color: {{ color }};
+        color: var(--color-{{color}});
       }
     </style>
   </head>
   <body>
-    <main>
+    <main id="board">
       <canvas id="canvas"></canvas>
-      {% comment %}
       <div id="ui">
         <code id="log"> </code>
-
         <br />
         <code
           >>>>&nbsp;<span contenteditable="true" id="ws-command"></span
         ></code>
       </div>
-      {% endcomment %}
     </main>
-
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
     <script src="/js/game.js" type="module"></script>
-    <script>
-      const PLAYER_ID = '{{ player_id }}';
-      const GAME_ID = '{{ game_id }}';
-      const NAME = '{{ name }}';
-      const COLOR = '{{ color }}';
-      const IS_HOST = {% if is_host %}true{% else %} false{% endif %};
-
-      const BOARD = {{board|safe}};
-      const COORDINATES = {{coords|safe}};
-      const MAP_DATA = {{map_data|safe}};
-      const LIMITS = {{limits|safe}};
-
-      const game = new ScotlandYardGame(BOARD, COORDINATES, MAP_DATA, LIMITS);
-    </script>
   </body>
 </html>

@@ -1,6 +1,8 @@
 from random import choice, randrange, shuffle
 from typing import Final
 
+import scotlandyardgame.__init__ as meta
+
 from .constants import (
     AVAILABLE_COLORS,
     AVAILABLE_START_LOCATIONS,
@@ -15,6 +17,8 @@ from .constants import (
 )
 from .map import MAP
 from .player import Player
+
+print(f"\033[34m{meta.__name__}\033[0m version \033[33m{meta.__version__}\033[0m")
 
 
 class ScotlandYard:
@@ -50,7 +54,7 @@ class ScotlandYard:
     # setters
 
     @id.setter
-    def id(self, *args):
+    def id(self, *_):
         raise AttributeError("ID assignment not allowed.")
 
     # private methods
@@ -62,7 +66,7 @@ class ScotlandYard:
         return (
             player is not None
             and (ticket != BLACK_TICKET or player.is_mr_x)
-            and player.tickets.get(ticket) > 0
+            and player.wallet.get(ticket) > 0
             and location in MAP.stations[player.location].getNeighbours(ticket)
             and (
                 self.__get_player_at(location) is None
@@ -92,11 +96,11 @@ class ScotlandYard:
             return EndState.DETECTIVES_WIN
         return EndState.NOT_ENDED
 
-    def __get_player_by_id(self, playerID: str) -> Player:
+    def __get_player_by_id(self, player_id: str) -> Player:
         """returns ```Player``` in current game with ID ```playerID```"""
-        if playerID not in self.__players:
+        if player_id not in self.__players:
             raise ValueError("player does not exist in this game")
-        return self.__players[playerID]
+        return self.__players[player_id]
 
     def __get_player_at(self, loc: int) -> Player:
         """returns ```Player``` in current game with location ```loc```"""
@@ -109,9 +113,9 @@ class ScotlandYard:
         if not self.__is_valid_move(player.id, location, ticket):
             raise ValueError("Invalid move")
         player.location = location
-        player.tickets.discard(ticket)
+        player.wallet.discard(ticket)
         if not player.is_mr_x:
-            self.__mr_x.tickets.gain(ticket)
+            self.__mr_x.wallet.gain(ticket)
 
     def __double_move(
         self, player: Player, ticket1: str, location1: int, ticket2: str, location2: int
@@ -121,14 +125,14 @@ class ScotlandYard:
             raise ValueError("Only Mr. X can double move")
 
         old_location = player.location
-        old_tickets = player.tickets.all()
+        old_tickets = player.wallet.all()
         try:
             self.__move(player, ticket1, location1)
             self.__move(player, ticket2, location2)
-            player.tickets.discard(DOUBLE_TICKET)
+            player.wallet.discard(DOUBLE_TICKET)
         except ValueError as e:
             player.location = old_location
-            player.tickets.set(old_tickets)
+            player.wallet.set(old_tickets)
             raise e
 
     def __advance_turn(self):
@@ -173,24 +177,26 @@ class ScotlandYard:
             "name",
             "color",
             "location",
-            "tickets",
+            "wallet",
             "is_host"
         }
         """
         if player_id == "ALL":
-            info = {p: self.get_player_info(p) for p in self.__players.keys()}
+            info = {p: self.get_player_info(p)[p] for p in self.__players.keys()}
             del info[self.__mr_x.id]["location"]
             return info
 
         p = self.__get_player_by_id(player_id)
         return {
-            "game_id": self.__ID,
-            "player_id": player_id,
-            "name": p.name,
-            "color": p.color,
-            "location": p.location,
-            "tickets": p.tickets.all(),
-            "is_host": p.id == self.get_host_id(),
+            player_id: {
+                "game_id": self.__ID,
+                "player_id": player_id,
+                "name": p.name,
+                "color": p.color,
+                "location": p.location,
+                "wallet": p.wallet.all(),
+                "is_host": p.id == self.get_host_id(),
+            }
         }
 
     def get_game_info(self) -> dict:
@@ -230,7 +236,9 @@ class ScotlandYard:
         if color == player.color:
             return
         if color not in self.__available_colors:
-            raise ValueError("Color not available.")
+            raise ValueError(
+                f"Color not available. Available colors: {self.__available_colors}"
+            )
         if player.is_mr_x:
             raise RuntimeError("Cannot assign color to Mr. X.")
         old_color = player.color
@@ -312,6 +320,8 @@ class ScotlandYard:
         if player.color != "X":
             self.__available_colors.append(player.color)
 
+        print(f"\tcolor: {player.color} {self.__available_colors}")
+
         if self.state == GameState.PENDING:
             self.__available_start_locations.append(player.location)
         del self.__players[player_id]
@@ -323,6 +333,7 @@ class ScotlandYard:
         if is_x:
             new_x_id = choice(tuple(self.__players.keys()))
             self.__mr_x = self.__get_player_by_id(new_x_id)
+            self.__available_colors.append(self.__mr_x.color)
             self.set_mr_x(self.__mr_x.id)
 
         if is_host:

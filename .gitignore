@@ -66,6 +66,7 @@ coverage.xml
 
 # pyenv 
 .python-version 
+Scripts/
 
 # celery 
 celerybeat-schedule.* 

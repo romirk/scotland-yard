@@ -9,7 +9,7 @@ from .constants import (
     TICKET_TYPES,
     UNDERGROUND_TICKET,
 )
-from .ForceDirectedRenderer import force_directed_graph
+# from .ForceDirectedRenderer import force_directed_graph
 from .mapdata import MAP_DATA
 from .station import Station
 

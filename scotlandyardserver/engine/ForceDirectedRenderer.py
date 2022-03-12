@@ -9,8 +9,6 @@ If not, see https://opensource.org/licenses/MIT.
 """
 # This thing is so legit I needed to make it its own file
 
-import numpy as np
-import numpy.linalg as la
 
 
 def combinations(n):

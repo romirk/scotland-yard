@@ -30,6 +30,7 @@ ALLOWED_HOSTS = [
     "ancient-headland-46868.herokuapp.com",
     "scotlandyard.imagifight.in",
     "localhost",
+    "192.168.137.1"
 ]
 CSRF_TRUSTED_ORIGINS = [
     "https://ancient-headland-46868.herokuapp.com",

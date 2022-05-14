@@ -1,9 +1,20 @@
 body {
   transition: opacity 0.2s;
+  background-color: black;
+}
+
+#layout {
+  opacity: 0;
+  animation: fadeIn 1s forwards;
 }
 
 #main {
-  margin: auto;
+  margin: 15vh auto;
+  display: block;
+}
+
+#main * :not(.material-icons, button) {
+  font-family: "comfortaa";
 }
 
 #players {
@@ -18,6 +29,9 @@ body {
   margin: 1vh;
   border-radius: 10px;
   background-color: var(--bg-color);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0.8;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -28,10 +42,27 @@ body {
   top: 0.5vh;
 }
 
+.new {
+  animation: floatin 1s;
+}
+
+.los {
+  opacity: 0.6;
+}
+
+.disconnect {
+  animation: floatout 1s forwards;
+}
+
+.disconnected {
+  display: none;
+}
+
 #buttons {
   display: flex;
   justify-content: center;
   padding: 3vh;
+  padding-bottom: 1vh;
   font-size: 16px;
   width: 35vw;
   margin: auto;
@@ -51,6 +82,7 @@ body {
 
 #copy-link {
   background-color: #0d6efd;
+  display: none;
 }
 
 #start {
@@ -58,16 +90,21 @@ body {
   display: none;
 }
 
-.los {
-  opacity: 0.6;
+#leave {
+  display: flex;
+  justify-content: center;
+  font-size: 16px;
+  width: 35vw;
+  margin: auto;
+  color: white;
 }
 
-#previewsvg {
+.previewsvg {
   width: 100%;
   height: 100%;
 }
 
-#playerheadpath {
+.playerheadpath {
   transform-origin: 25% 30%;
   transform: rotate(-90deg);
 }
@@ -82,19 +119,37 @@ body {
 .modal {
   background: none;
 }
+.modal-content,
+.modal-title {
+  font-family: "comfortaa";
+}
 
-#overlay {
+.overlay {
   position: fixed; /* Sit on top of the page content */
-  display: none; /* Hidden by default */
+  display: block; /* Hidden by default */
   width: 100%; /* Full width (cover the whole page) */
   height: 100%; /* Full height (cover the whole page) */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
   z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
   /* cursor: pointer; Add a pointer on hover */
+}
+
+#preload {
+  z-index: 1;
+  background-color: black;
+}
+
+.fade-out {
+  opacity: 0;
+  animation: floatout 1s forwards;
+}
+
+#start-overlay {
+  background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+  display: none;
 }
 
 #overlay-text {

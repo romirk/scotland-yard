@@ -1,77 +1,369 @@
-let move_order = [];
-let turn = 0;
+/**
+ * Front end logic for Scotland Yard.
+ *
+ * @author Romir Kulshrestha <r.kulshrestha@student.tudelft.nl>
+ * @author Bhavee Sarna
+ * @version 0.1.1a
+ */
 
+import Logger from "./logger.js";
+import Renderer from "./renderer.js";
 
-let log = "";
-const logElement = document.getElementById("gameLog");
+/** @typedef { import('./constants').Player } Player */
+/** @typedef { import('./constants').Wallet } Wallet */
 
-const socket = new WebSocket(
-  `ws${location.protocol === "https:" ? "s" : ""}://${
-    window.location.host
-  }/ws/game/${GAME_ID}`
-);
+const logger = new Logger(document.getElementById("log"));
 
-socket.onclose = function (event) {
-  console.log("Socket closed");
-  log += "<br><span style=color:red>Socket closed</span>";
-  logElement.innerHTML = log;
-  // window.location.assign("/");
-};
+/**
+ * Front-end client for Scotland Yard.
+ */
+class ScotlandYardClient {
+  /** @readonly */
+  static VERSION = "0.1.1a";
 
-socket.onopen = function (event) {
-  console.log("Socket opened");
-  wsSend("JOIN " + PLAYER_ID);
-  wsSend("GET_PLAYER_INFO");
-};
+  /** @type {WebSocket} */
+  #socket;
+  /** @type {Renderer} */
+  #renderer;
+  /** @type {HTMLCanvasElement} */
+  #canvas;
+  /** @type {Logger} */
+  #logger;
 
-const commandbox = document.getElementById("ws-command");
-commandbox.addEventListener("keyup", (event) => {
-  if (event.key === "Enter") {
-    wsSend(commandbox.innerText);
-    commandbox.innerText = "";
+  #game_id;
+  #player_id;
+  #player_name;
+  #player_color;
+  #location;
+  /** @type {Wallet} */
+  #wallet;
+
+  #game_info = {};
+
+  /** @type {Object.<string, Player>} */
+  #players = {};
+
+  /** @type {number[][][]} */
+  #map_data;
+  /** @type {number[][]} */
+  #coordinates;
+
+  /** @type {string[]} */
+  #move_order = [];
+  #turn = 0;
+  #cycle = 0;
+  #state = "IDLE";
+
+  /**
+   *
+   * @param {WebSocket} socket
+   * @param {Player} player_info
+   * @param {HTMLCanvasElement} canvas
+   */
+  constructor(
+    socket,
+    player_info,
+    canvas = document.getElementById("canvas"),
+    logger_service = logger
+  ) {
+    this.#socket = socket;
+    this.#canvas = canvas;
+    this.#logger = logger_service;
+    this.#game_id = player_info.game_id;
+    this.#player_id = player_info.player_id;
+    this.#player_name = player_info.name;
+    this.#player_color = player_info.color;
+    this.#location = player_info.location;
+    this.#wallet = player_info.wallet;
+
+    this.#configure_ws();
+    this.#create_renderer();
+
+    logger_service.clear();
+    logger_service.log(
+      `Scotland Yard v${ScotlandYardClient.VERSION}`,
+      "info"
+    );
+    logger_service.log(`Connected to game ${this.#game_id}`);
+    logger_service.log_html(
+      `<br>You are <span class=turn>${
+        this.str
+      }</span> connected as <span class=turn>${this.#player_id}<span>`
+    );
+    logger_service.log(`Type HELP for more options.`, "warn");
   }
-});
-commandbox.focus(); //autofocus on commandbox
 
+  get state() {
+    return this.#state;
+  }
 
-function wsSend(msg) {
-  socket.send(msg);
-  log += `<br><span style="color:blue">${msg}</span>`;
-  logElement.innerHTML = log;
+  get turn() {
+    return this.#turn;
+  }
+
+  get cycle() {
+    return this.#cycle;
+  }
+
+  get name() {
+    return this.#player_name;
+  }
+
+  get color() {
+    return this.#player_color;
+  }
+
+  get location() {
+    return this.#location;
+  }
+
+  get game_id() {
+    return this.#game_id;
+  }
+
+  get player_id() {
+    return this.#player_id;
+  }
+
+  get str() {
+    return `${this.#player_name} (${this.#player_color}) @ ${this.#location}`;
+  }
+
+  get map_data() {
+    return this.#map_data;
+  }
+
+  get coordinates() {
+    return this.#coordinates;
+  }
+
+  /**
+   * Asynchronously retrieve map data from server and initialize {@link Renderer}.
+   */
+  #create_renderer() {
+    $.getJSON("/map", (data) => {
+      this.#map_data = data.map_data;
+      this.#coordinates = data.coordinates;
+      logger.log(`Map data loaded.`, "debug");
+      this.#renderer = new Renderer(
+        this.#canvas,
+        this.#map_data,
+        this.#coordinates,
+        this.#logger
+      );
+      this.render();
+    });
+  }
+
+  /**
+   * Configure WebSocket functions.
+   */
+  #configure_ws() {
+    this.#socket.onclose = function (event) {
+      logger.log("Connection closed", "error");
+      window.location.assign("/");
+    };
+
+    this.#socket.onmessage = (e) => this.#game_ws_handler(e);
+
+    this.#socket.onopen = (e) => {
+      console.log("Socket opened");
+      this.#send("GET_PLAYER_INFO");
+      this.#send("GET_PLAYER_INFO ALL");
+    };
+  }
+
+  /**
+   * Send a message to the server over WebSocket.
+   * @param {string} msg message
+   */
+  #send(msg) {
+    logger.log(msg, "debug");
+    this.#socket.send(msg);
+  }
+
+  // #advance_turn() {
+  //   this.#turn_count++;
+  // }
+
+  /**
+   * Handle incoming messages from the server.
+   * @param {MessageEvent} event
+   */
+  #game_ws_handler(event) {
+    const msg = event.data;
+    const tokens = msg.split(" ");
+    const command = tokens[0];
+
+    logger.log(msg, "debug");
+
+    switch (command) {
+      case "PLAYER_MOVED":
+        let T = msg.split(" ");
+        let id = T[1];
+        let cycle = T[2];
+        //TODO: record ticket log
+        let player_location = T[4];
+
+        // this.#advance_turn();
+        if (this.cycle !== cycle) {
+          logger.log(`Cycle mismatch: ${this.cycle} | ${cycle}`, "error");
+        }
+
+        if (player_location !== undefined && player_location !== "") {
+          this.#players[id].location = player_location;
+        }
+
+        if (this.#player_color === "X") this.#send("GET_PLAYER_INFO");
+        this.render();
+        break;
+
+      case "GAME_INFO":
+        let game_info = JSON.parse(msg.split("GAME_INFO ")[1]);
+        this.#game_info = game_info;
+        this.#move_order = game_info.move_order;
+        break;
+
+      case "PLAYER_INFO":
+        let player_info = JSON.parse(msg.split("PLAYER_INFO ")[1]);
+        console.log(player_info);
+        for (const player_id in player_info) {
+          this.#players[player_id] = player_info[player_id];
+
+          if (
+            player_id === this.#player_id &&
+            player_info[player_id].location === undefined
+          ) {
+            this.#players[player_id].location = this.#location;
+          }
+        }
+
+        this.render();
+        break;
+
+      case "GAME_STARTING":
+        this.#send("GET_GAME_INFO");
+        this.#send("GET_PLAYER_INFO ALL");
+        this.render();
+        break;
+
+      case "DENIED":
+        logger.log(`${msg}`, "error");
+        break;
+
+      case "ERROR":
+        logger.log(msg.split("ERROR - ")[1], "error");
+        break;
+      default:
+        break;
+    }
+  }
+
+  /**
+   * Parse console input.
+   * @param {string} msg input
+   * @returns {void}
+   */
+  parse(msg) {
+    msg = msg.trim().toLowerCase();
+    let tokens = msg.split(" ");
+    switch (tokens[0]) {
+      case "render":
+        this.render();
+        return;
+      case "clear":
+        logger.clear();
+        return;
+      case "debug":
+        if (tokens.length < 2) return;
+        switch (tokens[1]) {
+          case "on":
+            logger.debug = true;
+            break;
+
+          case "off":
+            logger.debug = false;
+            break;
+          default:
+            break;
+        }
+        logger.log(`Debug mode is ${logger.debug ? "on" : "off"}`);
+        return;
+
+      default:
+        break;
+    }
+
+    logger.log(msg, "info");
+    this.#send(msg);
+  }
+
+  /**
+   * Request a move from the server.
+   * @param {string} ticket_type ticket type
+   * @param {number} target_location destination
+   * @returns {void}
+   */
+  move(ticket_type, target_location) {
+    if (this.#state !== "PLAYING") {
+      return;
+    }
+
+    if (this.#wallet[ticket_type] === 0) {
+      logger.log(`You don't have any ${ticket_type} tickets!`, "warn");
+      return;
+    }
+
+    if (this.#location === target_location) {
+      logger.log(`You're already at ${target_location}!`, "warn");
+      return;
+    }
+
+    if (this.#move_order[this.turn] !== this.#player_id) {
+      logger.log(
+        `It's not your turn! It's ${this.#move_order[this.turn]}'s turn.`,
+        "warn"
+      );
+      return;
+    }
+
+    this.#send(`MOVE ${ticket_type} ${target_location}`);
+  }
+
+  /**
+   * Render UI.
+   */
+  render() {
+    console.log("rendering");
+    this.#renderer.render(this.#players);
+  }
 }
 
-// document.getElementById("send").addEventListener("click", () => {
-//   wsSend(commandbox.innerText);
-// });
+$(document).ready(() => {
+  $.getJSON("/info", (data) => {
+    const player_info = data;
+    window.GAME_ID = player_info.game_id;
+    const ws_url = `${location.protocol === "https:" ? "wss" : "ws"}://${
+      window.location.host
+    }/ws/game/${player_info.game_id}/${player_info.player_id}`;
+    player_info.state = "new";
+    const socket = new WebSocket(ws_url);
+    console.log(ws_url, player_info);
 
-socket.onmessage = (msg) => {
-  console.log(msg);
-  log += "<br>" + msg.data;
+    const game = new ScotlandYardClient(socket, player_info);
 
-  //TODO Handle messages
-
-  let tokens = msg.data.split(" ");
-  let command = tokens[0];
-  console.log(command);
-  switch (command) {
-    case "PLAYER_MOVED":
-      turn = (turn + 1) % 6;
-      if (move_order[turn] == PLAYER_ID) {
-        log += "<br><span class=turn>It's your turn!</span>";
+    const commandbox = document.getElementById("ws-command");
+    window.addEventListener("keyup", (event) => {
+      if (event.key === "Enter") {
+        game.parse(commandbox.innerText);
+        commandbox.innerText = "";
+        commandbox.focus();
       }
-      break;
+    });
+    commandbox.focus(); //autofocus on commandbox
 
-    case "GAME_INFO":
-      let gameInfo = JSON.parse(msg.data.split("GAME_INFO ")[1]);
-      console.log(gameInfo);
-      move_order = gameInfo.move_order;
-      break;
+    window.onresize = () => game.render();
+  });
+});
 
-    case "GAME_STARTING":
-      wsSend("GET_GAME_INFO");
-      break;
-    default:
-      break;
-  }
-  logElement.innerHTML = log;
-};
+export default ScotlandYardClient;
